@@ -80,7 +80,6 @@ img { display: block; }
   font-size: 12px; color: var(--muted); white-space: nowrap;
 }
 .chip.strong { color: var(--fg); }
-.chip.due { color: var(--orange); }
 .tag {   /* Circle cycle tag: text-xs text-muted-foreground border rounded-md px-1.5 py-0.5 */
   display: inline-flex; align-items: center; height: 20px; padding: 0 6px;
   border: 1px solid var(--border); border-radius: var(--r-sm);
@@ -108,7 +107,7 @@ img { display: block; }
 .group-h > div { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 24px; }
 .group-h .name { font-size: 14px; font-weight: 500; }
 .group-h .count { font-size: 14px; color: var(--muted); }
-.t-orange > div { background: rgba(255,149,0,.06); }
+.t-orange > div { background: rgba(255,149,0,.045); }
 .t-blue > div { background: rgba(1,49,255,.07); }
 .t-yellow > div { background: rgba(250,204,21,.05); }
 .t-gray > div { background: rgba(161,161,170,.05); }
@@ -224,7 +223,7 @@ img { display: block; }
 .p-cmd .cmd-row { height: 44px; font-size: 15px; padding: 0 8px; }
 .tabbar {
   position: absolute; inset-inline: 0; bottom: 0; height: 84px; z-index: 6;
-  background: rgba(9,9,11,.94); border-top: 1px solid var(--border);
+  background: var(--bg); border-top: 1px solid var(--border);
   display: grid; grid-template-columns: repeat(4, 1fr); padding: 7px 8px 0;
 }
 .tab { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #71717a; font-size: 11px; font-weight: 500; }
@@ -306,7 +305,7 @@ img { display: block; }
     <span><a href="https://github.com/zerostaticthemes/square-ui">zerostaticthemes/square-ui</a> 6,160 כוכבים, push אחרון 15.09.2026</span>
   </div>
   <ul>
-    <li>שורות ולא כרטיסים: קבוצות עם כותרת דביקה בגוון-צבע של 3–7%, שורה של 44 פיקסלים, סמלי-הסטטוס של Linear (עוגה, וי, משולש) מ-mock-data/status.tsx.</li>
+    <li>שורות ולא כרטיסים: קבוצות עם כותרת דביקה בגוון קל של צבע-הקבוצה, שורה של 44 פיקסלים, סמלי-הסטטוס של Linear (עוגה, וי, חצים) מ-mock-data/status.tsx.</li>
     <li>כהה כברירת-מחדל: רקע zinc-950, משטח-תוכן #101011 עם קו-שיער ורדיוס 8 בתוך ריפוד 8, סרגל-צד של 244 בלי גבול, פאנל-מאפיינים בצד.</li>
     <li>קיצורי-מקלדת ברמז (חיפוש עם /, שורות-פקודה עם אות); כחול רק בטבעת-ההתקדמות ובסימני «עלה», כתום רק ל«חסר ממך», הכפתור הראשי לבן כמו ב-Circle.</li>
   </ul>
@@ -324,6 +323,7 @@ img { display: block; }
         <svg class="i chev"><use href="#i-chevrons-up-down"/></svg>
         <div class="sp">
           <span><svg class="i"><use href="#i-search"/></svg></span>
+          <span><svg class="i"><use href="#i-settings"/></svg></span>
         </div>
       </div>
 
@@ -334,7 +334,7 @@ img { display: block; }
         </div>
         <h1>פרק 19 עם אורלי אורן</h1>
         <div class="props">
-          <span class="chip due"><svg class="i" style="width:14px;height:14px"><use href="#i-calendar"/></svg>עולה ביום רביעי 28.10</span>
+          <span class="chip strong"><svg class="i" style="width:14px;height:14px;color:#a1a1aa"><use href="#i-calendar"/></svg>עולה ביום רביעי 28.10</span>
           <span class="chip">בעוד יומיים</span>
           <span class="chip strong">
             <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#27272a" stroke-width="2" fill="none"/><circle cx="8" cy="8" r="6" stroke="#0131FF" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="37.699" stroke-dashoffset="21.54" transform="rotate(-90 8 8)"/></svg>
@@ -469,7 +469,7 @@ img { display: block; }
           <div class="d-head">
             <div class="crumb"><svg class="i"><use href="#i-panel-right"/></svg><span>בית</span></div>
             <div class="acts">
-              <span class="btn btn-ghost"><svg class="i"><use href="#i-search"/></svg><span class="kbd">⌘K</span></span>
+              <span class="btn btn-ghost"><svg class="i"><use href="#i-search"/></svg><span class="kbd"><bdi dir="ltr">⌘K</bdi></span></span>
             </div>
           </div>
 
@@ -482,7 +482,7 @@ img { display: block; }
                 </div>
                 <h1>פרק 19 עם אורלי אורן</h1>
                 <div class="props">
-                  <span class="chip due"><svg class="i" style="width:14px;height:14px"><use href="#i-calendar"/></svg>עולה ביום רביעי 28.10</span>
+                  <span class="chip strong"><svg class="i" style="width:14px;height:14px;color:#a1a1aa"><use href="#i-calendar"/></svg>עולה ביום רביעי 28.10</span>
                   <span class="chip">בעוד יומיים</span>
                   <span class="chip strong">
                     <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#27272a" stroke-width="2" fill="none"/><circle cx="8" cy="8" r="6" stroke="#0131FF" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="37.699" stroke-dashoffset="21.54" transform="rotate(-90 8 8)"/></svg>

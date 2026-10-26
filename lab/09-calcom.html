@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>09 Cal.com</title>
+<style>
+@font-face { font-family: "Rag Sans"; src: url("./fonts/RagSans-VF.ttf"); font-weight: 100 900; }
+
+/* Tokens: cosscom/ui packages/ui/src/styles/globals.css (:root) + apps/examples/calcom/app/globals.css */
+:root {
+  --bg: #ffffff;                 /* --background white */
+  --fg: #262626;                 /* --foreground neutral-800 */
+  --primary: #262626;            /* --primary neutral-800 */
+  --primary-fg: #fafafa;         /* neutral-50 */
+  --muted-bg: rgba(0,0,0,.04);   /* --muted / --secondary / --accent: black 4% */
+  --muted: #686868;              /* --muted-foreground: neutral-500 90% + black */
+  --border: rgba(0,0,0,.08);     /* --border black 8% */
+  --input: rgba(0,0,0,.10);      /* --input black 10% */
+  --sidebar: #fafafa;            /* --sidebar neutral-50 */
+  --sidebar-fg: #505050;         /* calcom example: neutral-800 80% over sidebar */
+  --sidebar-border: rgba(0,0,0,.06);
+  --warning: #f59e0b; --warning-fg: #b45309;
+  --prod: #0131FF;               /* wedo Prod Blue as the event-type label colour */
+  --orange: #FF9500;
+  --r-sm: 6px; --r-md: 8px; --r-lg: 10px; --r-xl: 14px; --r-2xl: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #efefef; }
+body {
+  color: var(--fg);
+  font-family: "Rag Sans", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  padding: 20px 16px 64px;
+}
+a { color: inherit; text-decoration: none; }
+img { display: block; }
+.i { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+/* ---------- lab caption ---------- */
+.lab {
+  max-width: 1280px; margin: 0 auto 20px; padding: 12px 16px;
+  border: 1px solid var(--border); border-radius: var(--r-2xl); background: #fff;
+  font-size: 12px; line-height: 1.6; color: var(--muted);
+  display: grid; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+.lab-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.lab-name { color: var(--fg); font-weight: 700; font-size: 14px; }
+.lab a { color: var(--fg); text-decoration: underline; text-decoration-color: rgba(0,0,0,.25); text-underline-offset: 2px; }
+.lab ul { list-style: none; display: grid; gap: 2px; }
+.lab li { padding-inline-start: 12px; position: relative; }
+.lab li::before { content: ""; position: absolute; inset-inline-start: 0; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: #c4c4c4; }
+
+/* ---------- stages ---------- */
+.stage { display: flex; justify-content: safe center; overflow-x: auto; margin: 0 auto 28px; padding: 10px 0; }
+.phone {
+  position: relative; width: 390px; height: 844px; flex: none;
+  border-radius: 54px; overflow: hidden; background: var(--bg);
+  box-shadow: 0 0 0 1px #d4d4d4, 0 0 0 7px #fafafa, 0 0 0 8px #d4d4d4, 0 20px 50px rgba(0,0,0,.08);
+  margin: 8px 0;
+}
+.desk {
+  width: 1280px; height: 800px; flex: none; overflow: hidden; border-radius: 12px;
+  background: var(--sidebar); box-shadow: 0 0 0 1px #d9d9d9, 0 24px 60px rgba(0,0,0,.08);
+}
+#full:target ~ .stage .phone, #full:target ~ .stage .desk { height: auto; }
+#full:target ~ .stage .scroll { height: auto !important; overflow: visible !important; }
+#full:target ~ .stage .p-foot { position: static; padding-top: 12px; }
+#full:target ~ .stage .p-foot::before { display: none; }
+
+/* ---------- coss parts ---------- */
+.btn {   /* buttonVariants default size: h-8 rounded-lg border px-[11px] text-sm font-medium */
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 32px; padding: 0 11px; border-radius: var(--r-lg); border: 1px solid transparent;
+  font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer;
+}
+.btn .i { width: 16px; height: 16px; opacity: .8; margin: 0 -2px; }
+.btn-primary {
+  background: var(--primary); border-color: var(--primary); color: var(--primary-fg);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 1px 2px rgba(38,38,38,.24);
+}
+.btn-outline {
+  background: #fff; border-color: var(--input); color: var(--fg);
+  box-shadow: 0 1px 2px rgba(0,0,0,.05), inset 0 -1px 0 rgba(0,0,0,.04);
+}
+.btn-outline:hover { background: rgba(0,0,0,.02); }
+.btn-xs { height: 24px; gap: 4px; padding: 0 7px; border-radius: var(--r-md); font-size: 12px; }
+.btn-xs .i { width: 14px; height: 14px; }
+.btn-icon { width: 32px; padding: 0; }
+.badge {  /* badgeVariants: rounded-sm h-4.5 px-[3px] text-xs font-medium */
+  display: inline-flex; align-items: center; gap: 4px; height: 18px; min-width: 18px; padding: 0 4px;
+  border-radius: var(--r-sm); border: 1px solid transparent; font-size: 12px; font-weight: 500; white-space: nowrap;
+}
+.badge .i { width: 12px; height: 12px; opacity: .8; }
+.badge-outline { border-color: var(--input); background: #fff; color: var(--fg); }
+.badge-secondary { background: var(--muted-bg); color: var(--fg); }
+.badge-orange { background: rgba(255,149,0,.12); color: #b86a00; }
+
+.frame {  /* CardFrame: rounded-2xl border shadow-xs/5, before:bg-muted/72 */
+  position: relative; border-radius: var(--r-2xl); border: 1px solid var(--border);
+  background: #f7f7f7; box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+.frame-h { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 16px; padding: 16px 24px; }
+.frame-h .ft { font-size: 14px; font-weight: 600; }
+.frame-h.ep .ft, .frame-h.top .ft { font-size: 18px; font-weight: 600; line-height: 1.2; margin-bottom: 4px; }
+.frame-h .fd { font-size: 14px; color: var(--muted); grid-column: 1; }
+.frame-h .fa { grid-column: 2; grid-row: 1 / span 2; }
+.frame-h.sub { padding: 12px 24px; }
+.frame-h.sub .ft { font-weight: 500; color: var(--muted); }
+.frame-f { padding: 14px 24px; font-size: 14px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.frame > .card { margin: 0 -1px; border-radius: var(--r-xl); box-shadow: none; }
+.frame > .card:last-child { margin-bottom: -1px; }
+.card {   /* Card: rounded-2xl border bg-card shadow-xs/5 */
+  position: relative; border-radius: var(--r-2xl); border: 1px solid var(--border); background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+.li { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 24px; }
+.li + .li { border-top: 1px solid var(--border); }
+.li .content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.li .head { display: flex; flex-direction: column; gap: 4px; }
+.li .title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.li .title .slug { font-size: 12px; font-weight: 400; color: var(--muted); }
+.li .desc { font-size: 14px; color: var(--muted); }
+.li .badges { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.li .acts { display: flex; align-items: center; gap: 8px; }
+.li.locked .title { color: var(--muted); }
+.li.locked .title .badge { color: var(--fg); }
+.label-bar { position: absolute; top: 18px; bottom: 18px; inset-inline-start: 10px; width: 3px; border-radius: 999px; }
+.datecol { width: 160px; flex: none; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.datecol .d { font-size: 14px; font-weight: 500; }
+.datecol .t { font-size: 14px; color: var(--muted); margin-top: -4px; }
+.progress { width: 200px; display: flex; flex-direction: column; gap: 8px; }
+.progress .lbl { display: flex; justify-content: space-between; font-size: 14px; font-weight: 500; }
+.progress .lbl span:last-child { color: var(--muted); font-weight: 400; }
+.track { height: 6px; border-radius: 999px; background: var(--input); overflow: hidden; }
+.track i { display: block; height: 100%; background: var(--primary); }
+.meter { height: 8px; background: var(--input); overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--primary); }
+.ep-thumb { width: 96px; height: 54px; border-radius: var(--r-md); object-fit: cover; flex: none; box-shadow: 0 0 0 1px var(--border); }
+.ep-thumb.empty { background: var(--muted-bg); }
+.kpi { padding: 24px; display: flex; flex-direction: column; }
+.kpi .k-lbl { font-size: 14px; color: var(--muted); }
+.kpi .k-num { font-size: 30px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; margin-top: 6px; }
+.kpi .k-ins { font-size: 14px; margin-top: 14px; }
+.kpi .meter { margin-top: 10px; }
+.kpi .k-asof { font-size: 12px; color: var(--muted); margin-top: 10px; }
+.quick { display: flex; flex-wrap: wrap; gap: 8px; }
+.h-sec { font-size: 14px; font-weight: 500; color: var(--muted); margin-bottom: 10px; }
+
+/* ---------- desktop ---------- */
+.d-app { display: flex; height: 100%; }
+.side { width: 256px; flex: none; padding-top: 8px; display: flex; flex-direction: column; color: var(--sidebar-fg); }
+.side-h { display: flex; align-items: center; justify-content: space-between; gap: 2px; padding: 8px 12px 8px 8px; }
+.logo { display: flex; align-items: center; height: 32px; padding: 0 8px; }
+.logo img { height: 21px; width: auto; }
+.hacts { display: flex; align-items: center; gap: 2px; }
+.hbtn { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--r-lg); color: var(--sidebar-fg); }
+.hbtn:hover { background: rgba(0,0,0,.02); }
+.hbtn img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+.side-c { flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 0 8px; }
+.menu { display: flex; flex-direction: column; gap: 4px; padding: 8px 4px; }
+.m-btn {  /* SidebarMenuButton lg:h-8 rounded-lg p-2 font-medium text-sm */
+  position: relative; display: flex; align-items: center; gap: 8px; height: 32px; padding: 8px;
+  border-radius: var(--r-lg); font-size: 14px; font-weight: 500; color: var(--sidebar-fg);
+}
+.m-btn:hover { background: rgba(0,0,0,.02); color: var(--fg); }
+.m-btn.on { background: var(--muted-bg); color: var(--fg); }
+.m-btn .dot { margin-inline-start: auto; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); }
+.menu.foot { margin-top: auto; padding-bottom: 16px; }
+
+.inset {  /* SidebarInset: md:my-2 md:me-2 md:rounded-2xl md:border bg-background shadow-lg/5 */
+  flex: 1; min-width: 0; margin: 8px 0; margin-inline-end: 8px;
+  border-radius: var(--r-2xl); border: 1px solid var(--sidebar-border); background: var(--bg);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,.05), 0 4px 6px -4px rgba(0,0,0,.05), inset 0 -1px 0 rgba(0,0,0,.04);
+  overflow: hidden; display: flex; flex-direction: column;
+}
+.inset-scroll { flex: 1; min-height: 0; overflow: auto; padding: 24px 40px 40px; }
+.app-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.app-h h1 { font-size: 18px; font-weight: 700; line-height: 1; }
+.app-h p { font-size: 14px; color: var(--muted); margin-top: 6px; }
+.stack { display: flex; flex-direction: column; gap: 24px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+
+/* ---------- phone ---------- */
+.island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 124px; height: 36px; border-radius: 20px; background: #000; z-index: 40; }
+.p-scroll { height: 100%; overflow: auto; padding-top: 47px; }
+.p-head { position: sticky; top: 0; z-index: 20; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: var(--sidebar); border-bottom: 1px solid var(--border); }
+.p-head .logo { padding: 0; }
+.p-body { padding: 24px 16px 120px; }
+.phone .app-h { margin-bottom: 20px; }
+.phone .app-h h1 { font-size: 20px; }
+.phone .frame-h { padding: 14px 16px; }
+.phone .frame-h.sub { padding: 10px 16px; }
+.phone .frame-f { padding: 12px 16px; }
+.phone .li { padding: 14px 16px; padding-inline-start: 20px; align-items: flex-start; }
+.phone .li .acts { align-self: center; }
+.phone .progress { width: 100%; }
+.phone .frame-h.ep { grid-template-columns: 1fr; }
+.phone .frame-h.ep .fa { grid-column: 1; grid-row: auto; margin-top: 12px; }
+.p-booking { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.p-booking .row2 { display: flex; flex-wrap: wrap; gap: 8px; }
+.phone .kpi { padding: 20px 16px; }
+.phone .ep-thumb { width: 80px; height: 45px; }
+.p-foot {
+  position: absolute; inset-inline: 0; bottom: 0; z-index: 30; display: flex; align-items: center; justify-content: center; gap: 8px; padding-bottom: 30px;
+}
+.p-foot::before { content: ""; position: absolute; inset-inline: 0; bottom: -4px; height: 150%; background: linear-gradient(to top, #fff 60%, rgba(255,255,255,0)); pointer-events: none; }
+.pill-nav {
+  position: relative; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 999px;
+  border: 1px solid var(--border); background: #fff; box-shadow: 0 10px 15px -3px rgba(0,0,0,.05), 0 4px 6px -4px rgba(0,0,0,.05), inset 0 -1px 0 rgba(0,0,0,.04);
+}
+.pill-nav a { position: relative; width: 44px; height: 44px; border-radius: 999px; display: flex; align-items: center; justify-content: center; color: rgba(80,80,80,.8); }
+.pill-nav a .i { width: 20px; height: 20px; }
+.pill-nav a.on { background: var(--muted-bg); color: var(--fg); }
+.pill-nav a .dot { position: absolute; top: 9px; inset-inline-start: 9px; width: 7px; height: 7px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 2px #fff; }
+.fab { position: relative; width: 48px; height: 48px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: var(--primary); color: #fafafa; box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 1px 2px rgba(38,38,38,.24); }
+.fab .i { width: 20px; height: 20px; }
+.home-ind { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: #262626; z-index: 41; }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+<symbol id="i-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+<symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></symbol>
+<symbol id="i-calendar-days" viewBox="0 0 24 24"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M8 13h.01"/><path d="M12 13h.01"/><path d="M16 13h.01"/><path d="M8 17h.01"/><path d="M12 17h.01"/><path d="M16 17h.01"/></symbol>
+<symbol id="i-calendar-plus" viewBox="0 0 24 24"><path d="M16 18h6"/><path d="M16 2v3"/><path d="M19 15v6"/><path d="M21 11.5V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h8.3"/><path d="M3 9h18"/><path d="M8 2v3"/></symbol>
+<symbol id="i-calendar-clock" viewBox="0 0 24 24"><path d="M16 14v2.2l1.6 1"/><path d="M16 2v3"/><path d="M21 7.338V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h2.338"/><path d="M3 9h5.859"/><path d="M8 2v3"/><circle cx="16" cy="16" r="6"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+<symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+<symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol>
+<symbol id="i-image-up" viewBox="0 0 24 24"><path d="M10.3 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10l-3.1-3.1a2 2 0 0 0-2.814.014L6 21"/><path d="m14 19.5 3-3 3 3"/><path d="M17 22v-5.5"/><circle cx="9" cy="9" r="2"/></symbol>
+<symbol id="i-image-plus" viewBox="0 0 24 24"><path d="M16 5h6"/><path d="M19 2v6"/><path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/></symbol>
+<symbol id="i-share-2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol>
+<symbol id="i-pen-line" viewBox="0 0 24 24"><path d="M13 21h8"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></symbol>
+<symbol id="i-circle-dashed" viewBox="0 0 24 24"><path d="M10.1 2.182a10 10 0 0 1 3.8 0"/><path d="M13.9 21.818a10 10 0 0 1-3.8 0"/><path d="M17.609 3.721a10 10 0 0 1 2.69 2.7"/><path d="M2.182 13.9a10 10 0 0 1 0-3.8"/><path d="M20.279 17.609a10 10 0 0 1-2.7 2.69"/><path d="M21.818 10.1a10 10 0 0 1 0 3.8"/><path d="M3.721 6.391a10 10 0 0 1 2.7-2.69"/><path d="M6.391 20.279a10 10 0 0 1-2.69-2.7"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+<symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-chevrons-up-down" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></symbol>
+<symbol id="i-ellipsis" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-link-2" viewBox="0 0 24 24"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></symbol>
+<symbol id="i-video" viewBox="0 0 24 24"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></symbol>
+<symbol id="i-megaphone" viewBox="0 0 24 24"><path d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/><path d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14"/><path d="M8 6v8"/></symbol>
+<symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></symbol>
+<symbol id="i-type" viewBox="0 0 24 24"><path d="M12 4v16"/><path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2"/><path d="M9 20h6"/></symbol>
+<symbol id="i-inbox" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></symbol>
+<symbol id="i-command" viewBox="0 0 24 24"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></symbol>
+<symbol id="i-grip-vertical" viewBox="0 0 24 24"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+<symbol id="i-text-cursor-input" viewBox="0 0 24 24"><path d="M12 20h-1a2 2 0 0 1-2-2 2 2 0 0 1-2 2H6"/><path d="M13 8h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-7"/><path d="M5 16H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"/><path d="M6 4h1a2 2 0 0 1 2 2 2 2 0 0 1 2-2h1"/><path d="M9 6v12"/></symbol>
+<symbol id="i-square-pen" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></symbol>
+<symbol id="i-trending-up" viewBox="0 0 24 24"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M3 5h.01"/><path d="M3 12h.01"/><path d="M3 19h.01"/><path d="M8 5h13"/><path d="M8 12h13"/><path d="M8 19h13"/></symbol>
+<symbol id="i-panel-left" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></symbol>
+<symbol id="i-panel-right" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></symbol>
+<symbol id="i-chart-no-axes-column" viewBox="0 0 24 24"><path d="M5 21v-6"/><path d="M12 21V3"/><path d="M19 21V9"/></symbol>
+<symbol id="i-chart-column" viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
+<symbol id="i-sliders-horizontal" viewBox="0 0 24 24"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></symbol>
+<symbol id="i-list-filter" viewBox="0 0 24 24"><path d="M2 5h20"/><path d="M6 12h12"/><path d="M9 19h6"/></symbol>
+<symbol id="i-circle-user" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></symbol>
+<symbol id="i-square-play" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z"/></symbol>
+<symbol id="i-film" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></symbol>
+<symbol id="i-clapperboard" viewBox="0 0 24 24"><path d="m12.296 3.464 3.02 3.956"/><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z"/><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="m6.18 5.276 3.1 3.899"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+<symbol id="i-signature" viewBox="0 0 24 24"><path d="m21 17-2.156-1.868A.5.5 0 0 0 18 15.5v.5a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1c0-2.545-3.991-3.97-8.5-4a1 1 0 0 0 0 5c4.153 0 4.745-11.295 5.708-13.5a2.5 2.5 0 1 1 3.31 3.284"/><path d="M3 21h18"/></symbol>
+<symbol id="i-badge-check" viewBox="0 0 24 24"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m16 9-5.5 5.5L8 12"/></symbol>
+</svg>
+<div id="full"></div>
+
+<header class="lab">
+  <div class="lab-top">
+    <span class="lab-name">09 Cal.com</span>
+    <span><a href="https://github.com/cosscom/ui">cosscom/ui</a> 10,749 כוכבים, push אחרון 25.10.2026 (מערכת-העיצוב הרשמית של Cal.com; כולל apps/examples/calcom)</span>
+    <span><a href="https://github.com/calcom/cal.com">calcom/cal.com</a> (היום calcom/cal.diy) 49,393 כוכבים, push אחרון 26.10.2026</span>
+  </div>
+  <ul>
+    <li>האפליקציה יושבת על רקע #fafafa, והתוכן בלוח לבן צף: רדיוס 16, קו-שיער 6% וצל רך; סרגל-צד של 256 בלי גבול (calcom/components/ui/sidebar.tsx, SidebarInset).</li>
+    <li>מסגרת אפורה (CardFrame) שעוטפת כרטיס לבן עם שורות: כותרת-קבוצה אפורה, שורה של כותרת, תיאור ותגים קטנים ברדיוס 6, ופעולות בצד (card.tsx, list-item.tsx, event-types-list.tsx).</li>
+    <li>ההקלטה הבאה בנויה כמו שורת-הזמנה ב-Bookings: פס-צבע של 3 פיקסלים, עמודת תאריך ושעה, כפתור-מיקום קטן, «לשנות מועד» ו«להוסיף פרטי-אורח» כמו Reschedule ו-Add guests (booking/bookings-list.tsx, booking-actions.tsx); בטלפון סרגל-גלולה צף וכפתור + שחור (app-mobile-footer.tsx).</li>
+  </ul>
+  <div>גופן: Rag Sans במשקלים 400–700. coss כתוב כולו ב-Cal Sans (CalSansVF, כותרות Bold צמודות), ואין לו עברית; Rag Sans הוא הקרוב ביותר בקול, עם כותרות 700.</div>
+</header>
+
+<!-- ================= PHONE ================= -->
+<section class="stage">
+  <div class="phone">
+    <div class="island"></div>
+    <div class="p-scroll scroll">
+      <div class="p-head">
+        <a class="logo" href="#"><img src="../brand/wedo-logotype-black.svg" alt="wedo"></a>
+        <div class="hacts">
+          <a class="hbtn" href="#" aria-label="הגדרות"><svg class="i"><use href="#i-settings"/></svg></a>
+          <a class="hbtn" href="#"><img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt=""></a>
+        </div>
+      </div>
+      <div class="p-body">
+        <div class="app-h"><div><h1>בית</h1></div></div>
+        <div class="stack">
+          <section class="frame">
+            <div class="frame-h ep">
+              <div class="ft">פרק 19 עם אורלי אורן</div>
+              <div class="fd">עולה ביום רביעי 28.10, בעוד יומיים</div>
+              <div class="fa progress"><div class="lbl"><span>3 מתוך 7</span></div><div class="track"><i style="width:42.86%"></i></div></div>
+            </div>
+            <div class="frame-h sub"><div class="ft">חסר ממך</div></div>
+            <div class="card">
+              <div class="li">
+                <span class="label-bar" style="background:var(--orange)"></span>
+                <div class="content"><div class="head"><div class="title">שם לפרק<span class="badge badge-orange">פתוח</span></div><div class="desc">לפני העריכה</div></div></div>
+                <div class="acts"><a class="btn btn-primary" href="#">לבחור שם</a></div>
+              </div>
+              <div class="li">
+                <div class="content"><div class="head"><div class="title">תמונת-מרואיין<span class="badge badge-outline"><svg class="i"><use href="#i-hourglass"/></svg>ממתינה לאישור</span></div><div class="desc">התקבלה ב-25.10</div></div></div>
+              </div>
+              <div class="li locked">
+                <div class="content"><div class="head"><div class="title">בחירת-טיזרים<span class="badge badge-secondary"><svg class="i"><use href="#i-lock"/></svg>נעול</span></div><div class="desc">אחרי העריכה</div></div></div>
+              </div>
+              <div class="li locked">
+                <div class="content"><div class="head"><div class="title">אישור-לפרסום<span class="badge badge-secondary"><svg class="i"><use href="#i-lock"/></svg>נעול</span></div><div class="desc">בהמשך</div></div></div>
+              </div>
+            </div>
+            <div class="frame-f">עכשיו: עריכה, ממתין לעורך</div>
+          </section>
+
+          <section class="frame">
+            <div class="frame-h sub"><div class="ft">ההקלטה הבאה</div></div>
+            <div class="card">
+              <div class="li">
+                <span class="label-bar" style="background:var(--prod)"></span>
+                <div class="p-booking">
+                  <div class="head" style="display:flex;flex-direction:column;gap:4px">
+                    <div class="title">עם נועה בוקרה ורלי זדרב</div>
+                    <div class="desc">מפיק: יהלי</div>
+                  </div>
+                  <div class="datecol" style="width:auto">
+                    <span class="d">חמישי 29.10</span>
+                    <span class="t">11:00 עד 13:00</span>
+                    <a class="btn btn-outline btn-xs" href="#"><svg class="i"><use href="#i-map-pin"/></svg>אולפן רימקס</a>
+                  </div>
+                  <div class="row2">
+                    <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-calendar"/></svg>לשנות מועד</a>
+                    <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-user"/></svg>להוסיף פרטי-אורח</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="frame-f"><a class="btn btn-outline" href="#"><svg class="i"><use href="#i-plus"/></svg>לתאם הקלטה נוספת</a></div>
+          </section>
+
+          <section class="frame">
+            <div class="frame-h sub"><div class="ft">עלה לאחרונה</div></div>
+            <div class="card">
+              <div class="li">
+                <img class="ep-thumb" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="">
+                <div class="content" style="gap:8px"><div class="head"><div class="title">איך מקפיצים עסק בתיווך עם AI</div><div class="desc">פרק 18 עם אלכס קפ</div></div><div class="badges"><span class="badge badge-outline"><svg class="i"><use href="#i-calendar"/></svg>עלה ב-14.10</span></div></div>
+                <div class="acts"><a class="btn btn-outline btn-xs" href="#"><svg class="i"><use href="#i-share-2"/></svg>לשתף</a></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="frame">
+            <div class="frame-h sub"><div class="ft">איך התוכנית עושה</div></div>
+            <div class="card kpi">
+              <span class="k-lbl">צפיות ביוטיוב</span>
+              <span class="k-num">5,941</span>
+              <span class="k-ins">כל פרק נצפה בממוצע 21% מאורכו</span>
+              <div class="meter"><i style="width:21%"></i></div>
+              <span class="k-asof">נכון ל-25.10.2026, 18 פרקים</span>
+            </div>
+          </section>
+
+          <section>
+            <h2 class="h-sec">פעולות מהירות</h2>
+            <div class="quick">
+              <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-calendar-plus"/></svg>לתאם הקלטה</a>
+              <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-image-up"/></svg>להעלות תמונה</a>
+              <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-pen-line"/></svg>לבחור שם</a>
+              <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-share-2"/></svg>לשתף פרק</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+    <footer class="p-foot">
+      <nav class="pill-nav">
+        <a class="on" href="#" aria-label="בית"><svg class="i"><use href="#i-house"/></svg></a>
+        <a href="#" aria-label="אסטרטגיה"><svg class="i"><use href="#i-compass"/></svg></a>
+        <a href="#" aria-label="הפקה"><span class="dot"></span><svg class="i"><use href="#i-mic"/></svg></a>
+        <a href="#" aria-label="הפצה"><svg class="i"><use href="#i-send"/></svg></a>
+      </nav>
+      <a class="fab" href="#" aria-label="לתאם הקלטה"><svg class="i"><use href="#i-plus"/></svg></a>
+    </footer>
+    <div class="home-ind"></div>
+  </div>
+</section>
+
+<!-- ================= DESKTOP ================= -->
+<section class="stage">
+  <div class="desk">
+    <div class="d-app">
+      <aside class="side">
+        <div class="side-h">
+          <a class="logo" href="#"><img src="../brand/wedo-logotype-black.svg" alt="wedo"></a>
+          <div class="hacts">
+            <a class="hbtn" href="#" aria-label="חיפוש"><svg class="i"><use href="#i-search"/></svg></a>
+            <a class="hbtn" href="#"><img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt=""></a>
+          </div>
+        </div>
+        <div class="side-c">
+          <nav class="menu">
+            <a class="m-btn on" href="#"><svg class="i"><use href="#i-house"/></svg>בית</a>
+            <a class="m-btn" href="#"><svg class="i"><use href="#i-compass"/></svg>אסטרטגיה</a>
+            <a class="m-btn" href="#"><svg class="i"><use href="#i-mic"/></svg>הפקה<span class="dot"></span></a>
+            <a class="m-btn" href="#"><svg class="i"><use href="#i-send"/></svg>הפצה</a>
+          </nav>
+          <nav class="menu foot">
+            <a class="m-btn" href="#"><svg class="i"><use href="#i-settings"/></svg>הגדרות</a>
+          </nav>
+        </div>
+      </aside>
+
+      <main class="inset">
+        <div class="inset-scroll scroll">
+          <header class="app-h">
+            <div><h1>בית</h1><p>הפיצוח, עם גיל לי-רן</p></div>
+          </header>
+
+          <div class="stack">
+            <section class="frame">
+              <div class="frame-h top">
+                <div class="ft">פרק 19 עם אורלי אורן</div>
+                <div class="fd">עולה ביום רביעי 28.10, בעוד יומיים</div>
+                <div class="fa progress"><div class="lbl"><span>3 מתוך 7</span></div><div class="track"><i style="width:42.86%"></i></div></div>
+              </div>
+              <div class="frame-h sub"><div class="ft">חסר ממך</div></div>
+              <div class="card">
+                <div class="li">
+                  <span class="label-bar" style="background:var(--orange)"></span>
+                  <div class="content"><div class="head"><div class="title">שם לפרק<span class="badge badge-orange">פתוח</span></div><div class="desc">לפני העריכה</div></div></div>
+                  <div class="acts"><a class="btn btn-primary" href="#"><svg class="i"><use href="#i-pen-line"/></svg>לבחור שם</a></div>
+                </div>
+                <div class="li">
+                  <div class="content"><div class="head"><div class="title">תמונת-מרואיין<span class="badge badge-outline"><svg class="i"><use href="#i-hourglass"/></svg>ממתינה לאישור</span></div><div class="desc">התקבלה ב-25.10</div></div></div>
+                </div>
+                <div class="li locked">
+                  <div class="content"><div class="head"><div class="title">בחירת-טיזרים<span class="badge badge-secondary"><svg class="i"><use href="#i-lock"/></svg>נעול</span></div><div class="desc">אחרי העריכה</div></div></div>
+                </div>
+                <div class="li locked">
+                  <div class="content"><div class="head"><div class="title">אישור-לפרסום<span class="badge badge-secondary"><svg class="i"><use href="#i-lock"/></svg>נעול</span></div><div class="desc">בהמשך</div></div></div>
+                </div>
+              </div>
+              <div class="frame-f">עכשיו: עריכה, ממתין לעורך</div>
+            </section>
+
+            <section class="frame">
+              <div class="frame-h sub"><div class="ft">ההקלטה הבאה</div></div>
+              <div class="card">
+                <div class="li">
+                  <span class="label-bar" style="background:var(--prod)"></span>
+                  <div class="datecol">
+                    <span class="d">חמישי 29.10</span>
+                    <span class="t">11:00 עד 13:00</span>
+                    <a class="btn btn-outline btn-xs" href="#"><svg class="i"><use href="#i-map-pin"/></svg>אולפן רימקס</a>
+                  </div>
+                  <div class="content">
+                    <div class="head"><div class="title">עם נועה בוקרה ורלי זדרב</div><div class="desc">מפיק: יהלי</div></div>
+                  </div>
+                  <div class="acts">
+                    <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-calendar"/></svg>לשנות מועד</a>
+                    <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-user"/></svg>להוסיף פרטי-אורח</a>
+                  </div>
+                </div>
+              </div>
+              <div class="frame-f"><a class="btn btn-outline" href="#"><svg class="i"><use href="#i-plus"/></svg>לתאם הקלטה נוספת</a></div>
+            </section>
+
+            <div class="grid2">
+              <section class="frame">
+                <div class="frame-h sub"><div class="ft">עלה לאחרונה</div></div>
+                <div class="card">
+                  <div class="li">
+                    <img class="ep-thumb" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="">
+                    <div class="content" style="gap:8px"><div class="head"><div class="title">איך מקפיצים עסק בתיווך עם AI</div><div class="desc">פרק 18 עם אלכס קפ</div></div><div class="badges"><span class="badge badge-outline"><svg class="i"><use href="#i-calendar"/></svg>עלה ב-14.10</span></div></div>
+                    <div class="acts"><a class="btn btn-outline" href="#"><svg class="i"><use href="#i-share-2"/></svg>לשתף</a></div>
+                  </div>
+                </div>
+              </section>
+              <section class="frame">
+                <div class="frame-h sub"><div class="ft">איך התוכנית עושה</div></div>
+                <div class="card kpi">
+                  <span class="k-lbl">צפיות ביוטיוב</span>
+                  <span class="k-num">5,941</span>
+                  <span class="k-ins">כל פרק נצפה בממוצע 21% מאורכו</span>
+                  <div class="meter"><i style="width:21%"></i></div>
+                  <span class="k-asof">נכון ל-25.10.2026, 18 פרקים</span>
+                </div>
+              </section>
+            </div>
+
+            <section>
+              <h2 class="h-sec">פעולות מהירות</h2>
+              <div class="quick">
+                <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-calendar-plus"/></svg>לתאם הקלטה</a>
+                <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-image-up"/></svg>להעלות תמונה</a>
+                <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-pen-line"/></svg>לבחור שם</a>
+                <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-share-2"/></svg>לשתף פרק</a>
+              </div>
+            </section>
+
+            <section class="frame">
+              <div class="frame-h sub"><div class="ft">הפרקים</div></div>
+              <div class="card">
+                <div class="li"><span class="ep-thumb empty" style="width:64px;height:36px"></span><div class="content" style="gap:8px"><div class="head"><div class="title" style="color:var(--muted)">(עוד אין שם)<span class="slug">פרק 19</span></div><div class="desc">אורלי אורן</div></div></div><div class="acts"><span class="badge badge-secondary">בעריכה</span></div></div>
+                <div class="li"><img class="ep-thumb" style="width:64px;height:36px" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""><div class="content" style="gap:8px"><div class="head"><div class="title">איך מקפיצים עסק בתיווך עם AI<span class="slug">פרק 18</span></div><div class="desc">אלכס קפ</div></div></div><div class="acts"><span class="badge badge-outline"><svg class="i"><use href="#i-calendar"/></svg>עלה ב-14.10</span></div></div>
+                <div class="li"><img class="ep-thumb" style="width:64px;height:36px" src="https://i.ytimg.com/vi/P463I2IV9Xo/mqdefault.jpg" alt=""><div class="content" style="gap:8px"><div class="head"><div class="title">איך ממשיכים מכאן?<span class="slug">פרק 17</span></div><div class="desc">אהרון וחביבה איציקזון</div></div></div><div class="acts"><span class="badge badge-outline"><svg class="i"><use href="#i-calendar"/></svg>עלה ב-7.10</span></div></div>
+                <div class="li"><img class="ep-thumb" style="width:64px;height:36px" src="https://i.ytimg.com/vi/epNQhrsKjxI/mqdefault.jpg" alt=""><div class="content" style="gap:8px"><div class="head"><div class="title">חמשת הכללים למשא ומתן<span class="slug">פרק 16</span></div><div class="desc">ונסה סיימן</div></div></div><div class="acts"><span class="badge badge-outline"><svg class="i"><use href="#i-calendar"/></svg>עלה ב-30.9</span></div></div>
+                <div class="li"><img class="ep-thumb" style="width:64px;height:36px" src="https://i.ytimg.com/vi/fCG8ceGVDRo/mqdefault.jpg" alt=""><div class="content" style="gap:8px"><div class="head"><div class="title">איך לעשות שינוי קריירה בגיל 40<span class="slug">פרק 15</span></div><div class="desc">דקלה ביבי</div></div></div><div class="acts"><span class="badge badge-outline"><svg class="i"><use href="#i-calendar"/></svg>עלה ב-23.9</span></div></div>
+                <div class="li"><img class="ep-thumb" style="width:64px;height:36px" src="https://i.ytimg.com/vi/pp-nzLON8vY/mqdefault.jpg" alt=""><div class="content" style="gap:8px"><div class="head"><div class="title">מי נשאר ומי נשבר<span class="slug">פרק 14</span></div><div class="desc">אריק זאבי</div></div></div><div class="acts"><span class="badge badge-outline"><svg class="i"><use href="#i-calendar"/></svg>עלה ב-16.9</span></div></div>
+                <div class="li"><img class="ep-thumb" style="width:64px;height:36px" src="https://i.ytimg.com/vi/Sh0J8sIBfHs/mqdefault.jpg" alt=""><div class="content" style="gap:8px"><div class="head"><div class="title">הסוד הכי שמור ברי/מקס<span class="slug">פרק 13</span></div><div class="desc">איתי דוד</div></div></div><div class="acts"><span class="badge badge-outline"><svg class="i"><use href="#i-calendar"/></svg>עלה ב-9.9</span></div></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+</body>
+</html>

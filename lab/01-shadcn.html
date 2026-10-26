@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01 shadcn luma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Noto+Sans+Hebrew:wght@400..700&display=swap" rel="stylesheet">
+<style>
+/* Tokens: shadcn-ui/ui apps/v4/registry/themes.ts (theme "neutral", the base-luma preset)
+   + apps/v4/app/globals.css (proportional radius scale). Only change: --primary = wedo Prod Blue,
+   the slot a coloured shadcn/create preset fills. */
+:root{
+  --radius:.625rem;
+  --radius-sm:calc(var(--radius)*.6);
+  --radius-md:calc(var(--radius)*.8);
+  --radius-lg:var(--radius);
+  --radius-xl:calc(var(--radius)*1.4);
+  --radius-2xl:calc(var(--radius)*1.8);
+  --radius-3xl:calc(var(--radius)*2.2);
+  --radius-4xl:calc(var(--radius)*2.6);
+  --background:oklch(1 0 0);
+  --foreground:oklch(.145 0 0);
+  --card:oklch(1 0 0);
+  --card-foreground:oklch(.145 0 0);
+  --primary:oklch(.483 .293 264.3);
+  --primary-foreground:oklch(.985 0 0);
+  --secondary:oklch(.97 0 0);
+  --secondary-foreground:oklch(.205 0 0);
+  --muted:oklch(.97 0 0);
+  --muted-foreground:oklch(.556 0 0);
+  --accent:oklch(.97 0 0);
+  --accent-foreground:oklch(.205 0 0);
+  --border:oklch(.922 0 0);
+  --input:oklch(.922 0 0);
+  --ring:oklch(.708 0 0);
+  --sidebar:oklch(.985 0 0);
+  --sidebar-foreground:oklch(.145 0 0);
+  --sidebar-accent:oklch(.97 0 0);
+  --sidebar-accent-foreground:oklch(.205 0 0);
+  --sidebar-border:oklch(.922 0 0);
+  --wedo-orange:oklch(.765 .175 62.6);
+  --font-sans:"Inter","Noto Sans Hebrew",ui-sans-serif,system-ui,sans-serif;
+  --shadow-xs:0 1px 2px 0 rgb(0 0 0/.05);
+  --shadow-sm:0 1px 3px 0 rgb(0 0 0/.1),0 1px 2px -1px rgb(0 0 0/.1);
+  --shadow-md:0 4px 6px -1px rgb(0 0 0/.1),0 2px 4px -2px rgb(0 0 0/.1);
+  --shadow-lg:0 10px 15px -3px rgb(0 0 0/.1),0 4px 6px -4px rgb(0 0 0/.1);
+  --ring-5:0 0 0 1px color-mix(in oklch,var(--foreground) 5%,transparent);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--font-sans);color:var(--foreground);background:oklch(.93 0 0);-webkit-font-smoothing:antialiased;font-size:14px;line-height:20px}
+img{display:block}
+.ic{width:16px;height:16px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tnum{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted-foreground)}
+
+/* ---------- lab chrome (not part of the mockup) ---------- */
+.lab-cap{background:oklch(.985 0 0);border-bottom:1px solid var(--border);padding:10px 24px;font-size:12px;line-height:18px;color:oklch(.35 0 0)}
+.lab-cap-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px}
+.lab-cap b{font-size:13px;color:var(--foreground);font-weight:600}
+.lab-cap a{color:var(--foreground)}
+.lab-cap ol{margin:6px 0 0;padding-inline-start:18px;display:flex;flex-wrap:wrap;gap:2px 28px}
+.lab-cap li{max-width:620px}
+.lab-cap code{font-family:ui-monospace,monospace;font-size:11px;direction:ltr;unicode-bidi:isolate}
+.lab-stage{padding:28px 24px 48px;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.lab-label{font-size:12px;color:oklch(.45 0 0)}
+.lab-desk-wrap{max-width:100%;overflow-x:auto;padding:2px 2px 30px}
+
+/* ---------- device frames ---------- */
+.phone{position:relative;width:390px;height:844px;border-radius:55px;overflow:hidden;background:var(--background);box-shadow:0 0 0 10px oklch(.18 0 0),0 0 0 11px oklch(.35 0 0),0 30px 60px -20px rgb(0 0 0/.35);margin:11px 11px 24px}
+.desk{position:relative;width:1280px;height:800px;border-radius:12px;overflow:hidden;box-shadow:0 0 0 1px rgb(0 0 0/.14),0 30px 60px -24px rgb(0 0 0/.3)}
+
+/* ---------- shadcn parts, values from registry/styles/style-luma.css ---------- */
+.card{--card-spacing:24px;display:flex;flex-direction:column;gap:var(--card-spacing);padding-block:var(--card-spacing);background:var(--card);color:var(--card-foreground);border-radius:var(--radius-4xl);box-shadow:var(--ring-5),var(--shadow-md);overflow:hidden;min-width:0}
+.card.has-img{padding-top:0}
+.card.has-img>img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+.card-header{display:grid;grid-auto-rows:min-content;align-items:start;gap:6px;padding-inline:var(--card-spacing)}
+.card-header.has-action{grid-template-columns:1fr auto}
+.card-action{grid-column-start:2;grid-row:1/span 2;align-self:start;justify-self:end}
+.card-title{font-size:16px;line-height:24px;font-weight:500}
+.card-description{font-size:14px;line-height:20px;color:var(--muted-foreground)}
+.card-content{padding-inline:var(--card-spacing)}
+.card-footer{display:flex;align-items:center;padding-inline:var(--card-spacing)}
+.card-grow{flex:1;display:flex;flex-direction:column;justify-content:flex-end}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding-inline:12px;border-radius:var(--radius-4xl);border:1px solid transparent;background:transparent;background-clip:padding-box;color:var(--foreground);font:inherit;font-size:14px;line-height:20px;font-weight:500;white-space:nowrap;text-decoration:none;cursor:pointer;transition:color .15s,background-color .15s,box-shadow .15s}
+.btn:active{transform:translateY(1px)}
+.btn .ic{width:16px;height:16px}
+.btn.has-icon{padding-inline-start:10px}
+.btn-default{background:var(--primary);color:var(--primary-foreground)}
+.btn-default:hover{background:color-mix(in oklch,var(--primary) 80%,transparent)}
+.btn-outline{border-color:var(--border);background:var(--background)}
+.btn-outline:hover{background:var(--muted)}
+.btn-secondary{background:var(--secondary);color:var(--secondary-foreground)}
+.btn-secondary:hover{background:color-mix(in oklch,var(--secondary),var(--foreground) 5%)}
+.btn-ghost:hover{background:var(--muted)}
+.btn-sm{height:32px;gap:4px;padding-inline:12px}
+.btn-sm.has-icon{padding-inline-start:8px}
+.btn-icon{width:36px;padding:0}
+.btn-icon-sm{width:32px;height:32px;padding:0}
+.btn-block{width:100%}
+
+.badge{display:inline-flex;align-items:center;justify-content:center;gap:4px;width:fit-content;height:20px;padding:2px 8px;border-radius:var(--radius-3xl);border:1px solid transparent;font-size:12px;line-height:16px;font-weight:500;white-space:nowrap}
+.badge .ic{width:12px;height:12px}
+.badge-outline{border-color:var(--border);color:var(--foreground)}
+.badge-secondary{background:var(--secondary);color:var(--secondary-foreground)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:9999px;flex-shrink:0;background:var(--wedo-orange)}
+
+.progress{display:flex;flex-wrap:wrap;gap:12px}
+.progress-track{position:relative;display:flex;align-items:center;width:100%;height:12px;border-radius:9999px;background:var(--muted);overflow:hidden}
+.progress-indicator{height:100%;background:var(--primary)}
+
+.item{display:flex;flex-wrap:wrap;align-items:center;width:100%;gap:14px;padding:14px 16px;border:1px solid transparent;border-radius:var(--radius-2xl);font-size:14px;color:inherit;text-decoration:none;transition:background-color .1s}
+.item-sm{gap:14px;padding:12px 14px}
+.item-muted{background:color-mix(in oklch,var(--muted) 50%,transparent)}
+.item-outline{border-color:var(--border)}
+a.item:hover{background:var(--muted)}
+.item-col{flex-direction:column;align-items:stretch;flex-wrap:nowrap}
+.item-col>.item-footer{flex-basis:auto}
+.item-media{display:flex;flex-shrink:0;align-items:center;justify-content:center;gap:8px}
+.item-media-box{width:32px;height:32px;border-radius:var(--radius-xl);background:var(--muted);color:var(--foreground)}
+.item-content{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}
+.item-title{display:flex;align-items:center;gap:8px;width:fit-content;font-size:14px;line-height:1.375;font-weight:500}
+.item-description{font-size:14px;line-height:20px;color:var(--muted-foreground);text-align:start}
+.item-actions{display:flex;align-items:center;gap:8px}
+.item-footer{display:flex;flex-basis:100%;align-items:center;justify-content:space-between;gap:8px}
+.item-group{display:flex;flex-direction:column;gap:16px}
+.item.is-locked{opacity:.55}
+
+.table{width:100%;border-collapse:collapse;font-size:14px}
+.table thead tr{border-bottom:1px solid var(--border)}
+.table tbody tr{border-bottom:1px solid var(--border);transition:background-color .15s}
+.table tbody tr:last-child{border-bottom:0}
+.table tbody tr:hover{background:color-mix(in oklch,var(--muted) 50%,transparent)}
+.table th{height:48px;padding:0 12px;text-align:start;vertical-align:middle;font-weight:500;white-space:nowrap}
+.table td{padding:12px;vertical-align:middle;white-space:nowrap}
+.thumb{width:64px;height:36px;border-radius:var(--radius-md);object-fit:cover;background:var(--muted)}
+.thumb-empty{display:flex;align-items:center;justify-content:center;color:var(--muted-foreground)}
+
+.sep{height:1px;background:var(--border)}
+.icon-row{display:flex;align-items:center;gap:10px;font-size:14px}
+.icon-row .ic{color:var(--muted-foreground)}
+.big{font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.text-2xl{font-size:24px;line-height:32px}
+.text-3xl{font-size:30px;line-height:36px}
+.text-5xl{font-size:48px;line-height:1}
+.section-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500}
+
+/* ---------- desktop shell: blocks dashboard-01 (variant inset) + sidebar-07 ---------- */
+.d-app{display:flex;width:100%;height:100%;background:var(--sidebar)}
+.sb{width:288px;flex-shrink:0;height:100%;padding:8px;display:flex;flex-direction:column;color:var(--sidebar-foreground)}
+.sb-header,.sb-content{--radius:var(--radius-xl)}
+.sb-header{display:flex;flex-direction:column;gap:8px;padding:8px}
+.sb-content{display:flex;flex:1;flex-direction:column;gap:8px;min-height:0}
+.sb-group{display:flex;flex-direction:column;padding:8px}
+.sb-menu{display:flex;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none}
+.sb-btn{display:flex;align-items:center;gap:8px;width:100%;height:36px;padding:8px 12px;border-radius:calc(var(--radius)*1.4);color:inherit;text-decoration:none;font-size:14px;text-align:start;transition:background-color .15s}
+.sb-btn:hover{background:var(--sidebar-accent)}
+.sb-btn.active{background:var(--sidebar-accent);color:var(--sidebar-accent-foreground);font-weight:500}
+.sb-btn .dot{margin-inline-start:auto}
+.sb-btn-lg{height:56px;padding-inline:12px}
+.sb-logo{width:32px;height:32px;border-radius:var(--radius);object-fit:cover;flex-shrink:0}
+.sb-team{display:grid;flex:1;min-width:0;line-height:1.25}
+.sb-team span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 20px}
+.inset{flex:1;min-width:0;display:flex;flex-direction:column;margin:8px;margin-inline-start:0;background:var(--background);border-radius:var(--radius-2xl);box-shadow:var(--shadow-sm);overflow:hidden}
+.site-header{display:flex;align-items:center;gap:8px;height:48px;flex-shrink:0;padding-inline:24px;border-bottom:1px solid var(--border)}
+.site-header h1{margin:0;font-size:16px;line-height:24px;font-weight:500}
+.sep-v{width:1px;height:16px;background:var(--border);margin-inline:8px}
+.rtl-flip{transform:scaleX(-1)}
+.d-scroll{flex:1;overflow-y:auto}
+.d-page{display:flex;flex-direction:column;gap:24px;padding:24px}
+.d-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;align-items:stretch}
+.span-2{grid-column:span 2}
+.span-3{grid-column:span 3}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:center}
+.nowrap{white-space:nowrap}
+
+/* ---------- phone shell ---------- */
+.m-app{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--background)}
+.m-status{position:relative;height:47px;flex-shrink:0}
+.m-island{position:absolute;top:11px;left:50%;width:126px;height:37px;transform:translateX(-50%);border-radius:20px;background:#000}
+.m-header{display:flex;align-items:center;gap:10px;height:56px;padding-inline:16px;flex-shrink:0}
+.m-scroll{flex:1;overflow-y:auto;scrollbar-width:none}
+.m-scroll::-webkit-scrollbar{display:none}
+.m-page{display:flex;flex-direction:column;gap:16px;padding:4px 16px 128px}
+.m-tabs{position:absolute;inset-inline:14px;bottom:30px;display:flex;padding:4px;border-radius:9999px;background:var(--muted);box-shadow:var(--ring-5),var(--shadow-lg)}
+.m-tab{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:54px;border-radius:9999px;font-size:12px;line-height:16px;font-weight:500;color:color-mix(in oklch,var(--foreground) 60%,transparent);text-decoration:none}
+.m-tab .ic{width:20px;height:20px}
+.m-tab.active{background:var(--background);color:var(--foreground)}
+.m-tab .dot{position:absolute;top:8px;inset-inline-start:calc(50% + 8px)}
+.m-home{position:absolute;bottom:8px;left:50%;width:134px;height:5px;transform:translateX(-50%);border-radius:3px;background:oklch(.145 0 0)}
+.m-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/><circle cx="12" cy="12" r="10"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-updown" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></symbol>
+    <symbol id="i-panel" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></symbol>
+    <symbol id="i-imageup" viewBox="0 0 24 24"><path d="M10.3 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10l-3.1-3.1a2 2 0 0 0-2.814.014L6 21"/><path d="m14 19.5 3-3 3 3"/><path d="M17 22v-5.5"/><circle cx="9" cy="9" r="2"/></symbol>
+    <symbol id="i-calplus" viewBox="0 0 24 24"><path d="M16 19h6"/><path d="M16 2v4"/><path d="M19 16v6"/><path d="M21 12.598V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8.5"/><path d="M3 10h18"/><path d="M8 2v4"/></symbol>
+    <symbol id="i-calclock" viewBox="0 0 24 24"><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><path d="M17.5 17.5 16 16.3V14"/><circle cx="16" cy="16" r="6"/></symbol>
+    <symbol id="i-userplus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  </defs>
+</svg>
+
+<header class="lab-cap">
+  <div class="lab-cap-row">
+    <b>01 shadcn/ui בסגנון base-luma</b>
+    <a href="https://github.com/shadcn-ui/ui">github.com/shadcn-ui/ui</a>
+    <span>126,585 כוכבים</span>
+    <span>push אחרון 26.10.2026</span>
+    <span>גופן: Inter (הגופן של preset base-luma) לספרות וללטינית, Noto Sans Hebrew לעברית. זו ההמלצה בתיעוד ה-RTL של shadcn, ול-Inter ב-Google Fonts אין עברית.</span>
+  </div>
+  <ol>
+    <li>גאומטריה של luma: כרטיס rounded-4xl (26px) עם shadow-md וטבעת 5%, כפתורים ושדות כגלולות, תג בגובה 20px <code>registry/styles/style-luma.css</code></li>
+    <li>הדקדוק של כרטיסי ה-preview הרשמיים: אריחי Item muted בתוך כרטיס, Progress בעובי 12px, תג outline עם נקודת-צבע, מספר ב-tabular-nums <code>blocks/preview-02/cards</code></li>
+    <li>מעטפת dashboard-01 בגרסת inset (תפריט 288px, משטח-תוכן מעוגל 18px, כותרת 48px) עם מחליף-התוכנית של sidebar-07. Prod Blue יושב במשבצת primary, כמו preset צבעוני <code>blocks/dashboard-01</code></li>
+  </ol>
+</header>
+
+<main class="lab-stage">
+  <div class="lab-label">טלפון, 390 על 844</div>
+  <div class="phone">
+    <div class="m-app">
+      <div class="m-status"><div class="m-island"></div></div>
+      <div class="m-header">
+        <img class="sb-logo" style="border-radius:14px" src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="">
+        <div class="sb-team">
+          <span style="font-weight:500">הפיצוח</span>
+          <span style="font-size:12px;line-height:16px" class="muted">גיל לי-רן</span>
+        </div>
+        <a class="btn btn-ghost btn-icon" href="#" aria-label="הגדרות"><svg class="ic"><use href="#i-settings"/></svg></a>
+      </div>
+      <div class="m-scroll">
+        <div class="m-page">
+
+          <section class="card">
+            <div class="card-header has-action">
+              <div class="card-title">הפרק הבא שעולה</div>
+              <div class="card-description">עולה ביום רביעי 28.10</div>
+              <div class="card-action"><span class="badge badge-secondary">בעוד יומיים</span></div>
+            </div>
+            <div class="card-content" style="display:flex;flex-direction:column;gap:16px">
+              <div>
+                <div class="big text-3xl">פרק 19</div>
+                <div class="muted" style="font-size:16px;line-height:24px;margin-top:4px">עם אורלי אורן</div>
+              </div>
+              <div class="item item-muted item-col">
+                <div class="item-content" style="gap:12px">
+                  <div class="progress-track"><div class="progress-indicator" style="width:42.857%"></div></div>
+                </div>
+                <div class="item-footer">
+                  <span class="muted">עכשיו: עריכה, ממתין לעורך</span>
+                  <span class="tnum nowrap" style="font-weight:500">3 מתוך 7</span>
+                </div>
+              </div>
+              <div class="sep"></div>
+              <div class="section-head"><span class="dot"></span>חסר ממך</div>
+              <div class="item-group" style="gap:10px">
+                <div class="item item-outline item-sm">
+                  <div class="item-media item-media-box"><svg class="ic"><use href="#i-pencil"/></svg></div>
+                  <div class="item-content">
+                    <div class="item-title">שם לפרק</div>
+                    <div class="item-description">פתוח, לפני העריכה</div>
+                  </div>
+                  <div class="item-actions"><a class="btn btn-default btn-sm" href="#">לבחור שם</a></div>
+                </div>
+                <div class="item item-muted item-sm">
+                  <div class="item-media item-media-box" style="background:var(--background)"><svg class="ic"><use href="#i-image"/></svg></div>
+                  <div class="item-content">
+                    <div class="item-title">תמונת-מרואיין</div>
+                    <div class="item-description">התקבלה ב-25.10, ממתינה לאישור</div>
+                  </div>
+                </div>
+                <div class="item item-sm is-locked">
+                  <div class="item-media item-media-box"><svg class="ic"><use href="#i-lock"/></svg></div>
+                  <div class="item-content">
+                    <div class="item-title">בחירת-טיזרים</div>
+                    <div class="item-description">נעול, אחרי העריכה</div>
+                  </div>
+                </div>
+                <div class="item item-sm is-locked">
+                  <div class="item-media item-media-box"><svg class="ic"><use href="#i-lock"/></svg></div>
+                  <div class="item-content">
+                    <div class="item-title">אישור-לפרסום</div>
+                    <div class="item-description">נעול, בהמשך</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <div class="card-title">ההקלטה הבאה</div>
+            </div>
+            <div class="card-content" style="display:flex;flex-direction:column;gap:16px">
+              <div class="big text-2xl">חמישי 29.10, 11:00</div>
+              <div class="item item-muted item-col" style="gap:12px">
+                <div class="icon-row"><svg class="ic"><use href="#i-clock"/></svg><span class="tnum">11:00 עד 13:00</span></div>
+                <div class="icon-row"><svg class="ic"><use href="#i-pin"/></svg><span>אולפן רימקס</span></div>
+                <div class="icon-row"><svg class="ic"><use href="#i-users"/></svg><span>עם נועה בוקרה ורלי זדרב</span></div>
+                <div class="icon-row"><svg class="ic"><use href="#i-headphones"/></svg><span>מפיק: יהלי</span></div>
+              </div>
+            </div>
+            <div class="card-footer" style="flex-direction:column;gap:8px">
+              <div class="m-actions" style="width:100%">
+                <a class="btn btn-outline" href="#">לשנות מועד</a>
+                <a class="btn btn-outline" href="#">להוסיף פרטי-אורח</a>
+              </div>
+              <a class="btn btn-ghost btn-block" href="#">לתאם הקלטה נוספת</a>
+            </div>
+          </section>
+
+          <section class="card has-img">
+            <img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="" width="320" height="180">
+            <div class="card-header has-action">
+              <div class="card-description">עלה לאחרונה</div>
+              <div class="card-title" style="font-size:18px;line-height:26px">איך מקפיצים עסק בתיווך עם AI</div>
+              <div class="card-action"><span class="badge badge-outline">עלה ב-14.10</span></div>
+            </div>
+            <div class="card-content muted" style="margin-top:-16px">פרק 18 עם אלכס קפ</div>
+            <div class="card-footer"><a class="btn btn-secondary btn-block has-icon" href="#"><svg class="ic"><use href="#i-share"/></svg>לשתף</a></div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <div class="card-title">איך התוכנית עושה</div>
+              <div class="card-description">נכון ל-25.10.2026, 18 פרקים</div>
+            </div>
+            <div class="card-content">
+              <div class="item item-muted item-col">
+                <div class="item-content" style="gap:12px">
+                  <div class="item-description">צפיות ביוטיוב</div>
+                  <div class="big text-5xl">5,941</div>
+                  <div class="progress-track"><div class="progress-indicator" style="width:21%"></div></div>
+                </div>
+                <div class="item-footer"><span class="muted">כל פרק נצפה בממוצע 21% מאורכו</span></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header"><div class="card-title">פעולות מהירות</div></div>
+            <div class="card-content">
+              <div class="item-group" style="gap:8px">
+                <a class="item item-outline item-sm" href="#"><div class="item-media item-media-box"><svg class="ic"><use href="#i-calplus"/></svg></div><div class="item-content"><div class="item-title">לתאם הקלטה</div></div><svg class="ic muted"><use href="#i-chev"/></svg></a>
+                <a class="item item-outline item-sm" href="#"><div class="item-media item-media-box"><svg class="ic"><use href="#i-imageup"/></svg></div><div class="item-content"><div class="item-title">להעלות תמונה</div></div><svg class="ic muted"><use href="#i-chev"/></svg></a>
+                <a class="item item-outline item-sm" href="#"><div class="item-media item-media-box"><svg class="ic"><use href="#i-pencil"/></svg></div><div class="item-content"><div class="item-title">לבחור שם</div></div><svg class="ic muted"><use href="#i-chev"/></svg></a>
+                <a class="item item-outline item-sm" href="#"><div class="item-media item-media-box"><svg class="ic"><use href="#i-share"/></svg></div><div class="item-content"><div class="item-title">לשתף פרק</div></div><svg class="ic muted"><use href="#i-chev"/></svg></a>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+      <nav class="m-tabs">
+        <a class="m-tab active" href="#"><svg class="ic"><use href="#i-house"/></svg>בית</a>
+        <a class="m-tab" href="#"><svg class="ic"><use href="#i-compass"/></svg>אסטרטגיה</a>
+        <a class="m-tab" href="#"><span class="dot"></span><svg class="ic"><use href="#i-mic"/></svg>הפקה</a>
+        <a class="m-tab" href="#"><svg class="ic"><use href="#i-send"/></svg>הפצה</a>
+      </nav>
+      <div class="m-home"></div>
+    </div>
+  </div>
+
+  <div class="lab-label">מחשב, 1280 על 800</div>
+  <div class="lab-desk-wrap">
+    <div class="desk">
+      <div class="d-app">
+        <aside class="sb">
+          <div class="sb-header">
+            <a class="sb-btn sb-btn-lg" href="#">
+              <img class="sb-logo" src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="">
+              <span class="sb-team"><span style="font-weight:500">הפיצוח</span><span style="font-size:12px;line-height:16px">גיל לי-רן</span></span>
+              <svg class="ic"><use href="#i-updown"/></svg>
+            </a>
+          </div>
+          <div class="sb-content">
+            <div class="sb-group">
+              <ul class="sb-menu">
+                <li><a class="sb-btn active" href="#"><svg class="ic"><use href="#i-house"/></svg>בית</a></li>
+                <li><a class="sb-btn" href="#"><svg class="ic"><use href="#i-compass"/></svg>אסטרטגיה</a></li>
+                <li><a class="sb-btn" href="#"><svg class="ic"><use href="#i-mic"/></svg>הפקה<span class="dot"></span></a></li>
+                <li><a class="sb-btn" href="#"><svg class="ic"><use href="#i-send"/></svg>הפצה</a></li>
+              </ul>
+            </div>
+            <div class="sb-group" style="margin-top:auto">
+              <ul class="sb-menu">
+                <li><a class="sb-btn" href="#"><svg class="ic"><use href="#i-settings"/></svg>הגדרות</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="sb-footer">
+            <img src="../brand/wedo-logotype-black.svg" alt="wedo" style="height:20px;width:40px">
+          </div>
+        </aside>
+
+        <div class="inset">
+          <header class="site-header">
+            <a class="btn btn-ghost btn-icon-sm" href="#" aria-label="תפריט" style="margin-inline-start:-4px"><svg class="ic rtl-flip"><use href="#i-panel"/></svg></a>
+            <span class="sep-v"></span>
+            <h1>בית</h1>
+          </header>
+          <div class="d-scroll">
+            <div class="d-page">
+              <div class="d-grid">
+
+                <section class="card span-2">
+                  <div class="card-header has-action">
+                    <div class="card-title">הפרק הבא שעולה</div>
+                    <div class="card-description">עולה ביום רביעי 28.10</div>
+                    <div class="card-action"><span class="badge badge-secondary">בעוד יומיים</span></div>
+                  </div>
+                  <div class="card-content" style="display:flex;flex-direction:column;gap:20px">
+                    <div class="split">
+                      <div>
+                        <div class="big text-3xl">פרק 19</div>
+                        <div class="muted" style="font-size:16px;line-height:24px;margin-top:4px">עם אורלי אורן</div>
+                      </div>
+                      <div class="item item-muted item-col">
+                        <div class="item-content" style="gap:12px">
+                          <div class="progress-track"><div class="progress-indicator" style="width:42.857%"></div></div>
+                        </div>
+                        <div class="item-footer">
+                          <span class="muted">עכשיו: עריכה, ממתין לעורך</span>
+                          <span class="tnum nowrap" style="font-weight:500">3 מתוך 7</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="sep"></div>
+                    <div class="section-head"><span class="dot"></span>חסר ממך</div>
+                    <div class="item-group" style="gap:8px">
+                      <div class="item item-outline item-sm">
+                        <div class="item-media item-media-box"><svg class="ic"><use href="#i-pencil"/></svg></div>
+                        <div class="item-content">
+                          <div class="item-title">שם לפרק</div>
+                          <div class="item-description">פתוח, לפני העריכה</div>
+                        </div>
+                        <div class="item-actions"><a class="btn btn-default btn-sm" href="#">לבחור שם</a></div>
+                      </div>
+                      <div class="item item-muted item-sm">
+                        <div class="item-media item-media-box" style="background:var(--background)"><svg class="ic"><use href="#i-image"/></svg></div>
+                        <div class="item-content">
+                          <div class="item-title">תמונת-מרואיין</div>
+                          <div class="item-description">התקבלה ב-25.10, ממתינה לאישור</div>
+                        </div>
+                      </div>
+                      <div class="item item-sm is-locked">
+                        <div class="item-media item-media-box"><svg class="ic"><use href="#i-lock"/></svg></div>
+                        <div class="item-content">
+                          <div class="item-title">בחירת-טיזרים</div>
+                          <div class="item-description">נעול, אחרי העריכה</div>
+                        </div>
+                      </div>
+                      <div class="item item-sm is-locked">
+                        <div class="item-media item-media-box"><svg class="ic"><use href="#i-lock"/></svg></div>
+                        <div class="item-content">
+                          <div class="item-title">אישור-לפרסום</div>
+                          <div class="item-description">נעול, בהמשך</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="card">
+                  <div class="card-header"><div class="card-title">ההקלטה הבאה</div></div>
+                  <div class="card-content" style="display:flex;flex-direction:column;gap:16px">
+                    <div class="big text-2xl">חמישי 29.10, 11:00</div>
+                    <div class="item item-muted item-col" style="gap:12px">
+                      <div class="icon-row"><svg class="ic"><use href="#i-clock"/></svg><span class="tnum">11:00 עד 13:00</span></div>
+                      <div class="icon-row"><svg class="ic"><use href="#i-pin"/></svg><span>אולפן רימקס</span></div>
+                      <div class="icon-row"><svg class="ic"><use href="#i-users"/></svg><span>עם נועה בוקרה ורלי זדרב</span></div>
+                      <div class="icon-row"><svg class="ic"><use href="#i-headphones"/></svg><span>מפיק: יהלי</span></div>
+                    </div>
+                  </div>
+                  <div class="card-grow">
+                    <div class="card-footer" style="flex-direction:column;align-items:stretch;gap:8px">
+                      <a class="btn btn-outline has-icon" href="#"><svg class="ic"><use href="#i-calclock"/></svg>לשנות מועד</a>
+                      <a class="btn btn-outline has-icon" href="#"><svg class="ic"><use href="#i-userplus"/></svg>להוסיף פרטי-אורח</a>
+                      <a class="btn btn-ghost" href="#">לתאם הקלטה נוספת</a>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="card has-img">
+                  <img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="" width="320" height="180">
+                  <div class="card-header has-action">
+                    <div class="card-description">עלה לאחרונה</div>
+                    <div class="card-title">איך מקפיצים עסק בתיווך עם AI</div>
+                    <div class="card-action"><span class="badge badge-outline">עלה ב-14.10</span></div>
+                  </div>
+                  <div class="card-content muted" style="margin-top:-16px">פרק 18 עם אלכס קפ</div>
+                  <div class="card-grow"><div class="card-footer"><a class="btn btn-secondary btn-block has-icon" href="#"><svg class="ic"><use href="#i-share"/></svg>לשתף</a></div></div>
+                </section>
+
+                <section class="card">
+                  <div class="card-header">
+                    <div class="card-title">איך התוכנית עושה</div>
+                    <div class="card-description">נכון ל-25.10.2026, 18 פרקים</div>
+                  </div>
+                  <div class="card-content card-grow">
+                    <div class="item item-muted item-col">
+                      <div class="item-content" style="gap:12px">
+                        <div class="item-description">צפיות ביוטיוב</div>
+                        <div class="big text-5xl">5,941</div>
+                        <div class="progress-track"><div class="progress-indicator" style="width:21%"></div></div>
+                      </div>
+                      <div class="item-footer"><span class="muted">כל פרק נצפה בממוצע 21% מאורכו</span></div>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="card">
+                  <div class="card-header"><div class="card-title">פעולות מהירות</div></div>
+                  <div class="card-content">
+                    <div class="item-group" style="gap:8px">
+                      <a class="item item-outline item-sm" href="#"><div class="item-media item-media-box"><svg class="ic"><use href="#i-calplus"/></svg></div><div class="item-content"><div class="item-title">לתאם הקלטה</div></div><svg class="ic muted"><use href="#i-chev"/></svg></a>
+                      <a class="item item-outline item-sm" href="#"><div class="item-media item-media-box"><svg class="ic"><use href="#i-imageup"/></svg></div><div class="item-content"><div class="item-title">להעלות תמונה</div></div><svg class="ic muted"><use href="#i-chev"/></svg></a>
+                      <a class="item item-outline item-sm" href="#"><div class="item-media item-media-box"><svg class="ic"><use href="#i-pencil"/></svg></div><div class="item-content"><div class="item-title">לבחור שם</div></div><svg class="ic muted"><use href="#i-chev"/></svg></a>
+                      <a class="item item-outline item-sm" href="#"><div class="item-media item-media-box"><svg class="ic"><use href="#i-share"/></svg></div><div class="item-content"><div class="item-title">לשתף פרק</div></div><svg class="ic muted"><use href="#i-chev"/></svg></a>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="card span-3">
+                  <div class="card-header"><div class="card-title">פרקים</div></div>
+                  <div class="card-content">
+                    <table class="table">
+                      <thead><tr><th style="width:88px"></th><th>פרק</th><th>אורח</th><th>כותרת</th><th>מצב</th></tr></thead>
+                      <tbody>
+                        <tr><td><div class="thumb thumb-empty"><svg class="ic"><use href="#i-image"/></svg></div></td><td class="tnum">19</td><td>אורלי אורן</td><td class="muted">עוד אין שם</td><td><span class="badge badge-outline"><span class="dot" style="width:6px;height:6px;background:var(--primary)"></span>בעריכה</span></td></tr>
+                        <tr><td><img class="thumb" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""></td><td class="tnum">18</td><td>אלכס קפ</td><td>איך מקפיצים עסק בתיווך עם AI</td><td><span class="badge badge-secondary">עלה ב-14.10</span></td></tr>
+                        <tr><td><img class="thumb" src="https://i.ytimg.com/vi/P463I2IV9Xo/mqdefault.jpg" alt=""></td><td class="tnum">17</td><td>אהרון וחביבה איציקזון</td><td>איך ממשיכים מכאן?</td><td><span class="badge badge-secondary">עלה ב-7.10</span></td></tr>
+                        <tr><td><img class="thumb" src="https://i.ytimg.com/vi/epNQhrsKjxI/mqdefault.jpg" alt=""></td><td class="tnum">16</td><td>ונסה סיימן</td><td>חמשת הכללים למשא ומתן</td><td><span class="badge badge-secondary">עלה ב-30.9</span></td></tr>
+                        <tr><td><img class="thumb" src="https://i.ytimg.com/vi/fCG8ceGVDRo/mqdefault.jpg" alt=""></td><td class="tnum">15</td><td>דקלה ביבי</td><td>איך לעשות שינוי קריירה בגיל 40</td><td><span class="badge badge-secondary">עלה ב-23.9</span></td></tr>
+                        <tr><td><img class="thumb" src="https://i.ytimg.com/vi/pp-nzLON8vY/mqdefault.jpg" alt=""></td><td class="tnum">14</td><td>אריק זאבי</td><td>מי נשאר ומי נשבר</td><td><span class="badge badge-secondary">עלה ב-16.9</span></td></tr>
+                        <tr><td><img class="thumb" src="https://i.ytimg.com/vi/Sh0J8sIBfHs/mqdefault.jpg" alt=""></td><td class="tnum">13</td><td>איתי דוד</td><td>הסוד הכי שמור ברי/מקס</td><td><span class="badge badge-secondary">עלה ב-9.9</span></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

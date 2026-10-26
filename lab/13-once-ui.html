@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מעבדת-טעם 13: Once UI</title>
+<style>
+@font-face { font-family: "Rag Sans"; src: url("./fonts/RagSans-VF.ttf"); font-weight: 100 900; font-display: block; }
+
+/* ===== מעטפת-המעבדה (לא חלק מהמוקאפ) ===== */
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: #e7e7ea; color: #1d1d1f; font-family: "Rag Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+.lab-cap { background: #fff; border-bottom: 1px solid #d9d9de; padding: 10px 20px 12px; font-size: 12px; line-height: 1.5; }
+.lab-cap__row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; max-width: 1320px; margin: 0 auto; }
+.lab-cap__title { font-size: 15px; font-weight: 700; }
+.lab-cap a { color: #0131ff; text-decoration: none; }
+.lab-cap__meta { color: #6e6e73; font-variant-numeric: tabular-nums; }
+.lab-cap__points { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 4px 20px; max-width: 1320px; margin: 6px auto 0; color: #3a3a3c; }
+.lab-cap__points p { margin: 0; }
+.lab-cap__points b { color: #1d1d1f; font-weight: 600; }
+.lab-stage { padding: 28px 20px 8px; display: flex; flex-direction: column; align-items: safe center; gap: 10px; max-width: 100%; overflow-x: auto; }
+.lab-label { font-size: 12px; color: #6e6e73; font-variant-numeric: tabular-nums; }
+.device-phone { padding: 11px; border-radius: 66px; background: #0d0d0f; box-shadow: 0 0 0 1px #2b2b2e, 0 30px 60px -20px rgba(0,0,0,.45); }
+.device-phone .screen { width: 390px; height: 844px; border-radius: 55px; overflow: hidden; position: relative; isolation: isolate; }
+.island { position: absolute; top: 11px; inset-inline-start: 50%; transform: translateX(50%); width: 124px; height: 36px; border-radius: 20px; background: #000; z-index: 50; }
+.device-desktop { width: 1282px; border-radius: 12px; overflow: hidden; background: #1c1c1e; box-shadow: 0 0 0 1px #2b2b2e, 0 30px 70px -24px rgba(0,0,0,.45); }
+.device-desktop__bar { height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 14px; direction: ltr; }
+.device-desktop__bar i { width: 12px; height: 12px; border-radius: 50%; background: #3a3a3c; display: block; }
+.device-desktop .screen { width: 1280px; height: 800px; margin: 0 1px 1px; overflow: hidden; position: relative; isolation: isolate; }
+html.full .device-phone .screen, html.full .device-desktop .screen { height: auto; }
+html.full .scroll { height: auto !important; overflow: visible !important; }
+html.full .d-shell { height: auto; align-items: stretch; }
+html.full .d-side { height: auto; }
+
+/* ===== Once UI: טוקנים (packages/foundations/scss/tokens) ===== */
+.ou {
+  /* scheme.scss: gray */
+  --gray-100: oklch(0.1448 0 0); --gray-200: oklch(0.1957 0 0); --gray-300: oklch(0.3677 0 0); --gray-400: oklch(0.4640 0 0);
+  --gray-500: oklch(0.5624 0 0); --gray-600: oklch(0.6698 0 0); --gray-700: oklch(0.7636 0 0); --gray-800: oklch(0.8638 0 0);
+  --gray-900: oklch(0.9067 0 0); --gray-1000: oklch(0.9461 0 0);
+  --gray-600-15: oklch(0.6698 0 0 / 0.15); --gray-600-30: oklch(0.6698 0 0 / 0.3); --gray-600-50: oklch(0.6698 0 0 / 0.5);
+  /* data-brand="custom": סולם blue של Once UI, שלב 400 = Prod Blue */
+  --b-100: oklch(0.1471 0.0423 287.53); --b-200: oklch(0.2049 0.1018 274.20); --b-300: oklch(0.3947 0.2542 264.21); --b-400: #0131ff;
+  --b-500: oklch(0.5721 0.2254 263.69); --b-600: oklch(0.6743 0.1670 261.54); --b-700: oklch(0.7670 0.1165 257.88); --b-900: oklch(0.9057 0.0417 248.29);
+  --b-600-15: oklch(0.6743 0.1670 261.54 / 0.15); --b-600-30: oklch(0.6743 0.1670 261.54 / 0.3); --b-600-50: oklch(0.6743 0.1670 261.54 / 0.5);
+  /* data-accent="custom": B2C Orange בשלב 600 */
+  --a-100: oklch(0.17 0.035 60); --a-200: oklch(0.23 0.06 60); --a-300: oklch(0.42 0.11 60); --a-600: #ff9500; --a-700: oklch(0.83 0.13 64); --a-900: oklch(0.93 0.05 68);
+  --a-600-15: rgb(255 149 0 / 0.15); --a-600-30: rgb(255 149 0 / 0.3);
+
+  /* theme.scss [data-theme="dark"] */
+  --neutral-background-strong: var(--gray-300); --neutral-background-medium: var(--gray-200); --neutral-background-weak: var(--gray-100);
+  --neutral-on-background-strong: #fff; --neutral-on-background-medium: var(--gray-900); --neutral-on-background-weak: var(--gray-700);
+  --neutral-border-strong: var(--gray-400); --neutral-border-medium: var(--gray-300);
+  --neutral-alpha-strong: var(--gray-600-50); --neutral-alpha-medium: var(--gray-600-30); --neutral-alpha-weak: var(--gray-600-15);
+  --brand-background-strong: var(--b-300); --brand-background-medium: var(--b-200); --brand-background-weak: var(--b-100);
+  --brand-on-background-strong: #fff; --brand-on-background-medium: var(--b-900); --brand-on-background-weak: var(--b-700);
+  --brand-alpha-strong: var(--b-600-50); --brand-alpha-medium: var(--b-600-30); --brand-alpha-weak: var(--b-600-15);
+  --brand-color-medium: var(--b-400);
+  /* data-solid="contrast" (כמו בכל קונפיג רשמי של Once UI) */
+  --brand-solid-strong: var(--gray-1000); --brand-solid-medium: #fff; --brand-on-solid-strong: #000;
+  --accent-background-weak: var(--a-100); --accent-background-strong: var(--a-300);
+  --accent-on-background-medium: var(--a-900); --accent-on-background-weak: var(--a-700);
+  --accent-alpha-medium: var(--a-600-30); --accent-alpha-weak: var(--a-600-15);
+  --page-background: var(--neutral-background-weak);
+  --surface-background: var(--neutral-background-medium);
+  /* border.scss [data-border="playful"] */
+  --radius-xs: .25rem; --radius-s: .5rem; --radius-m: .75rem; --radius-m-nest-4: 1rem; --radius-l: 1rem; --radius-l-nest-4: 1.25rem; --radius-xl: 1.25rem; --radius-full: 999rem;
+  /* shadow.scss */
+  --shadow-m: 0 0 2px rgba(0,0,0,.12), 0 2px 4px rgba(0,0,0,.08), 0 8px 8px rgba(0,0,0,.08);
+  --shadow-l: 0 2px 4px rgba(0,0,0,.12), 0 8px 12px rgba(0,0,0,.08), 0 8px 16px rgba(0,0,0,.08);
+  --shadow-xl: 0 4px 4px rgba(0,0,0,.12), 0 8px 12px rgba(0,0,0,.08), 0 24px 24px rgba(0,0,0,.08);
+  /* theme.scss [data-transition="all"] */
+  --transition-micro-medium: all .2s ease-in-out;
+
+  background: var(--page-background);
+  color: var(--neutral-on-background-strong);
+  font-family: "Rag Sans", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+/* typography.scss: הטלפון יורש את --font-scaling-mobile 15px ואת הקטנת ה-display בנקודות-השבירה m ו-s; המחשב 16px */
+.ou.is-phone { font-size: 15px;
+  --fs-display-s: 30px; --lh-display-s: 37.5px; --fs-display-xs: 26.25px; --lh-display-xs: 30px;
+  --fs-heading-xl: 19.95px; --lh-heading-xl: 26.25px; --fs-heading-l: 18.75px; --lh-heading-l: 22.5px; --fs-heading-m: 16.9px; --lh-heading-m: 18.75px; --fs-heading-s: 16.9px; --lh-heading-s: 22.5px;
+  --fs-body-l: 16.9px; --fs-body-m: 15px; --lh-body-m: 22.5px; --fs-body-s: 13.1px; --lh-body-s: 16.9px; --fs-body-xs: 11.25px;
+  --fs-label-m: 13.9px; --fs-label-s: 12.4px; --lh-label-s: 15px; --fs-label-xs: 11.25px; }
+.ou.is-desktop { font-size: 16px;
+  --fs-display-m: 48px; --lh-display-m: 52px; --fs-display-s: 40px; --lh-display-s: 48px; --fs-display-xs: 32px; --lh-display-xs: 40px;
+  --fs-heading-xl: 24px; --lh-heading-xl: 32px; --fs-heading-l: 21.3px; --lh-heading-l: 28px; --fs-heading-m: 20px; --lh-heading-m: 24px; --fs-heading-s: 18px; --lh-heading-s: 24px;
+  --fs-body-l: 18px; --fs-body-m: 16px; --lh-body-m: 24px; --fs-body-s: 14px; --lh-body-s: 18px; --fs-body-xs: 12px;
+  --fs-label-m: 14.8px; --fs-label-s: 13.2px; --lh-label-s: 16px; --fs-label-xs: 12px; }
+
+.ou h1, .ou h2, .ou h3, .ou p { margin: 0; }
+:where(.ou) a { color: inherit; text-decoration: none; }
+.ou svg.i { width: 1.25em; height: 1.25em; flex-shrink: 0; }
+.ou svg.ph { width: 20px; height: 20px; fill: currentColor; flex-shrink: 0; }
+.display-strong-s { font-size: var(--fs-display-s); line-height: var(--lh-display-s); letter-spacing: -0.02em; font-weight: 600; }
+.display-strong-m { font-size: var(--fs-display-m); line-height: var(--lh-display-m); letter-spacing: -0.03em; font-weight: 600; }
+.display-strong-xs { font-size: var(--fs-display-xs); line-height: var(--lh-display-xs); font-weight: 600; }
+.heading-strong-xl { font-size: var(--fs-heading-xl); line-height: var(--lh-heading-xl); font-weight: 600; }
+.heading-strong-l { font-size: var(--fs-heading-l); line-height: var(--lh-heading-l); font-weight: 600; }
+.heading-strong-m { font-size: var(--fs-heading-m); line-height: var(--lh-heading-m); font-weight: 600; }
+.heading-strong-s { font-size: var(--fs-heading-s); line-height: var(--lh-heading-s); font-weight: 600; }
+.heading-default-xl { font-size: var(--fs-heading-xl); line-height: var(--lh-heading-xl); font-weight: 400; }
+.heading-default-l { font-size: var(--fs-heading-l); line-height: var(--lh-heading-l); font-weight: 400; }
+.body-default-m { font-size: var(--fs-body-m); line-height: var(--lh-body-m); }
+.body-default-s { font-size: var(--fs-body-s); line-height: var(--lh-body-s); }
+.label-default-s { font-size: var(--fs-label-s); line-height: var(--lh-label-s); font-weight: 400; }
+.label-strong-s { font-size: var(--fs-label-s); line-height: var(--lh-label-s); font-weight: 600; }
+.label-default-m { font-size: var(--fs-label-m); line-height: 1.25rem; }
+.label-strong-m { font-size: var(--fs-label-m); line-height: 1.25rem; font-weight: 600; }
+.label-default-xs { font-size: var(--fs-label-xs); line-height: .875rem; }
+.on-weak { color: var(--neutral-on-background-weak); }
+.on-medium { color: var(--neutral-on-background-medium); }
+.balance { text-wrap: balance; }
+
+/* Background.module.scss + Mask.module.scss: gradient, dots, mask */
+.ou-bg { position: absolute; inset: 0 0 auto 0; height: 560px; pointer-events: none; overflow: hidden; z-index: 0;
+  mask-image: radial-gradient(100% 100% at 50% 0%, black 0%, transparent 100%); -webkit-mask-image: radial-gradient(100% 100% at 50% 0%, black 0%, transparent 100%); }
+.ou-bg__gradient { position: absolute; inset: 0; opacity: .9;
+  background: radial-gradient(ellipse 50% 50% at 50% 0%, var(--brand-background-strong), transparent 100%); }
+.ou-bg__dots { position: absolute; inset: 0; opacity: .4;
+  background-image: radial-gradient(var(--brand-on-background-weak) 1px, transparent 1px); background-size: 24px 24px; }
+
+/* RevealFx.module.scss */
+@keyframes ou-reveal { from { -webkit-mask-position: 0 0; mask-position: 0 0; filter: blur(1rem); } to { -webkit-mask-position: 100% 0; mask-position: 100% 0; filter: blur(0); } }
+.reveal { -webkit-mask-image: linear-gradient(to left, black 0%, black 25%, transparent 50%); mask-image: linear-gradient(to left, black 0%, black 25%, transparent 50%);
+  -webkit-mask-size: 400% 100%; mask-size: 400% 100%; -webkit-mask-position: 100% 0; mask-position: 100% 0; animation: ou-reveal 1.1s ease-in-out both; }
+.reveal.d2 { animation-delay: .2s; } .reveal.d3 { animation-delay: .4s; } .reveal.d4 { animation-delay: .6s; }
+
+/* Badge.module.scss (with the shine effect) */
+.badge { position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: var(--radius-full);
+  background: var(--brand-alpha-weak); border: 1px solid var(--brand-alpha-medium); color: var(--neutral-on-background-strong); }
+.badge svg.i { color: var(--brand-on-background-medium); width: 16px; height: 16px; }
+.badge::before { content: ""; position: absolute; inset-block: 0; width: 100%; left: -100%; opacity: 0; transform: skewX(-20deg);
+  background: linear-gradient(120deg, transparent 20%, var(--brand-alpha-medium) 50%, transparent 80%); animation: ou-shine 9s ease-in-out infinite; }
+@keyframes ou-shine { 0% { left: -100%; } 1% { left: -100%; opacity: 1; } 15% { left: 100%; opacity: 1; } 16% { opacity: 0; } 100% { left: -100%; } }
+
+/* Tag.module.scss: radius s, padding 2/8, scheme-weak + scheme-alpha-medium */
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--radius-s); white-space: nowrap;
+  background: var(--neutral-background-weak); border: 1px solid var(--neutral-alpha-medium); color: var(--neutral-on-background-medium); }
+.tag--accent { background: var(--accent-background-weak); border-color: var(--accent-alpha-medium); color: var(--accent-on-background-medium); }
+.tag--brand { background: var(--brand-background-weak); border-color: var(--brand-alpha-medium); color: var(--brand-on-background-medium); }
+
+/* Button.module.scss */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap; font: inherit; cursor: pointer; text-decoration: none;
+  transition: var(--transition-micro-medium); border: 1px solid transparent; color: var(--neutral-on-background-strong); background: transparent; }
+.btn > span { padding: 0 4px; }
+.btn--s { height: 32px; padding: 4px 8px; border-radius: var(--radius-m); font-size: var(--fs-label-s); }
+.btn--m { height: 40px; padding: 8px 12px; border-radius: var(--radius-m); font-size: var(--fs-label-m); }
+.btn--l { height: 48px; padding: 12px 20px; border-radius: var(--radius-l); font-size: var(--fs-label-m); gap: 8px; }
+.btn--primary { background: var(--brand-solid-medium); color: var(--brand-on-solid-strong); font-weight: 600; }
+.btn--primary:hover { background: var(--brand-solid-strong); }
+.btn--secondary { border-color: var(--neutral-alpha-weak); }
+.btn--secondary:hover { background: var(--neutral-alpha-weak); }
+.btn--tertiary:hover { border-color: var(--neutral-border-medium); }
+.btn svg.i { width: 18px; height: 18px; }
+.btn--fill { width: 100%; }
+
+/* surfaces: background="surface" border="neutral-alpha-weak" radius="l" */
+.card { position: relative; background: var(--surface-background); border: 1px solid var(--neutral-alpha-weak); border-radius: var(--radius-l); }
+.card--accent { border-color: var(--accent-alpha-medium); }
+.line { height: 1px; background: var(--neutral-alpha-weak); border: 0; margin: 0; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--a-600); flex-shrink: 0; }
+.avatar { border-radius: var(--radius-full); object-fit: cover; flex-shrink: 0; border: 1px solid var(--neutral-alpha-weak); background: var(--neutral-background-strong); }
+
+/* ProgressBar.tsx: neutral-medium track + border, solid brand-strong fill */
+.progress { height: 8px; border-radius: var(--radius-full); background: var(--neutral-background-medium); border: 1px solid var(--neutral-alpha-medium); overflow: hidden; }
+.progress > i { display: block; height: 100%; width: 42.857%; border-radius: var(--radius-full); background: var(--brand-solid-strong); }
+
+/* ToggleButton.module.scss */
+.toggle { display: inline-flex; align-items: center; gap: 8px; border: 1px solid transparent; background: transparent; color: var(--neutral-on-background-weak);
+  border-radius: var(--radius-m); transition: var(--transition-micro-medium); white-space: nowrap; font: inherit; position: relative; }
+.toggle:hover { background: var(--neutral-alpha-weak); border-color: var(--neutral-alpha-weak); }
+.toggle.is-selected { background: var(--neutral-alpha-medium); border-color: var(--neutral-alpha-weak); color: var(--neutral-on-background-strong); }
+.toggle .nav-dot { position: absolute; top: 6px; inset-inline-end: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--a-600); box-shadow: 0 0 0 2px var(--page-background); }
+
+/* missing-from-you rows */
+.todo { display: flex; align-items: flex-start; gap: 12px; }
+.todo__icon { width: 36px; height: 36px; border-radius: var(--radius-m); display: grid; place-items: center; flex-shrink: 0;
+  background: var(--neutral-alpha-weak); color: var(--neutral-on-background-medium); }
+.todo__icon--accent { background: var(--accent-alpha-weak); color: var(--a-600); }
+.todo.is-locked .todo__title { color: var(--neutral-on-background-weak); }
+.todo.is-locked .todo__icon { background: transparent; border: 1px dashed var(--neutral-alpha-medium); color: var(--neutral-on-background-weak); }
+.meta-row { display: flex; align-items: center; gap: 8px; color: var(--neutral-on-background-medium); }
+.meta-row svg.i { color: var(--neutral-on-background-weak); width: 18px; height: 18px; }
+.media { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-l); border: 1px solid var(--neutral-alpha-weak); display: block; background: var(--neutral-background-medium); }
+
+/* ===== טלפון ===== */
+.is-phone .scroll { height: 844px; overflow-y: auto; scrollbar-width: none; position: relative; }
+.is-phone .scroll::-webkit-scrollbar { display: none; }
+.p-wrap { position: relative; z-index: 1; padding: 62px 16px 120px; display: flex; flex-direction: column; gap: 24px; }
+.p-head { display: flex; align-items: center; gap: 12px; }
+.p-head__text { flex: 1; min-width: 0; }
+.p-head__logo { height: 15px; opacity: .9; }
+.p-hero { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding-top: 8px; }
+.p-pad { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.p-sectionhead { display: flex; align-items: center; gap: 8px; }
+.p-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.p-actions .btn { justify-content: flex-start; }
+.p-nav { position: absolute; inset-inline: 0; bottom: 24px; display: flex; justify-content: center; z-index: 20; pointer-events: none; }
+.p-nav__pill { pointer-events: auto; display: flex; align-items: center; gap: 4px; padding: 4px; background: var(--page-background);
+  border: 1px solid var(--neutral-alpha-weak); border-radius: 1.5rem; box-shadow: var(--shadow-l); }
+.p-nav .toggle { height: 40px; padding: 8px 12px; border-radius: 1.25rem; }
+.p-nav .toggle.icon-only { width: 44px; padding: 0; justify-content: center; }
+.p-nav .vline { width: 1px; height: 24px; background: var(--neutral-alpha-medium); }
+.p-fade { position: absolute; inset-inline: 0; bottom: 0; height: 110px; z-index: 15; pointer-events: none;
+  background: linear-gradient(to top, var(--page-background), transparent); backdrop-filter: blur(.5rem); -webkit-backdrop-filter: blur(.5rem);
+  mask-image: linear-gradient(to top, black 25%, transparent 100%); -webkit-mask-image: linear-gradient(to top, black 25%, transparent 100%); }
+
+/* ===== מחשב ===== */
+.d-shell { display: flex; height: 800px; }
+.d-side { width: 272px; flex-shrink: 0; height: 100%; padding: 20px 16px; display: flex; flex-direction: column; gap: 20px;
+  border-inline-end: 1px solid var(--neutral-alpha-weak); position: relative; z-index: 2; background: var(--page-background); }
+.d-show { display: flex; align-items: center; gap: 12px; padding: 4px 8px 4px 4px; }
+.d-nav { display: flex; flex-direction: column; gap: 2px; }
+.d-nav .toggle { height: 40px; padding: 8px 16px; width: 100%; }
+.d-nav .toggle .nav-dot { position: static; margin-inline-start: auto; box-shadow: none; width: 8px; height: 8px; }
+.d-side__foot { margin-top: auto; display: flex; flex-direction: column; gap: 16px; }
+.d-side__logo { height: 16px; opacity: .75; align-self: flex-start; margin-inline-start: 16px; }
+.d-main { flex: 1; min-width: 0; position: relative; }
+.d-main .scroll { height: 800px; overflow-y: auto; position: relative; scrollbar-width: thin; scrollbar-color: var(--neutral-alpha-medium) transparent; }
+.d-wrap { position: relative; z-index: 1; padding: 40px 48px 56px; display: flex; flex-direction: column; gap: 32px; }
+.d-hero { display: grid; grid-template-columns: 1fr 360px; gap: 40px; align-items: end; }
+.d-hero__titles { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.d-hero__progress { display: flex; flex-direction: column; gap: 12px; padding-bottom: 6px; }
+.d-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; align-items: start; }
+.span-7 { grid-column: span 7; } .span-5 { grid-column: span 5; } .span-4 { grid-column: span 4; } .span-3 { grid-column: span 3; } .span-12 { grid-column: span 12; }
+.d-pad { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+.d-todo-list { display: flex; flex-direction: column; }
+.d-todo-list .todo { padding: 16px 0; }
+.d-todo-list .todo + .todo { border-top: 1px solid var(--neutral-alpha-weak); }
+.d-todo-list .todo:first-child { padding-top: 4px; }
+.d-quick { display: flex; flex-direction: column; gap: 8px; }
+.d-quick .btn { justify-content: flex-start; }
+.table { width: 100%; border-collapse: collapse; }
+.table th { text-align: start; font-weight: 400; font-size: var(--fs-label-s); color: var(--neutral-on-background-weak); padding: 0 12px 12px; border-bottom: 1px solid var(--neutral-alpha-weak); }
+.table td { padding: 12px; border-bottom: 1px solid var(--neutral-alpha-weak); font-size: var(--fs-body-s); vertical-align: middle; }
+.table tr:last-child td { border-bottom: 0; }
+.table tbody tr { transition: var(--transition-micro-medium); }
+.table tbody tr:hover { background: var(--neutral-alpha-weak); }
+.thumb { width: 64px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-s); border: 1px solid var(--neutral-alpha-weak); display: block; }
+.thumb--empty { background: var(--neutral-alpha-weak); border-style: dashed; border-color: var(--neutral-alpha-medium); }
+@media (prefers-reduced-motion: reduce) { .reveal, .badge::before { animation: none; } }
+</style>
+</head>
+<body>
+
+<header class="lab-cap">
+  <div class="lab-cap__row">
+    <span class="lab-cap__title">13. Once UI</span>
+    <a href="https://github.com/once-ui-system/core">github.com/once-ui-system/core</a>
+    <span class="lab-cap__meta">269 כוכבים, push אחרון 26.10.2026</span>
+    <span class="lab-cap__meta">הדמו שלו: <a href="https://github.com/once-ui-system/magic-portfolio">magic-portfolio</a>, 1,418 כוכבים, push 24.10.2026</span>
+  </div>
+  <div class="lab-cap__points">
+    <p><b>טוקנים בשלוש עוצמות.</b> brand, accent ו-neutral, כל אחד ב-background, on-background, border ו-alpha בדרגות weak, medium, strong. כהה, solid במצב contrast: הכפתור הראשי לבן, והכחול של wedo יושב ב-brand (תג, נקודות, זוהר).</p>
+    <p><b>משטחים מדורגים.</b> data-border="playful": רדיוס 0.75rem לכפתור, 1rem לכרטיס, nest-4 לגלולה שעוטפת. כרטיס = surface עם קו alpha חלש, וצל shadow-l רק לתפריט הצף.</p>
+    <p><b>רקע עם מסכה.</b> Background של Once UI: גרדיאנט רדיאלי מ-brand, רשת נקודות, ומסכה רדיאלית מלמעלה. כותרת display עם RevealFx, ותפריט-גלולה צף כמו ב-magic-portfolio.</p>
+    <p><b>גופן: Rag Sans.</b> Once UI משאיר את המשפחה לאפליקציה (font-heading, body, label); הזהות היא סולם display, heading, body, label. Geist של הדמו בלי עברית.</p>
+  </div>
+</header>
+
+<section class="lab-stage">
+  <div class="lab-label">טלפון <span dir="ltr">390×844</span></div>
+  <div class="device-phone">
+    <div class="screen ou is-phone" data-theme="dark">
+      <div class="island"></div>
+      <div class="scroll">
+        <div class="ou-bg"><div class="ou-bg__gradient"></div><div class="ou-bg__dots"></div></div>
+        <div class="p-wrap">
+          <div class="p-head">
+            <img class="avatar" src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="" width="40" height="40">
+            <div class="p-head__text">
+              <div class="heading-strong-s">הפיצוח</div>
+              <div class="body-default-s on-weak">גיל לי-רן</div>
+            </div>
+            <img class="p-head__logo" src="../brand/wedo-logotype-white.svg" alt="wedo">
+          </div>
+
+          <div class="p-hero">
+            <span class="badge label-default-s reveal"><svg class="i"><use href="#ou-calendar"/></svg>בעוד יומיים</span>
+            <h1 class="display-strong-s reveal d2">פרק 19</h1>
+            <p class="heading-default-l on-weak reveal d2">עם אורלי אורן</p>
+            <p class="body-default-m on-medium reveal d3">עולה ביום רביעי 28.10</p>
+            <div style="width:100%; display:flex; flex-direction:column; gap:10px; margin-top:8px" class="reveal d4">
+              <div style="display:flex; justify-content:space-between; align-items:baseline">
+                <span class="label-strong-s">3 מתוך 7</span>
+                <span class="label-default-s on-weak">עכשיו: עריכה, ממתין לעורך</span>
+              </div>
+              <div class="progress" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="7"><i></i></div>
+            </div>
+          </div>
+
+          <div class="card card--accent p-pad">
+            <div class="p-sectionhead"><span class="status-dot"></span><h2 class="heading-strong-m">חסר ממך</h2></div>
+            <div class="todo">
+              <span class="todo__icon todo__icon--accent"><svg class="i"><use href="#ou-edit"/></svg></span>
+              <div style="flex:1; display:flex; flex-direction:column; gap:6px">
+                <div style="display:flex; align-items:center; gap:8px"><span class="label-strong-m">שם לפרק</span><span class="tag tag--accent label-default-s">פתוח</span></div>
+                <span class="body-default-s on-weak">לפני העריכה</span>
+                <a class="btn btn--primary btn--m btn--fill" href="#" style="margin-top:6px"><svg class="i"><use href="#ou-edit"/></svg><span>לבחור שם</span></a>
+              </div>
+            </div>
+            <hr class="line">
+            <div class="todo">
+              <span class="todo__icon"><svg class="i"><use href="#ou-image"/></svg></span>
+              <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+                <span class="label-strong-m">תמונת-מרואיין</span>
+                <span class="body-default-s on-weak">התקבלה ב-25.10, ממתינה לאישור</span>
+              </div>
+            </div>
+            <hr class="line">
+            <div class="todo is-locked">
+              <span class="todo__icon" aria-label="נעול"><svg class="i"><use href="#ou-lock"/></svg></span>
+              <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+                <span class="label-strong-m todo__title">בחירת-טיזרים</span>
+                <span class="body-default-s on-weak">אחרי העריכה</span>
+              </div>
+            </div>
+            <hr class="line">
+            <div class="todo is-locked">
+              <span class="todo__icon" aria-label="נעול"><svg class="i"><use href="#ou-lock"/></svg></span>
+              <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+                <span class="label-strong-m todo__title">אישור-לפרסום</span>
+                <span class="body-default-s on-weak">בהמשך</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card p-pad">
+            <h2 class="label-default-s on-weak">ההקלטה הבאה</h2>
+            <p class="heading-strong-xl" style="margin-top:-8px">חמישי 29.10, 11:00</p>
+            <div style="display:flex; flex-direction:column; gap:10px" class="body-default-s">
+              <div class="meta-row"><svg class="i"><use href="#ou-time"/></svg>11:00 עד 13:00</div>
+              <div class="meta-row"><svg class="i"><use href="#ou-organization"/></svg>אולפן רימקס</div>
+              <div class="meta-row"><svg class="i"><use href="#ou-people"/></svg>עם נועה בוקרה ורלי זדרב</div>
+              <div class="meta-row"><svg class="i"><use href="#ou-person"/></svg>מפיק: יהלי</div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px">
+              <a class="btn btn--secondary btn--s" href="#"><svg class="i"><use href="#ou-calendar"/></svg><span>לשנות מועד</span></a>
+              <a class="btn btn--tertiary btn--s" href="#"><svg class="i"><use href="#ou-plus"/></svg><span>להוסיף פרטי-אורח</span></a>
+              <a class="btn btn--tertiary btn--s" href="#"><svg class="i"><use href="#ou-plus"/></svg><span>לתאם הקלטה נוספת</span></a>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:14px">
+            <h2 class="label-default-s on-weak">עלה לאחרונה</h2>
+            <img class="media" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="">
+            <div style="display:flex; flex-direction:column; gap:6px; padding: 0 4px">
+              <h3 class="heading-strong-l balance">איך מקפיצים עסק בתיווך עם AI</h3>
+              <p class="body-default-s on-weak">פרק 18 עם אלכס קפ</p>
+              <p class="label-default-s on-weak">עלה ב-14.10</p>
+            </div>
+            <a class="btn btn--secondary btn--m" href="#" style="align-self:flex-start"><svg class="i"><use href="#ou-send"/></svg><span>לשתף</span></a>
+          </div>
+
+          <div class="card p-pad" style="gap:8px">
+            <h2 class="label-default-s on-weak">איך התוכנית עושה</h2>
+            <p class="display-strong-s" style="margin-top:4px">5,941</p>
+            <p class="label-strong-m">צפיות ביוטיוב</p>
+            <p class="body-default-s on-medium">כל פרק נצפה בממוצע 21% מאורכו</p>
+            <p class="label-default-xs on-weak" style="margin-top:6px">נכון ל-25.10.2026, 18 פרקים</p>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <h2 class="label-default-s on-weak">פעולות מהירות</h2>
+            <div class="p-actions">
+              <a class="btn btn--secondary btn--l" href="#"><svg class="i"><use href="#ou-calendar"/></svg><span>לתאם הקלטה</span></a>
+              <a class="btn btn--secondary btn--l" href="#"><svg class="i"><use href="#ou-upload"/></svg><span>להעלות תמונה</span></a>
+              <a class="btn btn--secondary btn--l" href="#"><svg class="i"><use href="#ou-edit"/></svg><span>לבחור שם</span></a>
+              <a class="btn btn--secondary btn--l" href="#"><svg class="i"><use href="#ou-send"/></svg><span>לשתף פרק</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-fade"></div>
+      <nav class="p-nav" aria-label="ניווט">
+        <div class="p-nav__pill label-default-m">
+          <a class="toggle is-selected" href="#" aria-current="page"><svg class="ph"><use href="#ph-house"/></svg>בית</a>
+          <span class="vline"></span>
+          <a class="toggle icon-only" href="#" aria-label="אסטרטגיה"><svg class="ph"><use href="#ph-compass"/></svg></a>
+          <a class="toggle icon-only" href="#" aria-label="הפקה"><svg class="ph"><use href="#ph-microphone-stage"/></svg><span class="nav-dot"></span></a>
+          <a class="toggle icon-only" href="#" aria-label="הפצה"><svg class="ph"><use href="#ph-broadcast"/></svg></a>
+          <span class="vline"></span>
+          <a class="toggle icon-only" href="#" aria-label="הגדרות"><svg class="ph"><use href="#ph-gear-six"/></svg></a>
+        </div>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<section class="lab-stage">
+  <div class="lab-label">מחשב <span dir="ltr">1280×800</span></div>
+  <div class="device-desktop">
+    <div class="device-desktop__bar"><i></i><i></i><i></i></div>
+    <div class="screen ou is-desktop" data-theme="dark">
+      <div class="d-shell">
+        <aside class="d-side">
+          <div class="d-show">
+            <img class="avatar" src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="" width="40" height="40">
+            <div>
+              <div class="label-strong-m">הפיצוח</div>
+              <div class="label-default-s on-weak">גיל לי-רן</div>
+            </div>
+          </div>
+          <nav class="d-nav label-default-m" aria-label="ניווט">
+            <a class="toggle is-selected" href="#" aria-current="page"><svg class="ph"><use href="#ph-house"/></svg>בית</a>
+            <a class="toggle" href="#"><svg class="ph"><use href="#ph-compass"/></svg>אסטרטגיה</a>
+            <a class="toggle" href="#"><svg class="ph"><use href="#ph-microphone-stage"/></svg>הפקה<span class="nav-dot"></span></a>
+            <a class="toggle" href="#"><svg class="ph"><use href="#ph-broadcast"/></svg>הפצה</a>
+          </nav>
+          <div class="d-side__foot">
+            <nav class="d-nav label-default-m"><a class="toggle" href="#"><svg class="ph"><use href="#ph-gear-six"/></svg>הגדרות</a></nav>
+            <img class="d-side__logo" src="../brand/wedo-logotype-white.svg" alt="wedo">
+          </div>
+        </aside>
+
+        <main class="d-main">
+          <div class="scroll">
+            <div class="ou-bg" style="height:640px"><div class="ou-bg__gradient"></div><div class="ou-bg__dots"></div></div>
+            <div class="d-wrap">
+              <section class="d-hero">
+                <div class="d-hero__titles">
+                  <span class="badge label-default-s reveal"><svg class="i"><use href="#ou-calendar"/></svg>בעוד יומיים</span>
+                  <h1 class="display-strong-m reveal d2">פרק 19</h1>
+                  <p class="heading-default-xl on-weak reveal d2">עם אורלי אורן</p>
+                  <p class="body-default-m on-medium reveal d3">עולה ביום רביעי 28.10</p>
+                </div>
+                <div class="d-hero__progress reveal d4">
+                  <div style="display:flex; justify-content:space-between; align-items:baseline">
+                    <span class="label-strong-m">3 מתוך 7</span>
+                    <span class="label-default-s on-weak">עכשיו: עריכה, ממתין לעורך</span>
+                  </div>
+                  <div class="progress" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="7"><i></i></div>
+                </div>
+              </section>
+
+              <section class="d-grid">
+                <div class="card card--accent d-pad span-7">
+                  <div class="p-sectionhead"><span class="status-dot"></span><h2 class="heading-strong-m">חסר ממך</h2></div>
+                  <div class="d-todo-list">
+                    <div class="todo">
+                      <span class="todo__icon todo__icon--accent"><svg class="i"><use href="#ou-edit"/></svg></span>
+                      <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+                        <div style="display:flex; align-items:center; gap:8px"><span class="label-strong-m">שם לפרק</span><span class="tag tag--accent label-default-s">פתוח</span></div>
+                        <span class="body-default-s on-weak">לפני העריכה</span>
+                      </div>
+                      <a class="btn btn--primary btn--m" href="#"><svg class="i"><use href="#ou-edit"/></svg><span>לבחור שם</span></a>
+                    </div>
+                    <div class="todo">
+                      <span class="todo__icon"><svg class="i"><use href="#ou-image"/></svg></span>
+                      <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+                        <span class="label-strong-m">תמונת-מרואיין</span>
+                        <span class="body-default-s on-weak">התקבלה ב-25.10, ממתינה לאישור</span>
+                      </div>
+                    </div>
+                    <div class="todo is-locked">
+                      <span class="todo__icon" aria-label="נעול"><svg class="i"><use href="#ou-lock"/></svg></span>
+                      <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+                        <span class="label-strong-m todo__title">בחירת-טיזרים</span>
+                        <span class="body-default-s on-weak">אחרי העריכה</span>
+                      </div>
+                    </div>
+                    <div class="todo is-locked">
+                      <span class="todo__icon" aria-label="נעול"><svg class="i"><use href="#ou-lock"/></svg></span>
+                      <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+                        <span class="label-strong-m todo__title">אישור-לפרסום</span>
+                        <span class="body-default-s on-weak">בהמשך</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card d-pad span-5">
+                  <h2 class="label-default-s on-weak">ההקלטה הבאה</h2>
+                  <p class="heading-strong-xl" style="margin-top:-10px">חמישי 29.10, 11:00</p>
+                  <div style="display:flex; flex-direction:column; gap:12px" class="body-default-s">
+                    <div class="meta-row"><svg class="i"><use href="#ou-time"/></svg>11:00 עד 13:00</div>
+                    <div class="meta-row"><svg class="i"><use href="#ou-organization"/></svg>אולפן רימקס</div>
+                    <div class="meta-row"><svg class="i"><use href="#ou-people"/></svg>עם נועה בוקרה ורלי זדרב</div>
+                    <div class="meta-row"><svg class="i"><use href="#ou-person"/></svg>מפיק: יהלי</div>
+                  </div>
+                  <hr class="line">
+                  <div style="display:flex; flex-wrap:wrap; gap:8px">
+                    <a class="btn btn--secondary btn--s" href="#"><svg class="i"><use href="#ou-calendar"/></svg><span>לשנות מועד</span></a>
+                    <a class="btn btn--tertiary btn--s" href="#"><svg class="i"><use href="#ou-plus"/></svg><span>להוסיף פרטי-אורח</span></a>
+                    <a class="btn btn--tertiary btn--s" href="#"><svg class="i"><use href="#ou-plus"/></svg><span>לתאם הקלטה נוספת</span></a>
+                  </div>
+                </div>
+
+                <div class="span-5" style="display:flex; flex-direction:column; gap:14px">
+                  <h2 class="label-default-s on-weak">עלה לאחרונה</h2>
+                  <img class="media" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="">
+                  <div style="display:flex; gap:16px; align-items:flex-start; padding: 0 4px">
+                    <div style="flex:1; display:flex; flex-direction:column; gap:6px">
+                      <h3 class="heading-strong-l balance">איך מקפיצים עסק בתיווך עם AI</h3>
+                      <p class="body-default-s on-weak">פרק 18 עם אלכס קפ</p>
+                      <p class="label-default-s on-weak">עלה ב-14.10</p>
+                    </div>
+                    <a class="btn btn--secondary btn--s" href="#"><svg class="i"><use href="#ou-send"/></svg><span>לשתף</span></a>
+                  </div>
+                </div>
+
+                <div class="card d-pad span-4" style="gap:8px">
+                  <h2 class="label-default-s on-weak">איך התוכנית עושה</h2>
+                  <p class="display-strong-s" style="margin-top:6px">5,941</p>
+                  <p class="label-strong-m">צפיות ביוטיוב</p>
+                  <p class="body-default-s on-medium">כל פרק נצפה בממוצע 21% מאורכו</p>
+                  <p class="label-default-xs on-weak" style="margin-top:10px">נכון ל-25.10.2026, 18 פרקים</p>
+                </div>
+
+                <div class="span-3" style="display:flex; flex-direction:column; gap:12px">
+                  <h2 class="label-default-s on-weak">פעולות מהירות</h2>
+                  <div class="d-quick">
+                    <a class="btn btn--secondary btn--m" href="#"><svg class="i"><use href="#ou-calendar"/></svg><span>לתאם הקלטה</span></a>
+                    <a class="btn btn--secondary btn--m" href="#"><svg class="i"><use href="#ou-upload"/></svg><span>להעלות תמונה</span></a>
+                    <a class="btn btn--secondary btn--m" href="#"><svg class="i"><use href="#ou-edit"/></svg><span>לבחור שם</span></a>
+                    <a class="btn btn--secondary btn--m" href="#"><svg class="i"><use href="#ou-send"/></svg><span>לשתף פרק</span></a>
+                  </div>
+                </div>
+
+                <div class="card span-12" style="padding:20px 12px 8px">
+                  <h2 class="heading-strong-m" style="padding: 0 12px 16px">פרקים</h2>
+                  <table class="table">
+                    <thead><tr><th style="width:90px"></th><th style="width:56px">פרק</th><th style="width:200px">אורח</th><th>כותרת</th><th style="width:150px">מצב</th></tr></thead>
+                    <tbody>
+                      <tr><td><span class="thumb thumb--empty"></span></td><td>19</td><td>אורלי אורן</td><td class="on-weak">(עוד אין שם)</td><td><span class="tag tag--brand label-default-s">בעריכה</span></td></tr>
+                      <tr><td><img class="thumb" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""></td><td>18</td><td>אלכס קפ</td><td>איך מקפיצים עסק בתיווך עם AI</td><td><span class="tag label-default-s">עלה ב-14.10</span></td></tr>
+                      <tr><td><img class="thumb" src="https://i.ytimg.com/vi/P463I2IV9Xo/mqdefault.jpg" alt=""></td><td>17</td><td>אהרון וחביבה איציקזון</td><td>איך ממשיכים מכאן?</td><td><span class="tag label-default-s">עלה ב-7.10</span></td></tr>
+                      <tr><td><img class="thumb" src="https://i.ytimg.com/vi/epNQhrsKjxI/mqdefault.jpg" alt=""></td><td>16</td><td>ונסה סיימן</td><td>חמשת הכללים למשא ומתן</td><td><span class="tag label-default-s">עלה ב-30.9</span></td></tr>
+                      <tr><td><img class="thumb" src="https://i.ytimg.com/vi/fCG8ceGVDRo/mqdefault.jpg" alt=""></td><td>15</td><td>דקלה ביבי</td><td>איך לעשות שינוי קריירה בגיל 40</td><td><span class="tag label-default-s">עלה ב-23.9</span></td></tr>
+                      <tr><td><img class="thumb" src="https://i.ytimg.com/vi/pp-nzLON8vY/mqdefault.jpg" alt=""></td><td>14</td><td>אריק זאבי</td><td>מי נשאר ומי נשבר</td><td><span class="tag label-default-s">עלה ב-16.9</span></td></tr>
+                      <tr><td><img class="thumb" src="https://i.ytimg.com/vi/Sh0J8sIBfHs/mqdefault.jpg" alt=""></td><td>13</td><td>איתי דוד</td><td>הסוד הכי שמור ברי/מקס</td><td><span class="tag label-default-s">עלה ב-9.9</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+</section>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><symbol id="ou-calendar" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></g></symbol><symbol id="ou-edit" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"/></g></symbol><symbol id="ou-image" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></g></symbol><symbol id="ou-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></g></symbol><symbol id="ou-time" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></g></symbol><symbol id="ou-organization" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"/></g></symbol><symbol id="ou-people" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></g></symbol><symbol id="ou-person" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></g></symbol><symbol id="ou-plus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></g></symbol><symbol id="ou-send" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/></g></symbol><symbol id="ou-upload" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></g></symbol><symbol id="ph-house" viewBox="0 0 256 256"><path d="M216,120v96H152V152H104v64H40V120a8,8,0,0,1,2.34-5.66l80-80a8,8,0,0,1,11.32,0l80,80A8,8,0,0,1,216,120Z" opacity="0.2"/><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"/></symbol><symbol id="ph-compass" viewBox="0 0 256 256"><path d="M128,32a96,96,0,1,0,96,96A96,96,0,0,0,128,32Zm16,112L80,176l32-64,64-32Z" opacity="0.2"/><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216ZM172.42,72.84l-64,32a8.05,8.05,0,0,0-3.58,3.58l-32,64A8,8,0,0,0,80,184a8.1,8.1,0,0,0,3.58-.84l64-32a8.05,8.05,0,0,0,3.58-3.58l32-64a8,8,0,0,0-10.74-10.74ZM138,138,97.89,158.11,118,118l40.15-20.07Z"/></symbol><symbol id="ph-microphone-stage" viewBox="0 0 256 256"><path d="M156.5,151,59,222.45a8,8,0,0,1-10.38-.79l-14.3-14.3A8,8,0,0,1,33.55,197L105,99.5l0,0A64,64,0,0,0,156.48,151Z" opacity="0.2"/><path d="M168,16A72.07,72.07,0,0,0,96,88a73.29,73.29,0,0,0,.63,9.42L27.12,192.22A15.93,15.93,0,0,0,28.71,213L43,227.29a15.93,15.93,0,0,0,20.78,1.59l94.81-69.53A73.29,73.29,0,0,0,168,160a72,72,0,1,0,0-144Zm56,72a55.72,55.72,0,0,1-11.16,33.52L134.49,43.16A56,56,0,0,1,224,88ZM54.32,216,40,201.68,102.14,117A72.37,72.37,0,0,0,139,153.86ZM112,88a55.67,55.67,0,0,1,11.16-33.51l78.34,78.34A56,56,0,0,1,112,88Zm-2.35,58.34a8,8,0,0,1,0,11.31l-8,8a8,8,0,1,1-11.31-11.31l8-8A8,8,0,0,1,109.67,146.33Z"/></symbol><symbol id="ph-broadcast" viewBox="0 0 256 256"><path d="M160,128a32,32,0,1,1-32-32A32,32,0,0,1,160,128Z" opacity="0.2"/><path d="M128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,152Zm73.71,7.14a80,80,0,0,1-14.08,22.2,8,8,0,0,1-11.92-10.67,63.95,63.95,0,0,0,0-85.33,8,8,0,1,1,11.92-10.67,80.08,80.08,0,0,1,14.08,84.47ZM69,103.09a64,64,0,0,0,11.26,67.58,8,8,0,0,1-11.92,10.67,79.93,79.93,0,0,1,0-106.67A8,8,0,1,1,80.29,85.34,63.77,63.77,0,0,0,69,103.09ZM248,128a119.58,119.58,0,0,1-34.29,84,8,8,0,1,1-11.42-11.2,103.9,103.9,0,0,0,0-145.56A8,8,0,1,1,213.71,44,119.58,119.58,0,0,1,248,128ZM53.71,200.78A8,8,0,1,1,42.29,212a119.87,119.87,0,0,1,0-168,8,8,0,1,1,11.42,11.2,103.9,103.9,0,0,0,0,145.56Z"/></symbol><symbol id="ph-gear-six" viewBox="0 0 256 256"><path d="M230.1,108.76,198.25,90.62c-.64-1.16-1.31-2.29-2-3.41l-.12-36A104.61,104.61,0,0,0,162,32L130,49.89c-1.34,0-2.69,0-4,0L94,32A104.58,104.58,0,0,0,59.89,51.25l-.16,36c-.7,1.12-1.37,2.26-2,3.41l-31.84,18.1a99.15,99.15,0,0,0,0,38.46l31.85,18.14c.64,1.16,1.31,2.29,2,3.41l.12,36A104.61,104.61,0,0,0,94,224l32-17.87c1.34,0,2.69,0,4,0L162,224a104.58,104.58,0,0,0,34.08-19.25l.16-36c.7-1.12,1.37-2.26,2-3.41l31.84-18.1A99.15,99.15,0,0,0,230.1,108.76ZM128,168a40,40,0,1,1,40-40A40,40,0,0,1,128,168Z" opacity="0.2"/><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm109.94-52.79a8,8,0,0,0-3.89-5.4l-29.83-17-.12-33.62a8,8,0,0,0-2.83-6.08,111.91,111.91,0,0,0-36.72-20.67,8,8,0,0,0-6.46.59L128,41.85,97.88,25a8,8,0,0,0-6.47-.6A111.92,111.92,0,0,0,54.73,45.15a8,8,0,0,0-2.83,6.07l-.15,33.65-29.83,17a8,8,0,0,0-3.89,5.4,106.47,106.47,0,0,0,0,41.56,8,8,0,0,0,3.89,5.4l29.83,17,.12,33.63a8,8,0,0,0,2.83,6.08,111.91,111.91,0,0,0,36.72,20.67,8,8,0,0,0,6.46-.59L128,214.15,158.12,231a7.91,7.91,0,0,0,3.9,1,8.09,8.09,0,0,0,2.57-.42,112.1,112.1,0,0,0,36.68-20.73,8,8,0,0,0,2.83-6.07l.15-33.65,29.83-17a8,8,0,0,0,3.89-5.4A106.47,106.47,0,0,0,237.94,107.21Zm-15,34.91-28.57,16.25a8,8,0,0,0-3,3c-.58,1-1.19,2.06-1.81,3.06a7.94,7.94,0,0,0-1.22,4.21l-.15,32.25a95.89,95.89,0,0,1-25.37,14.3L134,199.13a8,8,0,0,0-3.91-1h-.19c-1.21,0-2.43,0-3.64,0a8.1,8.1,0,0,0-4.1,1l-28.84,16.1A96,96,0,0,1,67.88,201l-.11-32.2a8,8,0,0,0-1.22-4.22c-.62-1-1.23-2-1.8-3.06a8.09,8.09,0,0,0-3-3.06l-28.6-16.29a90.49,90.49,0,0,1,0-28.26L61.67,97.63a8,8,0,0,0,3-3c.58-1,1.19-2.06,1.81-3.06a7.94,7.94,0,0,0,1.22-4.21l.15-32.25a95.89,95.89,0,0,1,25.37-14.3L122,56.87a8,8,0,0,0,4.1,1c1.21,0,2.43,0,3.64,0a8,8,0,0,0,4.1-1l28.84-16.1A96,96,0,0,1,188.12,55l.11,32.2a8,8,0,0,0,1.22,4.22c.62,1,1.23,2,1.8,3.06a8.09,8.09,0,0,0,3,3.06l28.6,16.29A90.49,90.49,0,0,1,222.9,142.12Z"/></symbol></svg>
+<script>
+  if (new URLSearchParams(location.search).has('full')) document.documentElement.classList.add('full');
+</script>
+</body>
+</html>

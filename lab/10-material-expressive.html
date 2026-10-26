@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>10 Material 3 Expressive | מעבדת-טעם wedo app</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_photo_alternate,calendar_add_on,campaign,chevron_left,edit,event,group,home,image,lightbulb,location_on,lock,mic,movie,person,schedule,settings,share,verified&display=block">
+<style>
+/* ===== M3 system tokens =====
+   Color: material-color-utilities 0.4.0, DynamicScheme(source #0131FF, variant TONAL_SPOT, specVersion "2025", light),
+   generated exactly the way matraic/m3e packages/web/src/theme/ThemeElement.ts does.
+   Shape / type / elevation: matraic/m3e packages/web/src/core/shared/tokens/{ShapeToken,TypescaleToken,ElevationToken}.ts */
+:root {
+  --md-sys-color-background: #fbf8fe;
+  --md-sys-color-on-background: #31323b;
+  --md-sys-color-surface: #fbf8fe;
+  --md-sys-color-surface-dim: #dad9e4;
+  --md-sys-color-surface-bright: #fbf8fe;
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #f5f2fb;
+  --md-sys-color-surface-container: #efedf6;
+  --md-sys-color-surface-container-high: #e9e7f1;
+  --md-sys-color-surface-container-highest: #e3e1ed;
+  --md-sys-color-on-surface: #31323b;
+  --md-sys-color-on-surface-variant: #5e5e68;
+  --md-sys-color-outline: #7a7a84;
+  --md-sys-color-outline-variant: #b2b1bc;
+  --md-sys-color-inverse-surface: #0e0e12;
+  --md-sys-color-inverse-on-surface: #9e9ca2;
+  --md-sys-color-primary: #555c8c;
+  --md-sys-color-on-primary: #faf8ff;
+  --md-sys-color-primary-container: #c0c6fd;
+  --md-sys-color-on-primary-container: #383e6d;
+  --md-sys-color-primary-fixed-dim: #b2b8ee;
+  --md-sys-color-secondary: #5c5e72;
+  --md-sys-color-on-secondary: #faf8ff;
+  --md-sys-color-secondary-container: #e0e0f9;
+  --md-sys-color-on-secondary-container: #4e5065;
+  --md-sys-color-tertiary: #71557b;
+  --md-sys-color-on-tertiary: #fff7fc;
+  --md-sys-color-tertiary-container: #f2cefc;
+  --md-sys-color-on-tertiary-container: #5e4268;
+  --md-sys-color-error: #a8364b;
+  /* M3 custom color group for «חסר ממך»: B2C Orange #FF9500, TonalPalette tones 40/90/30, not harmonized */
+  --md-custom-orange: #8c5000;
+  --md-custom-orange-container: #ffdcbf;
+  --md-custom-on-orange-container: #6a3b00;
+  --wedo-orange: #FF9500;
+
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-large-increased: 20px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-extra-large-increased: 32px;
+  --md-sys-shape-corner-extra-extra-large: 48px;
+  --md-sys-shape-corner-full: 9999px;
+
+  --md-sys-elevation-level1: 0px 2px 1px -1px rgb(0 0 0 / .2), 0px 1px 1px 0px rgb(0 0 0 / .14), 0px 1px 3px 0px rgb(0 0 0 / .12);
+  --md-sys-elevation-level3: 0px 3px 5px -1px rgb(0 0 0 / .2), 0px 6px 10px 0px rgb(0 0 0 / .14), 0px 1px 18px 0px rgb(0 0 0 / .12);
+
+  --md-ref-typeface: "Google Sans", "Noto Sans Hebrew", system-ui, sans-serif;
+  /* expressive motion scheme, fast-spatial spring sampled by m3e as cubic-bezier fallback */
+  --md-sys-motion-spring-fast-spatial: 350ms cubic-bezier(0.42, 1.67, 0.21, 0.90);
+  --md-sys-motion-spring-fast-effects: 150ms cubic-bezier(0.31, 0.94, 0.34, 1.00);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: #d6d5df;
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-ref-typeface);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; color: inherit; border: 0; background: none; padding: 0; cursor: pointer; }
+p, h1, h2, h3, ul { margin: 0; padding: 0; }
+ul { list-style: none; }
+img { display: block; }
+
+.ms {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal; font-style: normal; font-size: 24px; line-height: 1;
+  letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap;
+  direction: ltr; font-feature-settings: "liga"; -webkit-font-smoothing: antialiased;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  flex: none;
+}
+.ms.fill { font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24; }
+.ms.s20 { font-size: 20px; font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 20; }
+
+/* ===== M3 typescale (standard + emphasized) ===== */
+.display-large-em { font-size: 3.5625rem; line-height: 4rem; font-weight: 500; letter-spacing: -0.015625rem; }
+.display-small-em { font-size: 2.25rem; line-height: 2.75rem; font-weight: 500; }
+.headline-medium { font-size: 1.75rem; line-height: 2.25rem; font-weight: 400; }
+.headline-small-em { font-size: 1.5rem; line-height: 2rem; font-weight: 500; }
+.title-large { font-size: 1.375rem; line-height: 1.75rem; font-weight: 400; }
+.title-large-em { font-size: 1.375rem; line-height: 1.75rem; font-weight: 500; }
+.title-medium { font-size: 1rem; line-height: 1.5rem; font-weight: 500; letter-spacing: 0.009375rem; }
+.title-medium-em { font-size: 1rem; line-height: 1.5rem; font-weight: 700; letter-spacing: 0.009375rem; }
+.title-small { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; letter-spacing: 0.00625rem; }
+.body-large { font-size: 1rem; line-height: 1.5rem; font-weight: 400; letter-spacing: 0.03125rem; }
+.body-medium { font-size: 0.875rem; line-height: 1.25rem; font-weight: 400; letter-spacing: 0.015625rem; }
+.body-small { font-size: 0.75rem; line-height: 1rem; font-weight: 400; letter-spacing: 0.025rem; }
+.label-large { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; letter-spacing: 0.00625rem; }
+.label-medium { font-size: 0.75rem; line-height: 1rem; font-weight: 500; letter-spacing: 0.03125rem; }
+
+/* ===== lab caption (outside the app) ===== */
+.lab {
+  background: var(--md-sys-color-surface-container-lowest);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  padding: 10px 20px;
+  font-size: 13px; line-height: 20px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+.lab-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.lab-name { font-size: 15px; font-weight: 700; color: var(--md-sys-color-on-surface); }
+.lab a { color: var(--md-sys-color-primary); text-decoration: none; font-weight: 500; }
+.lab a:hover { text-decoration: underline; }
+.lab-meta { white-space: nowrap; }
+.lab-notes { display: flex; flex-wrap: wrap; gap: 2px 18px; margin-top: 4px; }
+.lab-notes span::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 2px; background: var(--md-sys-color-primary-container); margin-inline-end: 6px; vertical-align: middle; }
+.stage { display: flex; flex-direction: column; align-items: center; gap: 28px; padding: 20px 7px 48px; }
+.desk-wrap { width: 100%; overflow-x: auto; display: flex; padding: 2px 0 30px; }
+.desk-wrap > .desk-frame { margin-inline: auto; }
+.stage-label { font-size: 13px; color: var(--md-sys-color-on-surface-variant); margin-bottom: -18px; }
+@media (max-width: 700px) {
+  .lab { padding: 8px 12px; font-size: 12px; line-height: 18px; }
+  .lab-notes, .lab-sec { display: none; }
+  .stage { padding-top: 10px; }
+  .stage-label:first-of-type { display: none; }
+}
+.notes-below { display: none; max-width: 410px; font-size: 12px; line-height: 18px; color: var(--md-sys-color-on-surface-variant); }
+@media (max-width: 700px) { .notes-below { display: block; } }
+.notes-below p + p { margin-top: 4px; }
+.notes-below a { color: var(--md-sys-color-primary); }
+
+/* ===== Pixel-style phone frame ===== */
+.phone-frame {
+  width: 410px; padding: 10px; border-radius: 52px;
+  background: #1b1b1f;
+  box-shadow: 0 0 0 1.5px #3a3a40, 0 18px 50px rgb(0 0 0 / .25);
+  flex: none;
+}
+.screen {
+  position: relative; width: 390px; height: 844px; overflow: hidden;
+  border-radius: 42px;
+  background: var(--md-sys-color-surface);
+}
+.sb {
+  position: absolute; inset: 0 0 auto 0; height: 40px; z-index: 4;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 26px 0 26px;
+  background: var(--md-sys-color-surface);
+  font-size: 14px; font-weight: 500; color: var(--md-sys-color-on-surface);
+}
+.sb .cam { position: absolute; left: 50%; top: 12px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: #0c0c0e; }
+.sb-icons { display: flex; gap: 6px; align-items: center; direction: ltr; }
+.sb-icons svg { display: block; }
+.scroll {
+  position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain;
+  padding-top: 40px; padding-bottom: 168px;
+  scrollbar-width: none;
+}
+.scroll::-webkit-scrollbar { display: none; }
+
+/* top app bar (M3E small, with subtitle) */
+.appbar {
+  position: sticky; top: 0; z-index: 3;
+  height: 72px; padding: 0 8px 0 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--md-sys-color-surface);
+}
+.ab-lead { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.shape-avatar { width: 48px; height: 48px; flex: none; clip-path: url(#m3e-9-sided-cookie); background: var(--md-sys-color-primary-container); }
+.shape-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 47% 40%; }
+.ab-title { font-size: 1.375rem; line-height: 1.75rem; font-weight: 500; color: var(--md-sys-color-on-surface); }
+.ab-sub { font-size: 0.875rem; line-height: 1.25rem; color: var(--md-sys-color-on-surface-variant); }
+.icon-btn {
+  width: 48px; height: 48px; border-radius: var(--md-sys-shape-corner-full);
+  display: grid; place-items: center; color: var(--md-sys-color-on-surface-variant);
+}
+.icon-btn:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent); }
+
+.feed { display: flex; flex-direction: column; gap: 12px; padding: 4px 16px 0; }
+
+/* ===== buttons (m3e ButtonSizeToken: S=40px pill, padding 20px; M=56px) ===== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 40px; padding: 0 20px; border-radius: var(--md-sys-shape-corner-full);
+  font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; letter-spacing: 0.00625rem;
+  white-space: nowrap;
+  transition: border-radius var(--md-sys-motion-spring-fast-effects), background-color 200ms cubic-bezier(.2,0,0,1);
+}
+.btn:active { border-radius: var(--md-sys-shape-corner-small); }
+.btn .ms { font-size: 20px; font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 20; }
+.btn.filled { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+.btn.filled:hover { box-shadow: var(--md-sys-elevation-level1); }
+.btn.tonal { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); }
+.btn.outlined { box-shadow: inset 0 0 0 1px var(--md-sys-color-outline-variant); color: var(--md-sys-color-on-surface-variant); }
+.btn.xs { height: 32px; padding: 0 12px; }
+
+/* ===== hero: next episode (primary container, extra-large corners) ===== */
+.hero {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  padding: 20px 20px 12px;
+}
+.hero-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.kicker { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; letter-spacing: 0.00625rem; }
+.hero .kicker { color: color-mix(in srgb, var(--md-sys-color-on-primary-container) 78%, transparent); }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px;
+  border-radius: var(--md-sys-shape-corner-small);
+  font-size: 0.875rem; font-weight: 500; letter-spacing: 0.00625rem; white-space: nowrap;
+}
+.chip.on-primary { background: var(--md-sys-color-surface-container-lowest); color: var(--md-sys-color-on-surface); }
+.hero-ep { margin-top: 10px; font-size: 2.8125rem; line-height: 3.25rem; font-weight: 500; letter-spacing: 0; }
+.hero-guest { font-size: 1.375rem; line-height: 1.75rem; font-weight: 400; }
+.hero-date { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 1rem; line-height: 1.5rem; letter-spacing: 0.03125rem; }
+.hero-date .ms { font-size: 20px; }
+.wavy { margin-top: 18px; height: 14px; }
+.wavy svg { display: block; width: 100%; height: 14px; transform: scaleX(-1); overflow: visible; }
+.wavy .active { fill: none; stroke: var(--md-sys-color-primary); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.wavy .track { fill: none; stroke: var(--md-sys-color-surface-container-lowest); stroke-opacity: .7; stroke-width: 4; stroke-linecap: round; }
+.wavy .stop { fill: var(--md-sys-color-primary); }
+.progress-text { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 10px; }
+.progress-text .count { font-size: 1rem; line-height: 1.5rem; font-weight: 700; }
+.progress-text .now { font-size: 0.875rem; line-height: 1.25rem; text-align: end; }
+
+.missing-head { display: flex; align-items: center; gap: 8px; margin: 22px 4px 10px; font-size: 1rem; line-height: 1.5rem; font-weight: 700; color: var(--md-sys-color-on-primary-container); }
+.missing-head .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--wedo-orange); }
+
+/* segmented list: m3e ListElement, variant "segmented": gap 2px, item corner 4px, ends 16px */
+.seg { display: flex; flex-direction: column; gap: 2px; margin: 0 -8px; }
+.seg-item {
+  display: flex; align-items: center; gap: 14px;
+  min-height: 72px; padding: 10px 14px 10px 14px;
+  background: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-sys-color-on-surface);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+}
+.seg-item:first-child { border-top-left-radius: var(--md-sys-shape-corner-large-increased); border-top-right-radius: var(--md-sys-shape-corner-large-increased); }
+.seg-item:last-child { border-bottom-left-radius: var(--md-sys-shape-corner-large-increased); border-bottom-right-radius: var(--md-sys-shape-corner-large-increased); }
+.lead {
+  width: 40px; height: 40px; flex: none; display: grid; place-items: center;
+  background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface-variant);
+  clip-path: url(#m3e-4-sided-cookie);
+}
+.lead .ms { font-size: 20px; }
+.lead.orange { background: var(--md-custom-orange-container); color: var(--md-custom-on-orange-container); clip-path: url(#m3e-sunny); }
+.seg-txt { flex: 1; min-width: 0; }
+.seg-hl { font-size: 1rem; line-height: 1.5rem; letter-spacing: 0.03125rem; }
+.seg-sup { font-size: 0.875rem; line-height: 1.25rem; letter-spacing: 0.015625rem; color: var(--md-sys-color-on-surface-variant); }
+.seg-sup .open { color: var(--md-custom-orange); font-weight: 500; }
+.seg-trail { color: var(--md-sys-color-on-surface-variant); }
+.locked .seg-hl { color: color-mix(in srgb, var(--md-sys-color-on-surface) 62%, transparent); }
+
+/* ===== cards ===== */
+.card {
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  padding: 20px;
+  background: var(--md-sys-color-surface-container);
+}
+.card .kicker { color: var(--md-sys-color-on-surface-variant); }
+.card-head { display: flex; align-items: center; gap: 14px; }
+.shape-ic { width: 52px; height: 52px; flex: none; display: grid; place-items: center; clip-path: url(#m3e-12-sided-cookie); background: var(--md-sys-color-tertiary-container); color: var(--md-sys-color-on-tertiary-container); }
+.rec-when { font-size: 1.5rem; line-height: 2rem; font-weight: 500; color: var(--md-sys-color-on-surface); }
+.facts { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+.facts li { display: flex; align-items: center; gap: 14px; font-size: 1rem; line-height: 1.5rem; letter-spacing: 0.03125rem; }
+.facts .ms { font-size: 20px; color: var(--md-sys-color-on-surface-variant); }
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+
+.latest { background: var(--md-sys-color-surface-container-low); }
+.thumb { margin-top: 12px; border-radius: var(--md-sys-shape-corner-large-increased); overflow: hidden; aspect-ratio: 16 / 9; background: var(--md-sys-color-surface-container-highest); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.latest-ep { margin-top: 14px; font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; color: var(--md-sys-color-on-surface-variant); }
+.latest-title { margin-top: 2px; font-size: 1.375rem; line-height: 1.75rem; font-weight: 500; color: var(--md-sys-color-on-surface); }
+.latest-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
+.latest-date { font-size: 0.875rem; color: var(--md-sys-color-on-surface-variant); }
+
+.stat { background: var(--md-sys-color-tertiary-container); color: var(--md-sys-color-on-tertiary-container); }
+.stat .kicker { color: color-mix(in srgb, var(--md-sys-color-on-tertiary-container) 80%, transparent); }
+.stat-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 6px; }
+.stat-num { font-size: 3.5625rem; line-height: 4rem; font-weight: 500; letter-spacing: -0.015625rem; }
+.stat-label { font-size: 1rem; line-height: 1.5rem; font-weight: 700; }
+.ring { position: relative; width: 88px; height: 88px; flex: none; }
+.ring svg { display: block; width: 88px; height: 88px; }
+.ring .active { fill: none; stroke: var(--md-sys-color-tertiary); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.ring .track { fill: none; stroke: color-mix(in srgb, var(--md-sys-color-tertiary) 22%, transparent); stroke-width: 6; stroke-linecap: round; }
+.ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 1.125rem; font-weight: 700; direction: ltr; }
+.stat-sentence { margin-top: 12px; font-size: 1rem; line-height: 1.5rem; letter-spacing: 0.03125rem; }
+.stat-asof { margin-top: 6px; font-size: 0.75rem; line-height: 1rem; letter-spacing: 0.025rem; color: color-mix(in srgb, var(--md-sys-color-on-tertiary-container) 78%, transparent); }
+
+.section-title { font-size: 1rem; line-height: 1.5rem; font-weight: 700; margin: 10px 4px 10px; color: var(--md-sys-color-on-surface); }
+/* quick actions: Android 16 quick-settings style pill tiles */
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tile {
+  display: flex; align-items: center; gap: 10px; height: 64px; padding: 0 12px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);
+  font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; text-align: start;
+  transition: border-radius var(--md-sys-motion-spring-fast-effects);
+}
+.tile:active { border-radius: var(--md-sys-shape-corner-large); }
+.tile-ic { width: 40px; height: 40px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
+.tile-ic .ms { font-size: 20px; }
+
+/* ===== FAB (m3e small extended FAB: 56px, corner large 16px, primary container, level 3) ===== */
+.fab {
+  display: inline-flex; align-items: center; gap: 12px;
+  height: 56px; padding: 0 20px 0 16px;
+  border-radius: var(--md-sys-shape-corner-large);
+  background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container);
+  box-shadow: var(--md-sys-elevation-level3);
+  font-size: 1rem; line-height: 1.5rem; font-weight: 500;
+  white-space: nowrap;
+}
+.phone .fab { position: absolute; inset-inline-end: 16px; bottom: 104px; z-index: 3; }
+
+/* ===== navigation bar (m3e NavBar: 64px, surface-container, 56x32 pill in secondary-container) ===== */
+.navbar {
+  position: absolute; inset: auto 0 0 0; z-index: 3;
+  height: 88px; padding-bottom: 24px;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  background: var(--md-sys-color-surface-container);
+}
+.nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--md-sys-color-on-surface-variant); text-decoration: none; }
+.nav-ind { position: relative; width: 56px; height: 32px; border-radius: var(--md-sys-shape-corner-full); display: grid; place-items: center; }
+.nav-item.active .nav-ind { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); }
+.nav-lbl { font-size: 0.75rem; line-height: 1rem; font-weight: 500; letter-spacing: 0.03125rem; }
+.nav-item.active .nav-lbl { color: var(--md-sys-color-secondary); font-weight: 700; }
+.badge-dot { position: absolute; top: 4px; inset-inline-end: 14px; width: 8px; height: 8px; border-radius: 50%; background: var(--wedo-orange); box-shadow: 0 0 0 2px var(--md-sys-color-surface-container); }
+.gesture { position: absolute; bottom: 9px; left: 50%; width: 108px; height: 4px; margin-left: -54px; border-radius: 2px; background: var(--md-sys-color-on-surface); opacity: .82; }
+
+/* ===== desktop: ChromeOS-like window, 1280x800 viewport ===== */
+.desk-frame { width: 1282px; border-radius: 14px; overflow: hidden; background: #e3e2ea; box-shadow: 0 0 0 1px #b9b8c3, 0 24px 60px rgb(0 0 0 / .22); flex: none; }
+.desk-bar { height: 44px; display: flex; align-items: center; gap: 14px; padding: 0 14px; background: #e9e8f0; direction: ltr; }
+.desk-bar .ctl { display: flex; gap: 18px; color: #45464f; }
+.desk-bar .ctl i { width: 12px; height: 2px; background: currentColor; display: block; }
+.desk-bar .ctl i.sq { height: 11px; width: 11px; background: none; border: 1.6px solid currentColor; border-radius: 2px; }
+.desk-bar .url { flex: 1; height: 30px; border-radius: 15px; background: #fff; display: flex; align-items: center; padding: 0 14px; font-size: 13px; color: #45464f; letter-spacing: .01em; }
+.desk {
+  position: relative; width: 1280px; height: 800px; margin: 0 1px 1px;
+  display: flex; background: var(--md-sys-color-surface-container); overflow: hidden;
+}
+.rail { width: 256px; flex: none; display: flex; flex-direction: column; padding: 16px 12px 16px; }
+.rail-brand { height: 40px; display: flex; align-items: center; padding: 0 12px; }
+.rail-brand img { height: 30px; width: auto; }
+.rail-show { display: flex; align-items: center; gap: 12px; padding: 12px 12px 18px; }
+.rail-show .shape-avatar { width: 44px; height: 44px; }
+.rail-show .t { font-size: 1rem; line-height: 1.5rem; font-weight: 700; color: var(--md-sys-color-on-surface); }
+.rail-show .s { font-size: 0.875rem; line-height: 1.25rem; color: var(--md-sys-color-on-surface-variant); }
+.rail .fab { align-self: flex-start; margin: 4px 4px 22px; box-shadow: var(--md-sys-elevation-level1); }
+.rail-nav { display: flex; flex-direction: column; gap: 2px; }
+.rail-item {
+  position: relative; display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant); text-decoration: none;
+  font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; letter-spacing: 0.00625rem;
+}
+.rail-item.active { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); font-weight: 700; }
+.rail-ic { position: relative; display: inline-grid; }
+.rail-ic .dot { position: absolute; top: -1px; inset-inline-end: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--wedo-orange); box-shadow: 0 0 0 2px var(--md-sys-color-surface-container); }
+.rail-foot { margin-top: auto; }
+
+.pane {
+  flex: 1; margin: 8px 8px 8px 0;
+  background: var(--md-sys-color-surface);
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--md-sys-color-outline-variant) transparent;
+}
+.pane-in { padding: 24px 32px 40px; }
+.pane-head { display: flex; align-items: center; justify-content: space-between; height: 56px; margin-bottom: 12px; }
+.pane-head h1 { font-size: 2rem; line-height: 2.5rem; font-weight: 500; color: var(--md-sys-color-on-surface); }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; grid-auto-flow: row dense; align-items: start; }
+.rows-2 { grid-row: span 2; }
+.rec-wide .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
+.desk .stat { align-self: stretch; }
+.span-3 { grid-column: 1 / -1; }
+.span-2 { grid-column: span 2; }
+.hero.desk-hero { display: grid; grid-template-columns: 360px 1fr; gap: 36px; padding: 28px; }
+.desk-hero .missing-head { margin-top: 0; }
+.desk-hero > div:first-child { display: flex; flex-direction: column; }
+.desk-hero > div:first-child .wavy { margin-top: auto; }
+.desk-hero .seg { margin: 0; }
+.desk-hero .hero-ep { margin-top: 12px; font-size: 3.5625rem; line-height: 4rem; }
+.desk .card { padding: 24px; }
+
+.eps { padding: 20px 8px 8px; background: var(--md-sys-color-surface-container-low); }
+.eps .kicker { padding: 0 16px 8px; }
+.ep-row { display: flex; align-items: center; gap: 16px; min-height: 72px; padding: 8px 16px; border-radius: var(--md-sys-shape-corner-large); }
+.ep-row:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface) 6%, transparent); }
+.ep-thumb { width: 96px; height: 54px; flex: none; border-radius: var(--md-sys-shape-corner-small); overflow: hidden; background: var(--md-sys-color-surface-container-highest); display: grid; place-items: center; color: var(--md-sys-color-outline); }
+.ep-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.ep-txt { flex: 1; min-width: 0; }
+.ep-over { font-size: 0.75rem; line-height: 1rem; font-weight: 500; letter-spacing: 0.03125rem; color: var(--md-sys-color-on-surface-variant); }
+.ep-hl { font-size: 1rem; line-height: 1.5rem; letter-spacing: 0.03125rem; color: var(--md-sys-color-on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ep-hl.none { color: var(--md-sys-color-on-surface-variant); }
+.ep-sup { font-size: 0.875rem; line-height: 1.25rem; color: var(--md-sys-color-on-surface-variant); }
+.ep-trail { font-size: 0.75rem; line-height: 1rem; font-weight: 500; color: var(--md-sys-color-on-surface-variant); white-space: nowrap; }
+.chip.status { height: 28px; background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); font-size: 0.75rem; }
+.desk .tiles { grid-template-columns: 1fr; }
+.desk .quick-card { background: var(--md-sys-color-surface-container-low); }
+.desk .quick-card .section-title { margin-top: 0; }
+</style>
+</head>
+<body>
+
+<header class="lab">
+  <div class="lab-head">
+    <span class="lab-name">10 Material 3 Expressive</span>
+    <span class="lab-repo"><a href="https://github.com/matraic/m3e" target="_blank" rel="noopener">matraic/m3e</a> <span class="lab-meta">314 כוכבים, push 25.10.2026</span></span>
+    <span class="lab-repo lab-sec"><a href="https://github.com/material-components/material-web" target="_blank" rel="noopener">material-web</a> <span class="lab-meta">11,375 כוכבים, push 22.10.2026</span></span>
+    <span class="lab-repo lab-sec"><a href="https://github.com/material-foundation/material-color-utilities" target="_blank" rel="noopener">material-color-utilities</a> <span class="lab-meta">2,293 כוכבים, push 19.10.2026</span></span>
+  </div>
+  <div class="lab-notes">
+    <span>משטחים טונאליים: סכמת M3 2025 שנגזרה מ-Prod Blue (tonal-spot), «חסר ממך» כצבע מותאם כתום</span>
+    <span>פינות 28px, רשימה מקוטעת, ותמונות וסמלים בצורות M3E (עוגייה, שמש)</span>
+    <span>התקדמות גלית, סרגל-ניווט 64px עם גלולה פעילה, FAB ו-rail מורחב במחשב</span>
+    <span>גופן: Google Sans, הגופן של אפליקציות Google ב-M3E, עם עברית ב-Google Fonts (ל-Google Sans Flex אין עברית)</span>
+  </div>
+</header>
+
+<main class="stage">
+  <div class="stage-label">טלפון <span dir="ltr">390×844</span></div>
+
+  <section class="phone" aria-label="טלפון">
+    <div class="phone-frame">
+      <div class="screen">
+        <div class="sb">
+          <span>9:30</span>
+          <span class="cam"></span>
+          <span class="sb-icons">
+            <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 13.5 1 6.2a10 10 0 0 1 14 0Z" fill="currentColor"/></svg>
+            <svg width="15" height="16" viewBox="0 0 15 16"><path d="M14 2v12H1Z" fill="currentColor"/></svg>
+            <svg width="9" height="16" viewBox="0 0 9 16"><rect x="0.5" y="1.5" width="8" height="14" rx="2" fill="none" stroke="currentColor"/><rect x="2" y="5" width="5" height="9" rx="1" fill="currentColor"/><rect x="3" y="0" width="3" height="1.6" rx=".6" fill="currentColor"/></svg>
+          </span>
+        </div>
+
+        <div class="scroll">
+          <header class="appbar">
+            <div class="ab-lead">
+              <span class="shape-avatar"><img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt=""></span>
+              <div>
+                <h1 class="ab-title">הפיצוח</h1>
+                <p class="ab-sub">גיל לי-רן</p>
+              </div>
+            </div>
+            <button class="icon-btn" aria-label="הגדרות"><span class="ms">settings</span></button>
+          </header>
+
+          <div class="feed">
+            <section class="hero">
+              <div class="hero-top">
+                <p class="kicker">הפרק הבא שעולה</p>
+                <span class="chip on-primary">בעוד יומיים</span>
+              </div>
+              <h2 class="hero-ep">פרק 19</h2>
+              <p class="hero-guest">עם אורלי אורן</p>
+              <p class="hero-date"><span class="ms">event</span>עולה ביום רביעי 28.10</p>
+              <div class="wavy" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="7">
+                <svg viewBox="0 0 318 14" preserveAspectRatio="none"><path class="active" d="M2 7L3 7.47L4 7.93L5 8.36L6 8.76L7 9.12L8 9.43L9 9.67L10 9.85L11 9.96L12 10L13 9.96L14 9.85L15 9.67L16 9.43L17 9.12L18 8.76L19 8.36L20 7.93L21 7.47L22 7L23 6.53L24 6.07L25 5.64L26 5.24L27 4.88L28 4.57L29 4.33L30 4.15L31 4.04L32 4L33 4.04L34 4.15L35 4.33L36 4.57L37 4.88L38 5.24L39 5.64L40 6.07L41 6.53L42 7L43 7.47L44 7.93L45 8.36L46 8.76L47 9.12L48 9.43L49 9.67L50 9.85L51 9.96L52 10L53 9.96L54 9.85L55 9.67L56 9.43L57 9.12L58 8.76L59 8.36L60 7.93L61 7.47L62 7L63 6.53L64 6.07L65 5.64L66 5.24L67 4.88L68 4.57L69 4.33L70 4.15L71 4.04L72 4L73 4.04L74 4.15L75 4.33L76 4.57L77 4.88L78 5.24L79 5.64L80 6.07L81 6.53L82 7L83 7.47L84 7.93L85 8.36L86 8.76L87 9.12L88 9.43L89 9.67L90 9.85L91 9.96L92 10L93 9.96L94 9.85L95 9.67L96 9.43L97 9.12L98 8.76L99 8.36L100 7.93L101 7.47L102 7L103 6.53L104 6.07L105 5.64L106 5.24L107 4.88L108 4.57L109 4.33L110 4.15L111 4.04L112 4L113 4.04L114 4.15L115 4.33L116 4.57L117 4.88L118 5.24L119 5.64L120 6.07L121 6.53L122 7L123 7.47L124 7.93L125 8.36L126 8.76L127 9.12L128 9.43L129 9.67L130 9.85L131 9.96L132 10L133 9.96L134 9.85"/><path class="track" d="M142.29 7L316 7"/><circle class="stop" cx="316" cy="7" r="2"/></svg>
+              </div>
+              <div class="progress-text">
+                <span class="count">3 מתוך 7</span>
+                <span class="now">עכשיו: עריכה, ממתין לעורך</span>
+              </div>
+
+              <h3 class="missing-head"><span class="dot"></span>חסר ממך</h3>
+              <ul class="seg">
+                <li class="seg-item">
+                  <span class="lead orange"><span class="ms">edit</span></span>
+                  <div class="seg-txt"><p class="seg-hl">שם לפרק</p><p class="seg-sup"><span class="open">פתוח</span>, לפני העריכה</p></div>
+                  <button class="btn filled">לבחור שם</button>
+                </li>
+                <li class="seg-item">
+                  <span class="lead orange"><span class="ms">image</span></span>
+                  <div class="seg-txt"><p class="seg-hl">תמונת-מרואיין</p><p class="seg-sup">התקבלה ב-25.10, ממתינה לאישור</p></div>
+                  <span class="ms seg-trail">chevron_left</span>
+                </li>
+                <li class="seg-item locked">
+                  <span class="lead"><span class="ms">movie</span></span>
+                  <div class="seg-txt"><p class="seg-hl">בחירת-טיזרים</p><p class="seg-sup">נעול, אחרי העריכה</p></div>
+                  <span class="ms s20 seg-trail">lock</span>
+                </li>
+                <li class="seg-item locked">
+                  <span class="lead"><span class="ms">verified</span></span>
+                  <div class="seg-txt"><p class="seg-hl">אישור-לפרסום</p><p class="seg-sup">נעול, בהמשך</p></div>
+                  <span class="ms s20 seg-trail">lock</span>
+                </li>
+              </ul>
+            </section>
+
+            <section class="card">
+              <div class="card-head">
+                <span class="shape-ic"><span class="ms">event</span></span>
+                <div><p class="kicker">ההקלטה הבאה</p><p class="rec-when">חמישי 29.10, 11:00</p></div>
+              </div>
+              <ul class="facts">
+                <li><span class="ms">schedule</span>11:00 עד 13:00</li>
+                <li><span class="ms">location_on</span>אולפן רימקס</li>
+                <li><span class="ms">group</span>עם נועה בוקרה ורלי זדרב</li>
+                <li><span class="ms">person</span>מפיק: יהלי</li>
+              </ul>
+              <div class="btn-row">
+                <button class="btn tonal">לשנות מועד</button>
+                <button class="btn tonal">להוסיף פרטי-אורח</button>
+                <button class="btn outlined">לתאם הקלטה נוספת</button>
+              </div>
+            </section>
+
+            <section class="card latest">
+              <p class="kicker">עלה לאחרונה</p>
+              <div class="thumb"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""></div>
+              <p class="latest-ep">פרק 18 עם אלכס קפ</p>
+              <p class="latest-title">איך מקפיצים עסק בתיווך עם AI</p>
+              <div class="latest-foot">
+                <span class="latest-date">עלה ב-14.10</span>
+                <button class="btn tonal"><span class="ms">share</span>לשתף</button>
+              </div>
+            </section>
+
+            <section class="card stat">
+              <p class="kicker">איך התוכנית עושה</p>
+              <div class="stat-row">
+                <div><p class="stat-num">5,941</p><p class="stat-label">צפיות ביוטיוב</p></div>
+                <div class="ring" aria-hidden="true">
+                  <svg viewBox="0 0 88 88"><path class="track" d="M82.44 47.49A38.6 38.6 0 1 1 31.06 7.64"/><path class="active" d="M44 5.4L44.61 4.96L45.24 4.54L45.88 4.16L46.53 3.84L47.18 3.58L47.84 3.41L48.49 3.32L49.14 3.33L49.77 3.43L50.4 3.62L51 3.9L51.58 4.27L52.14 4.7L52.67 5.2L53.18 5.75L53.67 6.32L54.15 6.91L54.6 7.51L55.05 8.08L55.49 8.63L55.94 9.14L56.39 9.59L56.86 9.98L57.34 10.3L57.85 10.56L58.39 10.74L58.97 10.85L59.57 10.91L60.21 10.91L60.88 10.86L61.58 10.79L62.31 10.7L63.05 10.6L63.8 10.52L64.56 10.46L65.3 10.43L66.03 10.46L66.74 10.55L67.4 10.7L68.03 10.93L68.61 11.23L69.13 11.61L69.59 12.06L69.99 12.58L70.33 13.17L70.61 13.81L70.84 14.5L71.03 15.22L71.18 15.96L71.29 16.71L71.4 17.45L71.49 18.18L71.6 18.89L71.72 19.56L71.88 20.19L72.07 20.78L72.31 21.32L72.61 21.81L72.96 22.25L73.38 22.65L73.86 23.01L74.4 23.34L74.98 23.65L75.61 23.94L76.28 24.22L76.97 24.5L77.66 24.8L78.35 25.12L79.02 25.46L79.65 25.84L80.23 26.25L80.76 26.7L81.21 27.2L81.59 27.73L81.88 28.31L82.08 28.92L82.2 29.57L82.22 30.24L82.17 30.93L82.05 31.64L81.87 32.35L81.64 33.06L81.38 33.77L81.1 34.48"/></svg>
+                  <b>21%</b>
+                </div>
+              </div>
+              <p class="stat-sentence">כל פרק נצפה בממוצע 21% מאורכו</p>
+              <p class="stat-asof">נכון ל-25.10.2026, 18 פרקים</p>
+            </section>
+
+            <section>
+              <h3 class="section-title">פעולות מהירות</h3>
+              <div class="tiles">
+                <button class="tile"><span class="tile-ic"><span class="ms">calendar_add_on</span></span>לתאם הקלטה</button>
+                <button class="tile"><span class="tile-ic"><span class="ms">add_photo_alternate</span></span>להעלות תמונה</button>
+                <button class="tile"><span class="tile-ic"><span class="ms">edit</span></span>לבחור שם</button>
+                <button class="tile"><span class="tile-ic"><span class="ms">share</span></span>לשתף פרק</button>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <button class="fab"><span class="ms">calendar_add_on</span>לתאם הקלטה</button>
+
+        <nav class="navbar" aria-label="ניווט">
+          <a class="nav-item active" href="#"><span class="nav-ind"><span class="ms fill">home</span></span><span class="nav-lbl">בית</span></a>
+          <a class="nav-item" href="#"><span class="nav-ind"><span class="ms">lightbulb</span></span><span class="nav-lbl">אסטרטגיה</span></a>
+          <a class="nav-item" href="#"><span class="nav-ind"><span class="ms">mic</span><span class="badge-dot"></span></span><span class="nav-lbl">הפקה</span></a>
+          <a class="nav-item" href="#"><span class="nav-ind"><span class="ms">campaign</span></span><span class="nav-lbl">הפצה</span></a>
+          <span class="gesture"></span>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <div class="notes-below">
+    <p>משטחים טונאליים: סכמת M3 2025 שנגזרה מ-Prod Blue (tonal-spot), «חסר ממך» כצבע מותאם כתום.</p>
+    <p>פינות 28px, רשימה מקוטעת, ותמונות וסמלים בצורות M3E (עוגייה, שמש).</p>
+    <p>התקדמות גלית, סרגל-ניווט 64px עם גלולה פעילה, FAB ו-rail מורחב במחשב.</p>
+    <p>גופן: Google Sans, הגופן של אפליקציות Google ב-M3E, עם עברית ב-Google Fonts (ל-Google Sans Flex אין עברית).</p>
+    <p>עוד ריפואים: <a href="https://github.com/material-components/material-web">material-web</a> (11,375 כוכבים, push 22.10.2026, הטוקנים הרשמיים, במצב תחזוקה), <a href="https://github.com/material-foundation/material-color-utilities">material-color-utilities</a> (2,293 כוכבים, push 19.10.2026).</p>
+  </div>
+
+  <div class="stage-label">מחשב <span dir="ltr">1280×800</span></div>
+
+  <div class="desk-wrap">
+  <section class="desk-frame" aria-label="מחשב">
+    <div class="desk-bar">
+      <span class="url">app.wedo-podcast.com</span>
+      <span class="ctl"><i></i><i class="sq"></i><i style="transform:rotate(45deg);width:14px"></i></span>
+    </div>
+    <div class="desk">
+      <aside class="rail">
+        <div class="rail-brand"><img src="../brand/wedo-logotype-black.svg" alt="wedo"></div>
+        <div class="rail-show">
+          <span class="shape-avatar"><img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt=""></span>
+          <div><p class="t">הפיצוח</p><p class="s">גיל לי-רן</p></div>
+        </div>
+        <button class="fab"><span class="ms">calendar_add_on</span>לתאם הקלטה</button>
+        <nav class="rail-nav" aria-label="ניווט">
+          <a class="rail-item active" href="#"><span class="ms fill">home</span>בית</a>
+          <a class="rail-item" href="#"><span class="ms">lightbulb</span>אסטרטגיה</a>
+          <a class="rail-item" href="#"><span class="rail-ic"><span class="ms">mic</span><span class="dot"></span></span>הפקה</a>
+          <a class="rail-item" href="#"><span class="ms">campaign</span>הפצה</a>
+        </nav>
+        <div class="rail-foot"><a class="rail-item" href="#"><span class="ms">settings</span>הגדרות</a></div>
+      </aside>
+
+      <main class="pane">
+        <div class="pane-in">
+          <div class="pane-head"><h1>בית</h1></div>
+          <div class="grid">
+            <section class="hero desk-hero span-3">
+              <div>
+                <div class="hero-top">
+                  <p class="kicker">הפרק הבא שעולה</p>
+                  <span class="chip on-primary">בעוד יומיים</span>
+                </div>
+                <h2 class="hero-ep">פרק 19</h2>
+                <p class="hero-guest">עם אורלי אורן</p>
+                <p class="hero-date"><span class="ms">event</span>עולה ביום רביעי 28.10</p>
+                <div class="wavy" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="7">
+                  <svg viewBox="0 0 360 14" preserveAspectRatio="none"><path class="active" d="M2 7L3 7.47L4 7.93L5 8.36L6 8.76L7 9.12L8 9.43L9 9.67L10 9.85L11 9.96L12 10L13 9.96L14 9.85L15 9.67L16 9.43L17 9.12L18 8.76L19 8.36L20 7.93L21 7.47L22 7L23 6.53L24 6.07L25 5.64L26 5.24L27 4.88L28 4.57L29 4.33L30 4.15L31 4.04L32 4L33 4.04L34 4.15L35 4.33L36 4.57L37 4.88L38 5.24L39 5.64L40 6.07L41 6.53L42 7L43 7.47L44 7.93L45 8.36L46 8.76L47 9.12L48 9.43L49 9.67L50 9.85L51 9.96L52 10L53 9.96L54 9.85L55 9.67L56 9.43L57 9.12L58 8.76L59 8.36L60 7.93L61 7.47L62 7L63 6.53L64 6.07L65 5.64L66 5.24L67 4.88L68 4.57L69 4.33L70 4.15L71 4.04L72 4L73 4.04L74 4.15L75 4.33L76 4.57L77 4.88L78 5.24L79 5.64L80 6.07L81 6.53L82 7L83 7.47L84 7.93L85 8.36L86 8.76L87 9.12L88 9.43L89 9.67L90 9.85L91 9.96L92 10L93 9.96L94 9.85L95 9.67L96 9.43L97 9.12L98 8.76L99 8.36L100 7.93L101 7.47L102 7L103 6.53L104 6.07L105 5.64L106 5.24L107 4.88L108 4.57L109 4.33L110 4.15L111 4.04L112 4L113 4.04L114 4.15L115 4.33L116 4.57L117 4.88L118 5.24L119 5.64L120 6.07L121 6.53L122 7L123 7.47L124 7.93L125 8.36L126 8.76L127 9.12L128 9.43L129 9.67L130 9.85L131 9.96L132 10L133 9.96L134 9.85L135 9.67L136 9.43L137 9.12L138 8.76L139 8.36L140 7.93L141 7.47L142 7L143 6.53L144 6.07L145 5.64L146 5.24L147 4.88L148 4.57L149 4.33L150 4.15L151 4.04L152 4"/><path class="track" d="M160.29 7L358 7"/><circle class="stop" cx="358" cy="7" r="2"/></svg>
+                </div>
+                <div class="progress-text">
+                  <span class="count">3 מתוך 7</span>
+                  <span class="now">עכשיו: עריכה, ממתין לעורך</span>
+                </div>
+              </div>
+              <div>
+                <h3 class="missing-head"><span class="dot"></span>חסר ממך</h3>
+                <ul class="seg">
+                  <li class="seg-item">
+                    <span class="lead orange"><span class="ms">edit</span></span>
+                    <div class="seg-txt"><p class="seg-hl">שם לפרק</p><p class="seg-sup"><span class="open">פתוח</span>, לפני העריכה</p></div>
+                    <button class="btn filled">לבחור שם</button>
+                  </li>
+                  <li class="seg-item">
+                    <span class="lead orange"><span class="ms">image</span></span>
+                    <div class="seg-txt"><p class="seg-hl">תמונת-מרואיין</p><p class="seg-sup">התקבלה ב-25.10, ממתינה לאישור</p></div>
+                    <span class="ms seg-trail">chevron_left</span>
+                  </li>
+                  <li class="seg-item locked">
+                    <span class="lead"><span class="ms">movie</span></span>
+                    <div class="seg-txt"><p class="seg-hl">בחירת-טיזרים</p><p class="seg-sup">נעול, אחרי העריכה</p></div>
+                    <span class="ms s20 seg-trail">lock</span>
+                  </li>
+                  <li class="seg-item locked">
+                    <span class="lead"><span class="ms">verified</span></span>
+                    <div class="seg-txt"><p class="seg-hl">אישור-לפרסום</p><p class="seg-sup">נעול, בהמשך</p></div>
+                    <span class="ms s20 seg-trail">lock</span>
+                  </li>
+                </ul>
+              </div>
+            </section>
+
+            <section class="card span-2 rec-wide">
+              <div class="card-head">
+                <span class="shape-ic"><span class="ms">event</span></span>
+                <div><p class="kicker">ההקלטה הבאה</p><p class="rec-when">חמישי 29.10, 11:00</p></div>
+              </div>
+              <ul class="facts">
+                <li><span class="ms">schedule</span>11:00 עד 13:00</li>
+                <li><span class="ms">location_on</span>אולפן רימקס</li>
+                <li><span class="ms">group</span>עם נועה בוקרה ורלי זדרב</li>
+                <li><span class="ms">person</span>מפיק: יהלי</li>
+              </ul>
+              <div class="btn-row">
+                <button class="btn tonal">לשנות מועד</button>
+                <button class="btn tonal">להוסיף פרטי-אורח</button>
+                <button class="btn outlined">לתאם הקלטה נוספת</button>
+              </div>
+            </section>
+
+
+            <section class="card stat">
+              <p class="kicker">איך התוכנית עושה</p>
+              <div class="stat-row">
+                <div><p class="stat-num">5,941</p><p class="stat-label">צפיות ביוטיוב</p></div>
+                <div class="ring" aria-hidden="true">
+                  <svg viewBox="0 0 88 88"><path class="track" d="M82.44 47.49A38.6 38.6 0 1 1 31.06 7.64"/><path class="active" d="M44 5.4L44.61 4.96L45.24 4.54L45.88 4.16L46.53 3.84L47.18 3.58L47.84 3.41L48.49 3.32L49.14 3.33L49.77 3.43L50.4 3.62L51 3.9L51.58 4.27L52.14 4.7L52.67 5.2L53.18 5.75L53.67 6.32L54.15 6.91L54.6 7.51L55.05 8.08L55.49 8.63L55.94 9.14L56.39 9.59L56.86 9.98L57.34 10.3L57.85 10.56L58.39 10.74L58.97 10.85L59.57 10.91L60.21 10.91L60.88 10.86L61.58 10.79L62.31 10.7L63.05 10.6L63.8 10.52L64.56 10.46L65.3 10.43L66.03 10.46L66.74 10.55L67.4 10.7L68.03 10.93L68.61 11.23L69.13 11.61L69.59 12.06L69.99 12.58L70.33 13.17L70.61 13.81L70.84 14.5L71.03 15.22L71.18 15.96L71.29 16.71L71.4 17.45L71.49 18.18L71.6 18.89L71.72 19.56L71.88 20.19L72.07 20.78L72.31 21.32L72.61 21.81L72.96 22.25L73.38 22.65L73.86 23.01L74.4 23.34L74.98 23.65L75.61 23.94L76.28 24.22L76.97 24.5L77.66 24.8L78.35 25.12L79.02 25.46L79.65 25.84L80.23 26.25L80.76 26.7L81.21 27.2L81.59 27.73L81.88 28.31L82.08 28.92L82.2 29.57L82.22 30.24L82.17 30.93L82.05 31.64L81.87 32.35L81.64 33.06L81.38 33.77L81.1 34.48"/></svg>
+                  <b>21%</b>
+                </div>
+              </div>
+              <p class="stat-sentence">כל פרק נצפה בממוצע 21% מאורכו</p>
+              <p class="stat-asof">נכון ל-25.10.2026, 18 פרקים</p>
+            </section>
+
+            <section class="card eps span-2 rows-2">
+              <p class="kicker">פרקים</p>
+              <div class="ep-row">
+                <span class="ep-thumb"><span class="ms">image</span></span>
+                <div class="ep-txt"><p class="ep-over">פרק 19</p><p class="ep-hl none">עוד אין שם</p><p class="ep-sup">אורלי אורן</p></div>
+                <span class="chip status">בעריכה</span>
+              </div>
+              <div class="ep-row">
+                <span class="ep-thumb"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""></span>
+                <div class="ep-txt"><p class="ep-over">פרק 18</p><p class="ep-hl">איך מקפיצים עסק בתיווך עם AI</p><p class="ep-sup">אלכס קפ</p></div>
+                <span class="ep-trail">עלה ב-14.10</span>
+              </div>
+              <div class="ep-row">
+                <span class="ep-thumb"><img src="https://i.ytimg.com/vi/P463I2IV9Xo/mqdefault.jpg" alt=""></span>
+                <div class="ep-txt"><p class="ep-over">פרק 17</p><p class="ep-hl">איך ממשיכים מכאן?</p><p class="ep-sup">אהרון וחביבה איציקזון</p></div>
+                <span class="ep-trail">עלה ב-7.10</span>
+              </div>
+              <div class="ep-row">
+                <span class="ep-thumb"><img src="https://i.ytimg.com/vi/epNQhrsKjxI/mqdefault.jpg" alt=""></span>
+                <div class="ep-txt"><p class="ep-over">פרק 16</p><p class="ep-hl">חמשת הכללים למשא ומתן</p><p class="ep-sup">ונסה סיימן</p></div>
+                <span class="ep-trail">עלה ב-30.9</span>
+              </div>
+              <div class="ep-row">
+                <span class="ep-thumb"><img src="https://i.ytimg.com/vi/fCG8ceGVDRo/mqdefault.jpg" alt=""></span>
+                <div class="ep-txt"><p class="ep-over">פרק 15</p><p class="ep-hl">איך לעשות שינוי קריירה בגיל 40</p><p class="ep-sup">דקלה ביבי</p></div>
+                <span class="ep-trail">עלה ב-23.9</span>
+              </div>
+              <div class="ep-row">
+                <span class="ep-thumb"><img src="https://i.ytimg.com/vi/pp-nzLON8vY/mqdefault.jpg" alt=""></span>
+                <div class="ep-txt"><p class="ep-over">פרק 14</p><p class="ep-hl">מי נשאר ומי נשבר</p><p class="ep-sup">אריק זאבי</p></div>
+                <span class="ep-trail">עלה ב-16.9</span>
+              </div>
+              <div class="ep-row">
+                <span class="ep-thumb"><img src="https://i.ytimg.com/vi/Sh0J8sIBfHs/mqdefault.jpg" alt=""></span>
+                <div class="ep-txt"><p class="ep-over">פרק 13</p><p class="ep-hl">הסוד הכי שמור ברי/מקס</p><p class="ep-sup">איתי דוד</p></div>
+                <span class="ep-trail">עלה ב-9.9</span>
+              </div>
+            </section>
+
+            <section class="card latest">
+              <p class="kicker">עלה לאחרונה</p>
+              <div class="thumb"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""></div>
+              <p class="latest-ep">פרק 18 עם אלכס קפ</p>
+              <p class="latest-title">איך מקפיצים עסק בתיווך עם AI</p>
+              <div class="latest-foot">
+                <span class="latest-date">עלה ב-14.10</span>
+                <button class="btn tonal"><span class="ms">share</span>לשתף</button>
+              </div>
+            </section>
+
+            <section class="card quick-card">
+              <h3 class="section-title">פעולות מהירות</h3>
+              <div class="tiles">
+                <button class="tile"><span class="tile-ic"><span class="ms">calendar_add_on</span></span>לתאם הקלטה</button>
+                <button class="tile"><span class="tile-ic"><span class="ms">add_photo_alternate</span></span>להעלות תמונה</button>
+                <button class="tile"><span class="tile-ic"><span class="ms">edit</span></span>לבחור שם</button>
+                <button class="tile"><span class="tile-ic"><span class="ms">share</span></span>לשתף פרק</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </section>
+  </div>
+</main>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+<!-- 9-sided-cookie bbox 28.0,29.9 324.0x319.9 -->
+<clipPath id="m3e-9-sided-cookie" clipPathUnits="objectBoundingBox"><path transform="matrix(0.003086 0 0 0.003086 -0.086420 -0.086031)" d="M154.828 43.2756C156.574 41.8498 157.448 41.1369 158.245 40.535C177.03 26.3548 202.97 26.3548 221.755 40.535C222.552 41.1369 223.425 41.8498 225.172 43.2756C225.952 43.9121 226.342 44.2303 226.727 44.5333C235.567 51.4788 246.406 55.4147 257.652 55.7636C258.143 55.7788 258.647 55.785 259.654 55.7975C261.911 55.8255 263.039 55.8395 264.037 55.8898C287.563 57.0742 307.435 73.7107 312.689 96.6205C312.912 97.5928 313.121 98.6991 313.541 100.911C313.728 101.899 313.822 102.393 313.922 102.872C316.219 113.862 321.986 123.828 330.377 131.308C330.743 131.635 331.125 131.962 331.888 132.618C333.599 134.087 334.454 134.821 335.187 135.5C352.445 151.495 356.95 176.983 346.215 197.903C345.76 198.791 345.208 199.773 344.104 201.737C343.611 202.613 343.364 203.052 343.132 203.483C337.812 213.375 335.809 224.708 337.418 235.82C337.488 236.304 337.569 236.8 337.732 237.792C338.096 240.014 338.278 241.125 338.402 242.115C341.318 265.436 328.347 287.851 306.647 296.991C305.726 297.379 304.67 297.778 302.559 298.574C301.617 298.929 301.146 299.107 300.69 299.289C290.241 303.455 281.406 310.852 275.48 320.395C275.221 320.811 274.964 321.243 274.449 322.107C273.297 324.043 272.721 325.011 272.178 325.849C259.387 345.584 235.011 354.436 212.498 347.521C211.543 347.228 210.477 346.856 208.347 346.112C207.396 345.78 206.921 345.614 206.455 345.461C195.767 341.951 184.233 341.951 173.545 345.461C173.079 345.614 172.603 345.78 171.652 346.112C169.522 346.856 168.457 347.228 167.502 347.521C144.989 354.436 120.613 345.584 107.822 325.849C107.279 325.011 106.703 324.043 105.55 322.107C105.036 321.243 104.779 320.811 104.52 320.395C98.5939 310.852 89.7583 303.455 79.3096 299.289C78.8539 299.107 78.3827 298.929 77.4404 298.574C75.3294 297.778 74.274 297.379 73.3529 296.991C51.6523 287.851 38.6819 265.436 41.598 242.115C41.7218 241.125 41.9039 240.014 42.2682 237.792C42.4308 236.8 42.5121 236.304 42.5822 235.82C44.1908 224.708 42.188 213.375 36.8675 203.483C36.6354 203.052 36.389 202.613 35.8962 201.737C34.7921 199.773 34.2401 198.791 33.7845 197.903C23.0499 176.983 27.5544 151.495 44.8128 135.5C45.5454 134.821 46.4007 134.087 48.1113 132.618C48.875 131.962 49.2568 131.635 49.6228 131.308C58.0134 123.828 63.7804 113.862 66.0777 102.872C66.1779 102.393 66.2715 101.899 66.4588 100.911C66.8783 98.699 67.088 97.5928 67.311 96.6204C72.5652 73.7107 92.4369 57.0742 115.962 55.8898C116.961 55.8395 118.089 55.8255 120.346 55.7975C121.353 55.785 121.857 55.7788 122.347 55.7636C133.594 55.4147 144.432 51.4788 153.272 44.5333C153.658 44.2303 154.048 43.9121 154.828 43.2756Z"/></clipPath>
+<!-- 4-sided-cookie bbox 44.0,44.0 292.0x292.0 -->
+<clipPath id="m3e-4-sided-cookie" clipPathUnits="objectBoundingBox"><path transform="matrix(0.003425 0 0 0.003425 -0.150696 -0.150696)" d="M230.389 50.473C293.109 23.2328 356.767 86.8908 329.527 149.611L325.023 159.981C316.707 179.13 316.707 200.87 325.023 220.019L329.527 230.389C356.767 293.109 293.109 356.767 230.389 329.527L220.019 325.023C200.87 316.707 179.13 316.707 159.981 325.023L149.611 329.527C86.8908 356.767 23.2328 293.109 50.473 230.389L54.9768 220.019C63.2934 200.87 63.2934 179.13 54.9768 159.981L50.473 149.611C23.2328 86.8908 86.8908 23.2328 149.611 50.473L159.981 54.9768C179.13 63.2934 200.87 63.2934 220.019 54.9768L230.389 50.473Z"/></clipPath>
+<!-- sunny bbox 30.0,30.0 320.0x320.0 -->
+<clipPath id="m3e-sunny" clipPathUnits="objectBoundingBox"><path transform="matrix(0.003125 0 0 0.003125 -0.093750 -0.093750)" d="M276.453 68.8118C286.405 69.4881 291.381 69.8263 295.404 71.5853C301.223 74.1305 305.87 78.7766 308.415 84.5965C310.174 88.6186 310.512 93.5948 311.188 103.547L312.732 126.259C313.005 130.284 313.142 132.296 313.579 134.219C314.212 136.997 315.31 139.648 316.827 142.059C317.877 143.728 319.203 145.248 321.856 148.288L336.824 165.438C343.384 172.954 346.663 176.712 348.263 180.8C350.579 186.715 350.579 193.285 348.263 199.2C346.663 203.288 343.384 207.046 336.824 214.562L321.856 231.712C319.203 234.752 317.877 236.272 316.827 237.941C315.31 240.352 314.212 243.003 313.579 245.781C313.142 247.704 313.005 249.716 312.732 253.741L311.188 276.453C310.512 286.405 310.174 291.381 308.415 295.404C305.87 301.223 301.223 305.87 295.404 308.415C291.381 310.174 286.405 310.512 276.453 311.188L253.741 312.732C249.716 313.005 247.704 313.142 245.781 313.579C243.003 314.212 240.352 315.31 237.941 316.827C236.272 317.877 234.752 319.203 231.712 321.856L214.562 336.824C207.046 343.384 203.288 346.663 199.2 348.263C193.285 350.579 186.715 350.579 180.8 348.263C176.712 346.663 172.954 343.384 165.438 336.824L148.288 321.856C145.248 319.203 143.728 317.877 142.059 316.827C139.648 315.31 136.997 314.212 134.219 313.579C132.296 313.142 130.284 313.005 126.259 312.732L103.547 311.188C93.5947 310.512 88.6186 310.174 84.5965 308.415C78.7766 305.87 74.1305 301.223 71.5853 295.404C69.8263 291.381 69.4881 286.405 68.8118 276.453L67.2684 253.741C66.9949 249.716 66.8581 247.704 66.4206 245.781C65.7883 243.003 64.6903 240.352 63.173 237.941C62.123 236.272 60.7965 234.752 58.1437 231.712L43.1756 214.562C36.6164 207.046 33.3369 203.288 31.7366 199.2C29.4211 193.285 29.4211 186.715 31.7366 180.8C33.3369 176.712 36.6164 172.954 43.1756 165.438L58.1437 148.288C60.7965 145.248 62.123 143.728 63.173 142.059C64.6903 139.648 65.7883 136.997 66.4206 134.219C66.8581 132.296 66.9949 130.284 67.2684 126.259L68.8118 103.547C69.4881 93.5948 69.8263 88.6186 71.5853 84.5965C74.1305 78.7766 78.7766 74.1305 84.5965 71.5853C88.6186 69.8263 93.5948 69.4881 103.547 68.8118L126.259 67.2684C130.284 66.9949 132.296 66.8581 134.219 66.4206C136.997 65.7883 139.648 64.6903 142.059 63.173C143.728 62.123 145.248 60.7966 148.288 58.1437L165.438 43.1756C172.954 36.6164 176.712 33.3369 180.8 31.7366C186.715 29.4211 193.285 29.4211 199.2 31.7366C203.288 33.3369 207.046 36.6164 214.562 43.1756L231.712 58.1437C234.752 60.7966 236.272 62.123 237.941 63.173C240.352 64.6903 243.003 65.7883 245.781 66.4206C247.704 66.8581 249.716 66.9949 253.741 67.2684L276.453 68.8118Z"/></clipPath>
+<!-- 12-sided-cookie bbox 30.0,30.0 320.0x320.0 -->
+<clipPath id="m3e-12-sided-cookie" clipPathUnits="objectBoundingBox"><path transform="matrix(0.003125 0 0 0.003125 -0.093750 -0.093750)" d="M166.697 39.8458C167.238 39.3157 167.508 39.0506 167.743 38.8298C180.246 27.0567 199.754 27.0567 212.257 38.8298C212.492 39.0506 212.762 39.3157 213.303 39.8458C213.628 40.1639 213.79 40.323 213.945 40.4703C221.945 48.1056 233.282 51.1433 244.028 48.5311C244.235 48.4807 244.456 48.4242 244.896 48.311C245.629 48.1224 245.996 48.0282 246.31 47.9542C263.024 44.0098 279.919 53.7642 284.86 70.2114C284.953 70.5199 285.055 70.8847 285.258 71.6143C285.38 72.0522 285.442 72.2711 285.502 72.4758C288.613 83.0884 296.912 91.3875 307.524 94.4985C307.729 94.5585 307.948 94.6195 308.386 94.7417C309.115 94.9452 309.48 95.0469 309.789 95.1396C326.236 100.081 335.99 116.976 332.046 133.69C331.972 134.004 331.878 134.371 331.689 135.104C331.576 135.544 331.519 135.765 331.469 135.972C328.857 146.718 331.894 158.055 339.53 166.055C339.677 166.21 339.836 166.372 340.154 166.697C340.684 167.238 340.949 167.508 341.17 167.743C352.943 180.246 352.943 199.754 341.17 212.257C340.949 212.492 340.684 212.762 340.154 213.303C339.836 213.628 339.677 213.79 339.53 213.945C331.894 221.945 328.857 233.282 331.469 244.028C331.519 244.235 331.576 244.456 331.689 244.896C331.878 245.629 331.972 245.996 332.046 246.31C335.99 263.024 326.236 279.919 309.789 284.86C309.48 284.953 309.115 285.055 308.386 285.258C307.948 285.381 307.729 285.442 307.524 285.502C296.912 288.613 288.613 296.912 285.502 307.524C285.442 307.729 285.381 307.948 285.258 308.386C285.055 309.115 284.953 309.48 284.86 309.789C279.919 326.236 263.024 335.99 246.31 332.046C245.996 331.972 245.629 331.878 244.896 331.689C244.456 331.576 244.235 331.519 244.028 331.469C233.282 328.857 221.945 331.894 213.945 339.53C213.79 339.677 213.628 339.836 213.303 340.154C212.762 340.684 212.492 340.949 212.257 341.17C199.754 352.943 180.246 352.943 167.743 341.17C167.508 340.949 167.238 340.684 166.697 340.154C166.372 339.836 166.21 339.677 166.055 339.53C158.055 331.894 146.718 328.857 135.972 331.469C135.765 331.519 135.544 331.576 135.104 331.689C134.371 331.878 134.004 331.972 133.69 332.046C116.976 335.99 100.081 326.236 95.1396 309.789C95.0469 309.48 94.9452 309.115 94.7417 308.386C94.6195 307.948 94.5585 307.729 94.4985 307.524C91.3875 296.912 83.0884 288.613 72.4758 285.502C72.2711 285.442 72.0522 285.38 71.6143 285.258C70.8847 285.055 70.5199 284.953 70.2114 284.86C53.7642 279.919 44.0098 263.024 47.9542 246.31C48.0282 245.996 48.1224 245.629 48.311 244.896C48.4242 244.456 48.4807 244.235 48.5311 244.028C51.1433 233.282 48.1056 221.945 40.4703 213.945C40.323 213.79 40.1639 213.628 39.8458 213.303C39.3157 212.762 39.0506 212.492 38.8298 212.257C27.0567 199.754 27.0567 180.246 38.8298 167.743C39.0506 167.508 39.3157 167.238 39.8458 166.697C40.1639 166.372 40.323 166.21 40.4703 166.055C48.1056 158.055 51.1433 146.718 48.5311 135.972C48.4807 135.765 48.4242 135.544 48.311 135.104C48.1224 134.371 48.0282 134.004 47.9542 133.69C44.0098 116.976 53.7642 100.081 70.2114 95.1396C70.5199 95.0469 70.8847 94.9452 71.6143 94.7417C72.0522 94.6195 72.2711 94.5585 72.4758 94.4985C83.0884 91.3875 91.3875 83.0884 94.4985 72.4758C94.5585 72.2711 94.6195 72.0522 94.7417 71.6143C94.9452 70.8847 95.0469 70.5199 95.1396 70.2114C100.081 53.7642 116.976 44.0098 133.69 47.9542C134.004 48.0282 134.371 48.1224 135.104 48.311C135.544 48.4242 135.765 48.4807 135.972 48.5311C146.718 51.1433 158.055 48.1056 166.055 40.4703C166.21 40.323 166.372 40.1639 166.697 39.8458Z"/></clipPath>
+<!-- arch bbox 35.0,35.0 310.0x310.0 -->
+<clipPath id="m3e-arch" clipPathUnits="objectBoundingBox"><path transform="matrix(0.003226 0 0 0.003226 -0.112903 -0.112903)" d="M345 293.727C345 299.96 345 303.076 344.689 305.696C342.259 326.14 326.14 342.259 305.696 344.689C303.076 345 299.96 345 293.727 345H86.2732C80.0405 345 76.9242 345 74.3043 344.689C53.8596 342.259 37.7407 326.14 35.3113 305.696C35 303.076 35 299.96 35 293.727L35 190C35 104.396 104.396 35 190 35C275.604 35 345 104.396 345 190V293.727Z"/></clipPath>
+<!-- soft-burst bbox 30.0,25.0 320.0x330.0 -->
+<clipPath id="m3e-soft-burst" clipPathUnits="objectBoundingBox"><path transform="matrix(0.003030 0 0 0.003030 -0.075758 -0.075758)" d="M175.147 33.1508C181.983 22.2831 198.017 22.2831 204.853 33.1508L221.238 59.2009C225.731 66.3458 234.797 69.2506 242.692 66.0751L271.475 54.4972C283.482 49.6671 296.455 58.9613 295.507 71.7154L293.235 102.288C292.612 110.673 298.215 118.278 306.494 120.284L336.681 127.601C349.275 130.653 354.23 145.692 345.861 155.461L325.8 178.877C320.298 185.3 320.298 194.7 325.8 201.123L345.861 224.539C354.23 234.308 349.275 249.347 336.681 252.399L306.494 259.716C298.215 261.722 292.612 269.327 293.235 277.712L295.507 308.285C296.455 321.039 283.482 330.333 271.475 325.503L242.692 313.925C234.797 310.749 225.731 313.654 221.238 320.799L204.853 346.849C198.017 357.717 181.983 357.717 175.147 346.849L158.762 320.799C154.269 313.654 145.203 310.749 137.308 313.925L108.525 325.503C96.5177 330.333 83.5454 321.039 84.4931 308.285L86.7649 277.712C87.388 269.327 81.785 261.722 73.5056 259.716L43.3186 252.399C30.7252 249.347 25.7702 234.308 34.1391 224.539L54.1997 201.123C59.7018 194.7 59.7018 185.3 54.1997 178.877L34.1391 155.461C25.7702 145.692 30.7252 130.653 43.3186 127.601L73.5056 120.284C81.785 118.278 87.388 110.673 86.7649 102.288L84.4931 71.7154C83.5454 58.9613 96.5177 49.6671 108.525 54.4972L137.308 66.0751C145.203 69.2506 154.269 66.3458 158.762 59.201L175.147 33.1508Z"/></clipPath>
+<!-- 4-leaf-clover bbox 42.0,42.0 296.0x296.0 -->
+<clipPath id="m3e-4-leaf-clover" clipPathUnits="objectBoundingBox"><path transform="matrix(0.003378 0 0 0.003378 -0.141892 -0.141892)" d="M63.0014 190C49.8954 174.339 42 154.126 42 132.06C42 82.321 82.1131 42 131.595 42C153.99 42 174.466 50.2594 190.173 63.9131C205.843 50.2594 226.271 42 248.614 42C297.981 42 338 82.321 338 132.06C338 154.126 330.123 174.339 317.048 190C330.123 205.661 338 225.874 338 247.94C338 297.679 297.981 338 248.614 338C226.271 338 205.843 329.741 190.173 316.087C174.466 329.741 153.99 338 131.595 338C82.1131 338 42 297.679 42 247.94C42 225.874 49.8954 205.661 63.0014 190Z"/></clipPath>
+
+  </defs>
+</svg>
+</body>
+</html>

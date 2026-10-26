@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11 Liquid Glass | מעבדת-טעם wedo app</title>
+<style>
+@font-face { font-family: "Rag Sans"; src: url("./fonts/RagSans-VF.ttf") format("truetype"); font-weight: 100 900; font-display: swap; }
+:root {
+  color-scheme: dark;
+  /* iOS 26 dark semantic colors */
+  --label: #ffffff;
+  --label-2: rgb(235 235 245 / .64);
+  --label-3: rgb(235 235 245 / .36);
+  --sep: rgb(255 255 255 / .13);
+  /* app tint = Prod Blue (fills), on dark text/icons = SaaS Blue; B2C Orange equals iOS systemOrange */
+  --tint: #0131FF;
+  --tint-on-dark: #01B0FF;
+  --orange: #FF9500;
+  --font: "Rag Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  /* Liquid Glass, regular variant over a dark backdrop */
+  --glass-fill: rgb(26 26 32 / .34);
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #0b0b0d; color: var(--label); font-family: var(--font); font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; }
+p, h1, h2, h3, ul { margin: 0; padding: 0; }
+ul { list-style: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+img { display: block; }
+.ic { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.85; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* ===== lab caption ===== */
+.lab { background: #141417; border-bottom: 1px solid rgb(255 255 255 / .08); padding: 10px 20px; font-size: 13px; line-height: 20px; color: #a1a1aa; }
+.lab-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.lab-name { font-size: 15px; font-weight: 700; color: #f5f5f7; }
+.lab a { color: #6fb6ff; text-decoration: none; font-weight: 600; }
+.lab a:hover { text-decoration: underline; }
+.lab-meta { white-space: nowrap; }
+.lab-notes { display: flex; flex-wrap: wrap; gap: 2px 18px; margin-top: 4px; }
+.lab-notes span::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 3px; background: linear-gradient(90deg, #0131FF, #01B0FF); margin-inline-end: 6px; vertical-align: middle; }
+.stage { display: flex; flex-direction: column; align-items: center; gap: 28px; padding: 20px 7px 48px; }
+.stage-label { font-size: 13px; color: #8e8e93; margin-bottom: -18px; }
+.notes-below { display: none; max-width: 410px; font-size: 12px; line-height: 18px; color: #a1a1aa; }
+.notes-below p + p { margin-top: 4px; }
+.notes-below a { color: #6fb6ff; }
+.desk-wrap { width: 100%; overflow-x: auto; display: flex; padding: 2px 0 30px; }
+.desk-wrap > .mac-frame { margin-inline: auto; }
+@media (max-width: 700px) {
+  .lab { padding: 8px 12px; font-size: 12px; line-height: 18px; }
+  .lab-notes, .lab-sec { display: none; }
+  .stage { padding-top: 10px; }
+  .stage-label:first-of-type { display: none; }
+  .notes-below { display: block; }
+}
+
+/* ===== Liquid Glass material =====
+   base (all browsers): blur + saturate backdrop, tint, inner glow (archisvaze/liquid-glass index.css .glassDiv::before),
+   specular rim ring (rdev/liquid-glass-react border layer: 1.5px gradient ring, mask-composite exclude), soft drop shadow.
+   Chromium: JS below swaps the backdrop for an SVG filter with a refraction displacement map at the bezel + specular map. */
+.lg {
+  position: relative; isolation: isolate;
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: blur(14px) saturate(175%);
+  backdrop-filter: blur(14px) saturate(175%);
+  box-shadow: 0 12px 32px -10px rgb(0 0 0 / .45);
+}
+.lg::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: -1; pointer-events: none;
+  box-shadow: inset 0 0 20px -5px rgb(255 255 255 / .38), inset 0 1px 0 0 rgb(255 255 255 / .14);
+}
+.lg::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: -1; pointer-events: none; padding: 1.3px;
+  background: linear-gradient(135deg, rgb(255 255 255 / .62) 0%, rgb(255 255 255 / .16) 22%, rgb(255 255 255 / 0) 44%, rgb(255 255 255 / .04) 62%, rgb(255 255 255 / .42) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.lg.clear { --glass-fill: rgb(255 255 255 / .04); }
+
+/* glass buttons (iOS 26 .glass and .glassProminent) */
+.gbtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 36px; padding: 0 15px; border-radius: 999px; white-space: nowrap;
+  font-size: 15px; font-weight: 600; letter-spacing: -0.01em;
+  background: rgb(255 255 255 / .11);
+  box-shadow: inset 0 0 12px -4px rgb(255 255 255 / .5), inset 0 1px 0 rgb(255 255 255 / .22);
+  color: var(--label);
+}
+.gbtn .ic { width: 17px; height: 17px; }
+.gbtn.prominent {
+  background: color-mix(in srgb, var(--tint) 90%, transparent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .38), inset 0 0 14px -3px rgb(255 255 255 / .55), 0 8px 18px -6px rgb(1 49 255 / .7);
+  color: #fff;
+}
+.gcircle { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; }
+.gcircle .ic { width: 21px; height: 21px; }
+
+/* ===== iPhone frame ===== */
+.phone-frame { width: 410px; padding: 10px; border-radius: 64px; background: #050506; box-shadow: 0 0 0 1.5px #5d5d63, 0 0 0 4px #1d1d20, 0 30px 70px rgb(0 0 0 / .6); flex: none; }
+.screen { position: relative; width: 390px; height: 844px; border-radius: 54px; overflow: hidden; background: #000; }
+/* backdrop: the brand light (aurora-glow.jpg) turned on its side so color runs the full height, bright core on the end side */
+.screen-bg { position: absolute; inset: 0; overflow: hidden; }
+.screen-bg::before {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 844px; height: 390px; margin: -195px 0 0 -422px;
+  background: url("../brand/aurora-glow.jpg") 50% 100% / cover no-repeat;
+  transform: scaleX(-1) rotate(-90deg) scale(1.16);
+  filter: brightness(.86) saturate(1.15);
+}
+.status { position: absolute; inset: 0 0 auto 0; height: 54px; z-index: 6; display: flex; align-items: center; justify-content: space-between; padding: 6px 34px 0 30px; font-size: 17px; font-weight: 600; pointer-events: none; }
+.island { position: absolute; top: 11px; left: 50%; width: 124px; height: 36px; margin-left: -62px; border-radius: 20px; background: #000; }
+.status-icons { display: flex; gap: 6px; align-items: center; direction: ltr; }
+.scroll { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; padding: 58px 16px 124px; scrollbar-width: none; }
+.scroll::-webkit-scrollbar { display: none; }
+
+.nav-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 2px 16px; }
+.title-block { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.artwork { width: 58px; height: 58px; border-radius: 13px; overflow: hidden; flex: none; box-shadow: 0 0 0 .5px rgb(255 255 255 / .2), 0 6px 16px rgb(0 0 0 / .4); }
+.artwork img { width: 100%; height: 100%; object-fit: cover; object-position: 47% 40%; }
+.large-title { font-size: 34px; line-height: 40px; font-weight: 800; letter-spacing: -0.02em; }
+.subtitle { font-size: 15px; line-height: 20px; color: var(--label-2); }
+
+.cards { display: flex; flex-direction: column; gap: 12px; }
+.card { border-radius: 30px; padding: 18px; }
+.k { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--label-2); }
+.row-between { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.cap { display: inline-flex; align-items: center; height: 26px; padding: 0 11px; border-radius: 999px; font-size: 13px; font-weight: 700; background: rgb(255 255 255 / .14); box-shadow: inset 0 0 8px -3px rgb(255 255 255 / .55); }
+
+.ep { margin-top: 8px; font-size: 34px; line-height: 40px; font-weight: 800; letter-spacing: -0.02em; }
+.guest { font-size: 20px; line-height: 25px; font-weight: 500; }
+.when { display: flex; align-items: center; gap: 7px; margin-top: 10px; font-size: 15px; line-height: 20px; }
+.when .ic { width: 17px; height: 17px; color: var(--tint-on-dark); }
+.bar { position: relative; height: 7px; margin-top: 16px; border-radius: 999px; background: rgb(255 255 255 / .16); overflow: hidden; }
+.bar i { position: absolute; inset-block: 0; inset-inline-start: 0; width: calc(100% * 3 / 7); border-radius: inherit; background: linear-gradient(270deg, #0131FF, #01B0FF); box-shadow: 0 0 10px rgb(1 176 255 / .55); }
+.bar-text { display: flex; justify-content: space-between; gap: 10px; margin-top: 8px; font-size: 13px; line-height: 18px; }
+.bar-text b { font-weight: 700; }
+.bar-text span { color: var(--label-2); text-align: end; }
+
+.missing-h { display: flex; align-items: center; gap: 8px; margin: 20px 2px 8px; font-size: 17px; line-height: 22px; font-weight: 700; }
+.missing-h .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 8px rgb(255 149 0 / .8); }
+/* iOS inset grouped list, sunk into the glass */
+.group { border-radius: 20px; background: rgb(0 0 0 / .26); box-shadow: inset 0 1px 0 rgb(255 255 255 / .06); overflow: hidden; }
+.row { position: relative; display: flex; align-items: center; gap: 12px; min-height: 62px; padding: 9px 14px; }
+.row + .row::before { content: ""; position: absolute; top: 0; inset-inline-start: 56px; inset-inline-end: 0; height: .5px; background: var(--sep); }
+.tile-ic { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; flex: none; background: #48484a; color: rgb(255 255 255 / .82); }
+.tile-ic .ic { width: 17px; height: 17px; stroke-width: 2; }
+.tile-ic.orange { background: var(--orange); color: #fff; box-shadow: 0 0 14px -2px rgb(255 149 0 / .6); }
+.row-txt { flex: 1; min-width: 0; }
+.row-t { font-size: 16px; line-height: 21px; font-weight: 500; }
+.row-s { font-size: 13px; line-height: 18px; color: var(--label-2); }
+.row-s .open { color: var(--orange); font-weight: 700; }
+.row.locked .row-t { color: rgb(255 255 255 / .62); }
+.trail { color: var(--label-3); }
+.trail.ic { width: 18px; height: 18px; }
+.row .gbtn { height: 34px; padding: 0 14px; font-size: 15px; }
+
+.rec-when { margin-top: 2px; font-size: 22px; line-height: 28px; font-weight: 800; letter-spacing: -0.01em; }
+.facts { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; }
+.facts li { display: flex; align-items: center; gap: 10px; font-size: 15px; line-height: 20px; }
+.facts .ic { width: 18px; height: 18px; color: var(--label-2); }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+.thumb { margin-top: 10px; border-radius: 16px; overflow: hidden; aspect-ratio: 16 / 9; box-shadow: 0 0 0 .5px rgb(255 255 255 / .16); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.latest-ep { margin-top: 12px; font-size: 13px; line-height: 18px; color: var(--label-2); }
+.latest-title { margin-top: 2px; font-size: 20px; line-height: 25px; font-weight: 800; letter-spacing: -0.01em; }
+.latest-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
+.latest-foot .date { font-size: 13px; color: var(--label-2); }
+
+.big { margin-top: 4px; font-size: 56px; line-height: 60px; font-weight: 800; letter-spacing: -0.03em; }
+.big-l { font-size: 15px; line-height: 20px; font-weight: 700; }
+.sent { margin-top: 10px; font-size: 15px; line-height: 20px; }
+.asof { margin-top: 6px; font-size: 12px; line-height: 16px; color: var(--label-2); }
+
+.sec-title { margin: 12px 4px 10px; font-size: 20px; line-height: 25px; font-weight: 800; letter-spacing: -0.01em; }
+/* Control Center style tiles */
+.cc { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cc-tile { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; height: 92px; padding: 12px 14px 12px; border-radius: 26px; text-align: start; font-size: 15px; line-height: 19px; font-weight: 700; }
+.cc-ic { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgb(255 255 255 / .16); box-shadow: inset 0 0 10px -4px rgb(255 255 255 / .6); }
+.cc-ic .ic { width: 19px; height: 19px; }
+
+/* floating Liquid Glass tab bar */
+.tabbar { position: absolute; z-index: 5; inset-inline: 18px; bottom: 26px; height: 64px; border-radius: 32px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 5px; --glass-fill: rgb(30 30 36 / .22); }
+.tab { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border-radius: 27px; color: var(--label); text-decoration: none; font-size: 10.5px; line-height: 13px; font-weight: 600; }
+.tab .ic { width: 25px; height: 25px; stroke-width: 1.75; }
+.tab.sel { background: rgb(255 255 255 / .13); box-shadow: inset 0 0 12px -4px rgb(255 255 255 / .45), inset 0 1px 0 rgb(255 255 255 / .16); color: var(--tint-on-dark); }
+.tab.sel .ic { stroke-width: 2.1; }
+.tab .badge { position: absolute; top: 7px; inset-inline-start: calc(50% + 6px); width: 9px; height: 9px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 2px rgb(0 0 0 / .35); }
+.edge { position: absolute; z-index: 4; inset-inline: 0; pointer-events: none; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.edge.top { top: 0; height: 74px; background: linear-gradient(to bottom, rgb(0 0 0 / .5), rgb(0 0 0 / 0)); -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent); mask-image: linear-gradient(to bottom, #000 40%, transparent); }
+.edge.bottom { bottom: 0; height: 128px; background: linear-gradient(to top, rgb(0 0 0 / .55), rgb(0 0 0 / 0)); -webkit-mask-image: linear-gradient(to top, #000 45%, transparent); mask-image: linear-gradient(to top, #000 45%, transparent); }
+.home-ind { position: absolute; z-index: 6; bottom: 8px; left: 50%; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: #fff; }
+
+/* ===== macOS 26 Tahoe window, 1280x800 ===== */
+.mac-frame { flex: none; padding: 0; border-radius: 27px; box-shadow: 0 0 0 1px rgb(255 255 255 / .16), 0 40px 90px rgb(0 0 0 / .7); }
+.mac { position: relative; width: 1280px; height: 800px; border-radius: 26px; overflow: hidden; background: #000; }
+.mac-bg { position: absolute; inset: 0; background: #000 url("../brand/aurora-glow.jpg") 50% 100% / auto 118% no-repeat; filter: brightness(.78) saturate(1.2); }
+.side { position: absolute; z-index: 3; top: 9px; bottom: 9px; right: 9px; width: 236px; border-radius: 18px; padding: 14px 10px 10px; display: flex; flex-direction: column; --glass-fill: rgb(30 30 36 / .34); }
+.lights { display: flex; gap: 8px; padding: 0 6px 18px; }
+.lights i { width: 12px; height: 12px; border-radius: 50%; display: block; box-shadow: inset 0 0 0 .5px rgb(0 0 0 / .25); }
+.side-show { display: flex; align-items: center; gap: 10px; padding: 0 6px 16px; }
+.side-show .artwork { width: 40px; height: 40px; border-radius: 9px; }
+.side-show .t { font-size: 14px; line-height: 18px; font-weight: 800; }
+.side-show .s { font-size: 12px; line-height: 16px; color: var(--label-2); }
+.side-nav { display: flex; flex-direction: column; gap: 2px; }
+.side-item { position: relative; display: flex; align-items: center; gap: 9px; height: 34px; padding: 0 10px; border-radius: 10px; color: var(--label); text-decoration: none; font-size: 13.5px; font-weight: 500; }
+.side-item .ic { width: 17px; height: 17px; color: var(--tint-on-dark); }
+.side-item.sel { background: rgb(255 255 255 / .14); box-shadow: inset 0 0 10px -4px rgb(255 255 255 / .35); font-weight: 700; }
+.side-item .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); margin-inline-start: auto; box-shadow: 0 0 6px rgb(255 149 0 / .8); }
+.side-foot { margin-top: auto; }
+.mac-content { position: absolute; z-index: 2; top: 0; bottom: 0; right: 254px; left: 0; overflow-y: auto; padding: 0 20px 28px 22px; scrollbar-width: none; }
+.mac-content::-webkit-scrollbar { display: none; }
+.toolbar { position: sticky; top: 0; z-index: 4; display: flex; align-items: center; height: 58px; margin-bottom: 6px; }
+.toolbar::before { content: ""; position: absolute; z-index: -1; inset: 0 -20px -18px -22px; pointer-events: none; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); background: linear-gradient(to bottom, rgb(0 0 0 / .45), rgb(0 0 0 / 0)); -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent); mask-image: linear-gradient(to bottom, #000 45%, transparent); }
+.toolbar .title-cap { height: 38px; padding: 0 16px; border-radius: 999px; display: inline-flex; align-items: center; font-size: 15px; font-weight: 800; --glass-fill: rgb(30 30 36 / .3); }
+.mgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.m-span2 { grid-column: span 2; }
+.m-span3 { grid-column: 1 / -1; }
+.mac .card { border-radius: 24px; padding: 18px; }
+.m-hero { display: grid; grid-template-columns: 250px 1fr; gap: 26px; }
+.m-hero .missing-h { margin-top: 0; }
+.m-hero > div:first-child { display: flex; flex-direction: column; }
+.m-hero > div:first-child .bar { margin-top: auto; }
+.m-hero .ep { font-size: 40px; line-height: 46px; }
+.mac .rec-when { font-size: 20px; line-height: 26px; }
+.mac .big { font-size: 50px; line-height: 54px; }
+.eps-list { margin-top: 8px; }
+.eprow { display: grid; grid-template-columns: 88px 64px 1fr 160px 110px; align-items: center; gap: 14px; min-height: 58px; padding: 6px 8px; border-radius: 14px; font-size: 14px; }
+.eprow + .eprow { box-shadow: 0 -.5px 0 var(--sep); }
+.eprow .th { width: 88px; height: 50px; border-radius: 9px; overflow: hidden; background: rgb(255 255 255 / .08); display: grid; place-items: center; color: var(--label-3); }
+.eprow .th img { width: 100%; height: 100%; object-fit: cover; }
+.eprow .n { font-weight: 800; }
+.eprow .ti { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.eprow .ti.none { color: var(--label-3); font-weight: 500; }
+.eprow .g, .eprow .st { color: var(--label-2); }
+.eprow .st.editing { color: var(--label); }
+.m-quick .cc { grid-template-columns: 1fr 1fr; gap: 10px; }
+.m-quick .cc-tile { height: 82px; border-radius: 20px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<header class="lab">
+  <div class="lab-head">
+    <span class="lab-name">11 Liquid Glass</span>
+    <span class="lab-repo"><a href="https://github.com/archisvaze/liquid-glass" target="_blank" rel="noopener">archisvaze/liquid-glass</a> <span class="lab-meta">815 כוכבים, push 14.10.2026</span></span>
+    <span class="lab-repo lab-sec"><a href="https://github.com/rdev/liquid-glass-react" target="_blank" rel="noopener">rdev/liquid-glass-react</a> <span class="lab-meta">6,526 כוכבים, push 13.06.2025</span></span>
+    <span class="lab-repo lab-sec"><a href="https://github.com/samasante/liquid-glass" target="_blank" rel="noopener">samasante/liquid-glass</a> <span class="lab-meta">649 כוכבים, push 23.06.2026</span></span>
+    <span class="lab-repo lab-sec"><a href="https://github.com/AndrewPrifer/liquid-dom" target="_blank" rel="noopener">liquid-dom</a> <span class="lab-meta">2,561 כוכבים, push 06.09.2026</span></span>
+  </div>
+  <div class="lab-notes">
+    <span>השבירה האמיתית: מפת-תזוזה לפי חוק סנל בשולי כל משטח, ומפת-ברק, דרך backdrop-filter (בכרום; בספארי טשטוש בלבד)</span>
+    <span>הניווט צף: סרגל-טאבים כקפסולה, כפתורים עגולים וסרגל-צד מרחף, הכול מזכוכית מעל האור של המותג</span>
+    <span>רשימה מקובצת בסגנון iOS, אריחי מרכז-הבקרה, כפתור בולט בצבע Prod Blue, כתום מערכת = B2C Orange</span>
+    <span>גופן: Rag Sans, שמתנהג כמו SF; גופני-המערכת של אפל לא מורשים לשימוש ברשת</span>
+  </div>
+</header>
+
+<main class="stage">
+  <div class="stage-label">טלפון <span dir="ltr">390×844</span></div>
+
+  <section class="phone" aria-label="טלפון">
+    <div class="phone-frame">
+      <div class="screen">
+        <div class="screen-bg" aria-hidden="true"></div>
+        <div class="status">
+          <span>9:41</span>
+          <span class="island"></span>
+          <span class="status-icons">
+            <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="#fff"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="#fff"/><rect x="10" y="3" width="3" height="9" rx="1" fill="#fff"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#fff"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 11.6 5.6 9.2a3.4 3.4 0 0 1 4.8 0Z M3.4 7a6.6 6.6 0 0 1 9.2 0l-1.2 1.2a4.9 4.9 0 0 0-6.8 0Z M1.2 4.8a9.7 9.7 0 0 1 13.6 0l-1.2 1.1a8 8 0 0 0-11.2 0Z" fill="#fff"/></svg>
+            <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.8" fill="none" stroke="#fff" stroke-opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2.5" fill="#fff"/><path d="M25 4.5v4a2 2 0 0 0 0-4Z" fill="#fff" fill-opacity=".45"/></svg>
+          </span>
+        </div>
+
+        <div class="scroll">
+          <header class="nav-head">
+            <div class="title-block">
+              <span class="artwork"><img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt=""></span>
+              <div><h1 class="large-title">הפיצוח</h1><p class="subtitle">גיל לי-רן</p></div>
+            </div>
+            <button class="lg gcircle" data-bezel="14" data-blur="3" aria-label="הגדרות" style="border-radius:50%"><svg class="ic"><use href="#i-settings"/></svg></button>
+          </header>
+
+          <div class="cards">
+            <section class="lg card" data-bezel="26" data-blur="9">
+              <div class="row-between"><p class="k">הפרק הבא שעולה</p><span class="cap">בעוד יומיים</span></div>
+              <h2 class="ep">פרק 19</h2>
+              <p class="guest">עם אורלי אורן</p>
+              <p class="when"><svg class="ic"><use href="#i-calendar"/></svg>עולה ביום רביעי 28.10</p>
+              <div class="bar" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="7"><i></i></div>
+              <div class="bar-text"><b>3 מתוך 7</b><span>עכשיו: עריכה, ממתין לעורך</span></div>
+
+              <h3 class="missing-h"><span class="dot"></span>חסר ממך</h3>
+              <ul class="group">
+                <li class="row">
+                  <span class="tile-ic orange"><svg class="ic"><use href="#i-pencil"/></svg></span>
+                  <div class="row-txt"><p class="row-t">שם לפרק</p><p class="row-s"><span class="open">פתוח</span>, לפני העריכה</p></div>
+                  <button class="gbtn prominent">לבחור שם</button>
+                </li>
+                <li class="row">
+                  <span class="tile-ic orange"><svg class="ic"><use href="#i-image"/></svg></span>
+                  <div class="row-txt"><p class="row-t">תמונת-מרואיין</p><p class="row-s">התקבלה ב-25.10, ממתינה לאישור</p></div>
+                  <svg class="ic trail"><use href="#i-chevron-left"/></svg>
+                </li>
+                <li class="row locked">
+                  <span class="tile-ic"><svg class="ic"><use href="#i-film"/></svg></span>
+                  <div class="row-txt"><p class="row-t">בחירת-טיזרים</p><p class="row-s">נעול, אחרי העריכה</p></div>
+                  <svg class="ic trail"><use href="#i-lock"/></svg>
+                </li>
+                <li class="row locked">
+                  <span class="tile-ic"><svg class="ic"><use href="#i-badge-check"/></svg></span>
+                  <div class="row-txt"><p class="row-t">אישור-לפרסום</p><p class="row-s">נעול, בהמשך</p></div>
+                  <svg class="ic trail"><use href="#i-lock"/></svg>
+                </li>
+              </ul>
+            </section>
+
+            <section class="lg card" data-bezel="26" data-blur="9">
+              <p class="k">ההקלטה הבאה</p>
+              <p class="rec-when">חמישי 29.10, 11:00</p>
+              <ul class="facts">
+                <li><svg class="ic"><use href="#i-clock"/></svg>11:00 עד 13:00</li>
+                <li><svg class="ic"><use href="#i-map-pin"/></svg>אולפן רימקס</li>
+                <li><svg class="ic"><use href="#i-users"/></svg>עם נועה בוקרה ורלי זדרב</li>
+                <li><svg class="ic"><use href="#i-user"/></svg>מפיק: יהלי</li>
+              </ul>
+              <div class="btns">
+                <button class="gbtn">לשנות מועד</button>
+                <button class="gbtn">להוסיף פרטי-אורח</button>
+                <button class="gbtn">לתאם הקלטה נוספת</button>
+              </div>
+            </section>
+
+            <section class="lg card" data-bezel="26" data-blur="9">
+              <p class="k">עלה לאחרונה</p>
+              <div class="thumb"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""></div>
+              <p class="latest-ep">פרק 18 עם אלכס קפ</p>
+              <p class="latest-title">איך מקפיצים עסק בתיווך עם AI</p>
+              <div class="latest-foot"><span class="date">עלה ב-14.10</span><button class="gbtn"><svg class="ic"><use href="#i-share"/></svg>לשתף</button></div>
+            </section>
+
+            <section class="lg card" data-bezel="26" data-blur="9">
+              <p class="k">איך התוכנית עושה</p>
+              <p class="big">5,941</p>
+              <p class="big-l">צפיות ביוטיוב</p>
+              <p class="sent">כל פרק נצפה בממוצע 21% מאורכו</p>
+              <p class="asof">נכון ל-25.10.2026, 18 פרקים</p>
+            </section>
+
+            <section>
+              <h3 class="sec-title">פעולות מהירות</h3>
+              <div class="cc">
+                <button class="lg cc-tile" data-bezel="18" data-blur="6"><span class="cc-ic"><svg class="ic"><use href="#i-calendar-plus"/></svg></span>לתאם הקלטה</button>
+                <button class="lg cc-tile" data-bezel="18" data-blur="6"><span class="cc-ic"><svg class="ic"><use href="#i-image-plus"/></svg></span>להעלות תמונה</button>
+                <button class="lg cc-tile" data-bezel="18" data-blur="6"><span class="cc-ic"><svg class="ic"><use href="#i-pencil"/></svg></span>לבחור שם</button>
+                <button class="lg cc-tile" data-bezel="18" data-blur="6"><span class="cc-ic"><svg class="ic"><use href="#i-share"/></svg></span>לשתף פרק</button>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <span class="edge top" aria-hidden="true"></span>
+        <span class="edge bottom" aria-hidden="true"></span>
+        <nav class="lg tabbar" data-bezel="22" data-blur="3" aria-label="ניווט">
+          <a class="tab sel" href="#"><svg class="ic"><use href="#i-house"/></svg>בית</a>
+          <a class="tab" href="#"><svg class="ic"><use href="#i-lightbulb"/></svg>אסטרטגיה</a>
+          <a class="tab" href="#"><svg class="ic"><use href="#i-mic"/></svg>הפקה<span class="badge"></span></a>
+          <a class="tab" href="#"><svg class="ic"><use href="#i-megaphone"/></svg>הפצה</a>
+        </nav>
+        <span class="home-ind"></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="notes-below">
+    <p>השבירה האמיתית: מפת-תזוזה לפי חוק סנל בשולי כל משטח, ומפת-ברק, דרך backdrop-filter (בכרום; בספארי טשטוש בלבד).</p>
+    <p>הניווט צף: סרגל-טאבים כקפסולה, כפתורים עגולים וסרגל-צד מרחף, הכול מזכוכית מעל האור של המותג.</p>
+    <p>רשימה מקובצת בסגנון iOS, אריחי מרכז-הבקרה, כפתור בולט בצבע Prod Blue, כתום מערכת = B2C Orange.</p>
+    <p>גופן: Rag Sans, שמתנהג כמו SF; גופני-המערכת של אפל לא מורשים לשימוש ברשת.</p>
+    <p>עוד ריפואים: <a href="https://github.com/rdev/liquid-glass-react">rdev/liquid-glass-react</a> (6,526 כוכבים, push 13.06.2025), <a href="https://github.com/samasante/liquid-glass">samasante/liquid-glass</a> (649, push 23.06.2026), <a href="https://github.com/AndrewPrifer/liquid-dom">liquid-dom</a> (2,561, push 06.09.2026).</p>
+  </div>
+
+  <div class="stage-label">מחשב <span dir="ltr">1280×800</span></div>
+
+  <div class="desk-wrap">
+    <section class="mac-frame" aria-label="מחשב">
+      <div class="mac">
+        <div class="mac-bg" aria-hidden="true"></div>
+
+        <aside class="lg side" data-bezel="22" data-blur="10">
+          <div class="lights"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+          <div class="side-show">
+            <span class="artwork"><img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt=""></span>
+            <div><p class="t">הפיצוח</p><p class="s">גיל לי-רן</p></div>
+          </div>
+          <nav class="side-nav" aria-label="ניווט">
+            <a class="side-item sel" href="#"><svg class="ic"><use href="#i-house"/></svg>בית</a>
+            <a class="side-item" href="#"><svg class="ic"><use href="#i-lightbulb"/></svg>אסטרטגיה</a>
+            <a class="side-item" href="#"><svg class="ic"><use href="#i-mic"/></svg>הפקה<span class="dot"></span></a>
+            <a class="side-item" href="#"><svg class="ic"><use href="#i-megaphone"/></svg>הפצה</a>
+          </nav>
+          <div class="side-foot"><a class="side-item" href="#"><svg class="ic"><use href="#i-settings"/></svg>הגדרות</a></div>
+        </aside>
+
+        <div class="mac-content">
+          <div class="toolbar"><span class="lg title-cap" data-bezel="12" data-blur="4">בית</span></div>
+          <div class="mgrid">
+            <section class="lg card m-span2 m-hero" data-bezel="24" data-blur="10">
+              <div>
+                <div class="row-between"><p class="k">הפרק הבא שעולה</p><span class="cap">בעוד יומיים</span></div>
+                <h2 class="ep">פרק 19</h2>
+                <p class="guest">עם אורלי אורן</p>
+                <p class="when"><svg class="ic"><use href="#i-calendar"/></svg>עולה ביום רביעי 28.10</p>
+                <div class="bar" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="7"><i></i></div>
+                <div class="bar-text"><b>3 מתוך 7</b><span>עכשיו: עריכה, ממתין לעורך</span></div>
+              </div>
+              <div>
+                <h3 class="missing-h"><span class="dot"></span>חסר ממך</h3>
+                <ul class="group">
+                  <li class="row">
+                    <span class="tile-ic orange"><svg class="ic"><use href="#i-pencil"/></svg></span>
+                    <div class="row-txt"><p class="row-t">שם לפרק</p><p class="row-s"><span class="open">פתוח</span>, לפני העריכה</p></div>
+                    <button class="gbtn prominent">לבחור שם</button>
+                  </li>
+                  <li class="row">
+                    <span class="tile-ic orange"><svg class="ic"><use href="#i-image"/></svg></span>
+                    <div class="row-txt"><p class="row-t">תמונת-מרואיין</p><p class="row-s">התקבלה ב-25.10, ממתינה לאישור</p></div>
+                    <svg class="ic trail"><use href="#i-chevron-left"/></svg>
+                  </li>
+                  <li class="row locked">
+                    <span class="tile-ic"><svg class="ic"><use href="#i-film"/></svg></span>
+                    <div class="row-txt"><p class="row-t">בחירת-טיזרים</p><p class="row-s">נעול, אחרי העריכה</p></div>
+                    <svg class="ic trail"><use href="#i-lock"/></svg>
+                  </li>
+                  <li class="row locked">
+                    <span class="tile-ic"><svg class="ic"><use href="#i-badge-check"/></svg></span>
+                    <div class="row-txt"><p class="row-t">אישור-לפרסום</p><p class="row-s">נעול, בהמשך</p></div>
+                    <svg class="ic trail"><use href="#i-lock"/></svg>
+                  </li>
+                </ul>
+              </div>
+            </section>
+
+            <section class="lg card" data-bezel="24" data-blur="10">
+              <p class="k">ההקלטה הבאה</p>
+              <p class="rec-when">חמישי 29.10, 11:00</p>
+              <ul class="facts">
+                <li><svg class="ic"><use href="#i-clock"/></svg>11:00 עד 13:00</li>
+                <li><svg class="ic"><use href="#i-map-pin"/></svg>אולפן רימקס</li>
+                <li><svg class="ic"><use href="#i-users"/></svg>עם נועה בוקרה ורלי זדרב</li>
+                <li><svg class="ic"><use href="#i-user"/></svg>מפיק: יהלי</li>
+              </ul>
+              <div class="btns">
+                <button class="gbtn">לשנות מועד</button>
+                <button class="gbtn">להוסיף פרטי-אורח</button>
+                <button class="gbtn">לתאם הקלטה נוספת</button>
+              </div>
+            </section>
+
+            <section class="lg card" data-bezel="24" data-blur="10">
+              <p class="k">עלה לאחרונה</p>
+              <div class="thumb"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""></div>
+              <p class="latest-ep">פרק 18 עם אלכס קפ</p>
+              <p class="latest-title">איך מקפיצים עסק בתיווך עם AI</p>
+              <div class="latest-foot"><span class="date">עלה ב-14.10</span><button class="gbtn"><svg class="ic"><use href="#i-share"/></svg>לשתף</button></div>
+            </section>
+
+            <section class="lg card" data-bezel="24" data-blur="10">
+              <p class="k">איך התוכנית עושה</p>
+              <p class="big">5,941</p>
+              <p class="big-l">צפיות ביוטיוב</p>
+              <p class="sent">כל פרק נצפה בממוצע 21% מאורכו</p>
+              <p class="asof">נכון ל-25.10.2026, 18 פרקים</p>
+            </section>
+
+            <section class="lg card m-quick" data-bezel="24" data-blur="10">
+              <p class="k">פעולות מהירות</p>
+              <div class="cc" style="margin-top:10px">
+                <button class="cc-tile" style="background:rgb(255 255 255 / .08);box-shadow:inset 0 0 12px -5px rgb(255 255 255 / .45)"><span class="cc-ic"><svg class="ic"><use href="#i-calendar-plus"/></svg></span>לתאם הקלטה</button>
+                <button class="cc-tile" style="background:rgb(255 255 255 / .08);box-shadow:inset 0 0 12px -5px rgb(255 255 255 / .45)"><span class="cc-ic"><svg class="ic"><use href="#i-image-plus"/></svg></span>להעלות תמונה</button>
+                <button class="cc-tile" style="background:rgb(255 255 255 / .08);box-shadow:inset 0 0 12px -5px rgb(255 255 255 / .45)"><span class="cc-ic"><svg class="ic"><use href="#i-pencil"/></svg></span>לבחור שם</button>
+                <button class="cc-tile" style="background:rgb(255 255 255 / .08);box-shadow:inset 0 0 12px -5px rgb(255 255 255 / .45)"><span class="cc-ic"><svg class="ic"><use href="#i-share"/></svg></span>לשתף פרק</button>
+              </div>
+            </section>
+
+            <section class="lg card m-span3" data-bezel="24" data-blur="10">
+              <p class="k">פרקים</p>
+              <div class="eps-list">
+                <div class="eprow"><span class="th"><svg class="ic"><use href="#i-image"/></svg></span><span class="n">פרק 19</span><span class="ti none">עוד אין שם</span><span class="g">אורלי אורן</span><span class="st editing">בעריכה</span></div>
+                <div class="eprow"><span class="th"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""></span><span class="n">פרק 18</span><span class="ti">איך מקפיצים עסק בתיווך עם AI</span><span class="g">אלכס קפ</span><span class="st">עלה ב-14.10</span></div>
+                <div class="eprow"><span class="th"><img src="https://i.ytimg.com/vi/P463I2IV9Xo/mqdefault.jpg" alt=""></span><span class="n">פרק 17</span><span class="ti">איך ממשיכים מכאן?</span><span class="g">אהרון וחביבה איציקזון</span><span class="st">עלה ב-7.10</span></div>
+                <div class="eprow"><span class="th"><img src="https://i.ytimg.com/vi/epNQhrsKjxI/mqdefault.jpg" alt=""></span><span class="n">פרק 16</span><span class="ti">חמשת הכללים למשא ומתן</span><span class="g">ונסה סיימן</span><span class="st">עלה ב-30.9</span></div>
+                <div class="eprow"><span class="th"><img src="https://i.ytimg.com/vi/fCG8ceGVDRo/mqdefault.jpg" alt=""></span><span class="n">פרק 15</span><span class="ti">איך לעשות שינוי קריירה בגיל 40</span><span class="g">דקלה ביבי</span><span class="st">עלה ב-23.9</span></div>
+                <div class="eprow"><span class="th"><img src="https://i.ytimg.com/vi/pp-nzLON8vY/mqdefault.jpg" alt=""></span><span class="n">פרק 14</span><span class="ti">מי נשאר ומי נשבר</span><span class="g">אריק זאבי</span><span class="st">עלה ב-16.9</span></div>
+                <div class="eprow"><span class="th"><img src="https://i.ytimg.com/vi/Sh0J8sIBfHs/mqdefault.jpg" alt=""></span><span class="n">פרק 13</span><span class="ti">הסוד הכי שמור ברי/מקס</span><span class="g">איתי דוד</span><span class="st">עלה ב-9.9</span></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" color-interpolation-filters="sRGB">
+  <defs id="lg-defs"></defs>
+<symbol id="i-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /> <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></symbol>
+<symbol id="i-lightbulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" /> <path d="M19 10v2a7 7 0 0 1-14 0v-2" /> <line x1="12" x2="12" y1="19" y2="22" /></symbol>
+<symbol id="i-megaphone" viewBox="0 0 24 24"><path d="m3 11 18-5v12L3 14v-3z" /> <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" /></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /> <circle cx="12" cy="12" r="3" /></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <polyline points="12 6 12 12 16 14" /></symbol>
+<symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" /></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <circle cx="9" cy="7" r="4" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <path d="M16 3.13a4 4 0 0 1 0 7.75" /></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /> <circle cx="12" cy="7" r="4" /></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></symbol>
+<symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /> <circle cx="9" cy="9" r="2" /> <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></symbol>
+<symbol id="i-film" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M7 3v18" /> <path d="M3 7.5h4" /> <path d="M3 12h18" /> <path d="M3 16.5h4" /> <path d="M17 3v18" /> <path d="M17 7.5h4" /> <path d="M17 16.5h4" /></symbol>
+<symbol id="i-badge-check" viewBox="0 0 24 24"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" /> <path d="m9 12 2 2 4-4" /></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /> <path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol>
+<symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /> <polyline points="16 6 12 2 8 6" /> <line x1="12" x2="12" y1="2" y2="15" /></symbol>
+<symbol id="i-calendar-plus" viewBox="0 0 24 24"><path d="M8 2v4" /> <path d="M16 2v4" /> <path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8" /> <path d="M3 10h18" /> <path d="M16 19h6" /> <path d="M19 16v6" /></symbol>
+<symbol id="i-image-plus" viewBox="0 0 24 24"><path d="M16 5h6" /> <path d="M19 2v6" /> <path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5" /> <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /> <circle cx="9" cy="9" r="2" /></symbol>
+
+</svg>
+
+<script>
+/* Liquid Glass refraction for Chromium.
+   Adapted from archisvaze/liquid-glass (MIT): calculateRefractionProfile / generateDisplacementMap / generateSpecularMap
+   in index.html, convex-squircle surface, filter graph feGaussianBlur > feDisplacementMap > feColorMatrix(saturate) > specular composite.
+   WebKit and Gecko keep the CSS blur fallback: backdrop-filter:url() is Chromium-only (see samasante/liquid-glass BROWSERS.md). */
+(() => {
+  const brands = (navigator.userAgentData && navigator.userAgentData.brands) || [];
+  if (!brands.some((b) => /Chromium/.test(b.brand))) return;
+  const surface = (x) => Math.pow(1 - Math.pow(1 - x, 4), 0.25);
+  function profile(thick, bezel, ior, n) {
+    const eta = 1 / ior, out = new Float64Array(n);
+    for (let i = 0; i < n; i++) {
+      const x = i / n, y = surface(x), dx = x < 1 ? 1e-4 : -1e-4;
+      const d = (surface(x + dx) - y) / dx, m = Math.sqrt(d * d + 1);
+      const nx = -d / m, ny = -1 / m, k = 1 - eta * eta * (1 - ny * ny);
+      if (k < 0) { out[i] = 0; continue; }
+      const sq = Math.sqrt(k), rx = -(eta * ny + sq) * nx, ry = eta - (eta * ny + sq) * ny;
+      out[i] = rx * ((y * bezel + thick) / ry);
+    }
+    return out;
+  }
+  function canvas(w, h) { const c = document.createElement("canvas"); c.width = w; c.height = h; return c; }
+  function dispMap(w, h, r, bezel, prof, maxD) {
+    const c = canvas(w, h), ctx = c.getContext("2d"), img = ctx.createImageData(w, h), d = img.data;
+    for (let i = 0; i < d.length; i += 4) { d[i] = 128; d[i + 1] = 128; d[i + 2] = 0; d[i + 3] = 255; }
+    const rSq = r * r, r1Sq = (r + 1) ** 2, rBSq = Math.max(r - bezel, 0) ** 2, wB = w - r * 2, hB = h - r * 2, S = prof.length;
+    for (let y1 = 0; y1 < h; y1++) for (let x1 = 0; x1 < w; x1++) {
+      const x = x1 < r ? x1 - r : x1 >= w - r ? x1 - r - wB : 0;
+      const y = y1 < r ? y1 - r : y1 >= h - r ? y1 - r - hB : 0;
+      const dSq = x * x + y * y;
+      if (dSq > r1Sq || dSq < rBSq) continue;
+      const dist = Math.sqrt(dSq), fromSide = r - dist;
+      const op = dSq < rSq ? 1 : 1 - (dist - r) / (Math.sqrt(r1Sq) - r);
+      if (op <= 0 || dist === 0) continue;
+      const cos = x / dist, sin = y / dist, bi = Math.min(((fromSide / bezel) * S) | 0, S - 1), disp = prof[bi] || 0;
+      const idx = (y1 * w + x1) * 4;
+      d[idx] = (128 + (-cos * disp / maxD) * 127 * op + 0.5) | 0;
+      d[idx + 1] = (128 + (-sin * disp / maxD) * 127 * op + 0.5) | 0;
+    }
+    ctx.putImageData(img, 0, 0);
+    return c.toDataURL();
+  }
+  function specMap(w, h, r, bezel) {
+    const c = canvas(w, h), ctx = c.getContext("2d"), img = ctx.createImageData(w, h), d = img.data;
+    const ang = Math.PI / 3, sv = [Math.cos(ang), Math.sin(ang)];
+    const rSq = r * r, r1Sq = (r + 1) ** 2, rBSq = Math.max(r - bezel, 0) ** 2, wB = w - r * 2, hB = h - r * 2;
+    for (let y1 = 0; y1 < h; y1++) for (let x1 = 0; x1 < w; x1++) {
+      const x = x1 < r ? x1 - r : x1 >= w - r ? x1 - r - wB : 0;
+      const y = y1 < r ? y1 - r : y1 >= h - r ? y1 - r - hB : 0;
+      const dSq = x * x + y * y;
+      if (dSq > r1Sq || dSq < rBSq) continue;
+      const dist = Math.sqrt(dSq), fromSide = r - dist;
+      const op = dSq < rSq ? 1 : 1 - (dist - r) / (Math.sqrt(r1Sq) - r);
+      if (op <= 0 || dist === 0) continue;
+      const cos = x / dist, sin = -y / dist, dot = Math.abs(cos * sv[0] + sin * sv[1]);
+      const edge = Math.sqrt(Math.max(0, 1 - (1 - fromSide) ** 2)), coeff = dot * edge;
+      const col = (255 * coeff) | 0, idx = (y1 * w + x1) * 4;
+      d[idx] = col; d[idx + 1] = col; d[idx + 2] = col; d[idx + 3] = (col * coeff * op) | 0;
+    }
+    ctx.putImageData(img, 0, 0);
+    return c.toDataURL();
+  }
+  const defs = document.getElementById("lg-defs");
+  let n = 0;
+  function build() {
+    let markup = "";
+    const jobs = [];
+    document.querySelectorAll(".lg").forEach((el) => {
+      const w = Math.round(el.offsetWidth), h = Math.round(el.offsetHeight);
+      if (w < 8 || h < 8) return;
+      const r = Math.floor(Math.min(parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0, w / 2, h / 2));
+      if (r < 4) return;
+      const bezel = Math.max(1, Math.min(+el.dataset.bezel || 20, r - 1, Math.min(w, h) / 2 - 1));
+      const prof = profile(+el.dataset.thick || 70, bezel, 1.6, 128);
+      const maxD = Math.max(...Array.from(prof, Math.abs)) || 1;
+      const id = "lgf" + (++n);
+      markup += `<filter id="${id}" x="0%" y="0%" width="100%" height="100%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="${+el.dataset.blur || 6}" result="b"/>
+        <feImage href="${dispMap(w, h, r, bezel, prof, maxD)}" x="0" y="0" width="${w}" height="${h}" result="d"/>
+        <feDisplacementMap in="b" in2="d" scale="${maxD}" xChannelSelector="R" yChannelSelector="G" result="r"/>
+        <feColorMatrix in="r" type="saturate" values="1.9" result="s"/>
+        <feImage href="${specMap(w, h, r, bezel * 2.2)}" x="0" y="0" width="${w}" height="${h}" result="sp"/>
+        <feComposite in="s" in2="sp" operator="in" result="sm"/>
+        <feComponentTransfer in="sp" result="sf"><feFuncA type="linear" slope="0.42"/></feComponentTransfer>
+        <feBlend in="sm" in2="s" mode="normal" result="w"/>
+        <feBlend in="sf" in2="w" mode="normal"/>
+      </filter>`;
+      jobs.push([el, id]);
+    });
+    defs.innerHTML = markup;
+    for (const [el, id] of jobs) { el.style.backdropFilter = `url(#${id})`; el.style.webkitBackdropFilter = `url(#${id})`; }
+  }
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(build));
+})();
+</script>
+</body>
+</html>
