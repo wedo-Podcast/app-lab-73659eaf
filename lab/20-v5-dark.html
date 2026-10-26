@@ -80,37 +80,42 @@ html.full .d-layout, html.full .d-main { height: auto; }
   font-family: "Rag Sans", sans-serif; font-size: 16px; line-height: 1.5;
 }
 
-/* ===== «חצי-כהה»: @radix-ui/colors 3.0.0, slate-dark.css + slate-dark-alpha.css ===== */
+/* ===== «חצי-כהה»: @radix-ui/colors 3.0.0, slate-dark.css + slate-dark-alpha.css; שתיים-שלוש מדרגות מעל «כהה» ===== */
 :is(html.semi, body:has(#semi:target)) .mu {
   --slate-1: #111113; --slate-2: #18191b; --slate-3: #212225; --slate-4: #272a2d; --slate-5: #2e3135; --slate-6: #363a3f;
   --slate-7: #43484e; --slate-8: #5a6169; --slate-9: #696e77; --slate-10: #777b84; --slate-11: #b0b4ba; --slate-12: #edeef0;
-  --slate-a2: #d8f4f609; --slate-a3: #ddeaf814; --slate-a4: #d3edf81d; --slate-a5: #d9edfe25; --slate-a6: #d6ebfd30;
-  --background: var(--slate-2);
+  --slate-a3: #ddeaf814; --slate-a4: #d3edf81d; --slate-a5: #d9edfe25; --slate-a6: #d6ebfd30; --slate-a7: #d9edff40;
+  --background: var(--slate-5);
   --foreground: var(--slate-12);
-  --card: var(--slate-4);
+  --card: var(--slate-7);
   --primary: var(--slate-12); --primary-foreground: var(--slate-1);
-  --secondary: var(--slate-5); --accent: var(--slate-5);
-  --muted-foreground: var(--slate-11);
-  --border: var(--slate-a4); --input: var(--slate-a6);
-  --sidebar: var(--slate-1); --sidebar-accent: var(--slate-4); --sidebar-border: var(--slate-a3);
-  --card-edge: var(--slate-a4);
+  --secondary: var(--slate-8); --accent: var(--slate-8);
+  --muted-foreground: color-mix(in oklab, var(--slate-11) 70%, var(--slate-12));
+  --border: var(--slate-a6); --input: var(--slate-a7);
+  --sidebar: var(--slate-3); --sidebar-accent: var(--slate-5); --sidebar-border: var(--slate-a4);
+  --card-edge: var(--slate-a6);
   --card-glow: none;
-  --card-hover: var(--slate-a2);
-  --t-head: var(--slate-12); --t-sub: var(--slate-11); --t-dim: color-mix(in oklab, var(--slate-10), var(--slate-11) 40%);
-  --bento-icon: var(--slate-8);
-  --tile-bg: var(--slate-a3); --tile-edge: var(--slate-a4);
-  --pill-edge: var(--slate-a3);
+  --card-hover: var(--slate-a3);
+  --t-head: var(--slate-12); --t-sub: color-mix(in oklab, var(--slate-11) 70%, var(--slate-12)); --t-dim: var(--slate-11);
+  --bento-icon: var(--slate-9);
+  --tile-bg: var(--slate-a3); --tile-edge: var(--slate-a6);
+  --pill-edge: var(--slate-a5);
+  /* Prod Blue טהור יורד ל-1.27:1 על slate-7: בטקסט-הגרדיאנט ובקרן הוא מתחיל מגוון שלו (55% Prod Blue, 45% לבן), מד-הצפייה ב-SaaS Blue */
+  --color-from: color-mix(in srgb, #0131ff 55%, #fff);
+  --gauge: #01b0ff; --gauge-track: var(--slate-5);
+  --orange-ink: #ffc061; --orange-soft: rgb(255 149 0 / .16);
   --field-display: block;
 }
 
-/* הרקע של «חצי-כהה»: הגרדיאנט הרשמי Prod Blue אל Main Shade (product/מותג.md) כשדה עדין בפינה השמאלית-התחתונה. סטטי. */
-.field { position: absolute; left: 0; bottom: 0; width: 100%; height: min(100%, 900px); pointer-events: none; z-index: 0; display: var(--field-display);
+/* הרקע של «חצי-כהה»: הגרדיאנט הרשמי Prod Blue אל Main Shade (product/מותג.md) בחלק התחתון של המסך:
+   כחול בפינה השמאלית-התחתונה, Main Shade לאורך התחתית, דוהה למעלה אל slate-5. סטטי, מתחת לכרטיסים. */
+.field { position: absolute; left: 0; bottom: 0; width: 100%; height: min(100%, var(--field-h)); pointer-events: none; z-index: 0; display: var(--field-display);
   background: radial-gradient(var(--field-r) at 0% 100%, #0131ff 0%, #00051a 62%);
-  opacity: var(--field-opacity, .42);
-  -webkit-mask-image: radial-gradient(var(--field-r) at 0% 100%, #000 0%, rgb(0 0 0 / .62) 30%, rgb(0 0 0 / .24) 62%, transparent 92%);
-          mask-image: radial-gradient(var(--field-r) at 0% 100%, #000 0%, rgb(0 0 0 / .62) 30%, rgb(0 0 0 / .24) 62%, transparent 92%); }
-.is-phone { --field-r: 560px 720px; }
-.d-main { --field-r: 1180px 760px; }
+  opacity: var(--field-opacity, .72);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgb(0 0 0 / .5) 38%, transparent 100%);
+          mask-image: linear-gradient(to top, #000 0%, rgb(0 0 0 / .5) 38%, transparent 100%); }
+.is-phone { --field-h: 440px; --field-r: 430px 440px; }
+.d-main { --field-h: 440px; --field-r: 980px 560px; }
 
 .mu h1, .mu h2, .mu h3, .mu p, .mu figure, .mu ol { margin: 0; }
 :where(.mu) a { color: inherit; text-decoration: none; }
@@ -217,7 +222,7 @@ html.full .d-layout, html.full .d-main { height: auto; }
 .gauge { position: relative; width: 120px; height: 120px; }
 .gauge svg { width: 100%; height: 100%; transform: rotate(-90deg) scaleY(-1); }
 .gauge circle { fill: none; stroke-width: 10; stroke-linecap: round; }
-.gauge__track { stroke: var(--secondary); }
+.gauge__track { stroke: var(--gauge-track, var(--secondary)); }
 .gauge__value { stroke: var(--gauge); stroke-dasharray: 251.33; stroke-dashoffset: 198.55; }
 .gauge__label { position: absolute; inset: 0; display: grid; place-items: center; font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--foreground); }
 .ticker-line { font-size: 60px; line-height: 1; font-weight: 500; letter-spacing: 0.02em; color: var(--foreground); }
@@ -310,7 +315,7 @@ html.full .d-layout, html.full .d-main { height: auto; }
   </div>
   <div class="lab-cap__points">
     <p><b>«כהה»: הערכה הכהה של Magic UI כמו שהיא</b> (<code>apps/www/styles/globals.css</code>, הבלוק <code>.dark</code>): רקע <code>oklch(0.145 0 0)</code>, כרטיס <code>oklch(0.205 0 0)</code>, טקסט <code>oklch(0.985 0 0)</code>, קו לבן 10%. ניטרלי לגמרי (chroma 0), לא zinc. הכרטיס כמו ב-<code>bento-grid.tsx</code> בכהה. <b>הרקע שטוח, בלי אור.</b></p>
-    <p><b>«חצי-כהה»: slate הכהה של Radix</b> (<code>@radix-ui/colors</code> 3.0.0, <code>slate-dark.css</code>): רקע slate-2, כרטיס slate-4, טקסט slate-12, קו slate-a4. <b>הרקע:</b> הגרדיאנט הרשמי Prod Blue אל Main Shade (<code>product/מותג.md</code>) כשדה עדין בפינה השמאלית-התחתונה, כמו הצד הכחול של רקע-הזום. סטטי, מתחת לכרטיסים.</p>
+    <p><b>«חצי-כהה»: slate של Radix, שתיים-שלוש מדרגות מעל</b> (<code>@radix-ui/colors</code> 3.0.0, <code>slate-dark.css</code>): רקע slate-5, כרטיס slate-7, טקסט slate-12, קו slate-a6, תפריט-צד slate-3. <b>הרקע:</b> הגרדיאנט הרשמי Prod Blue אל Main Shade (<code>product/מותג.md</code>) בחלק התחתון של המסך, כחול בפינה השמאלית כמו הצד הכחול של רקע-הזום; סטטי, מתחת לכרטיסים. Prod Blue טהור לא קריא על slate-7 (1.27:1), אז בטקסט-הגרדיאנט ובקרן הוא מתחיל מגוון שלו (55% Prod Blue, 45% לבן), ומד-הצפייה ב-SaaS Blue.</p>
     <div><b>תקציב-האפקטים</b>
       <ol class="lab-budget">
         <li>בלולאה: קרן אחת סביב «חסר ממך» (<code>border-beam.tsx</code>) וטקסט-גרדיאנט על «פרק 19» (<code>animated-gradient-text.tsx</code>), 8 שניות כל אחד, Prod Blue אל SaaS Blue.</li>

@@ -84,6 +84,8 @@ html.full .d-shell, html.full .d-main { height: auto; }
 .btn--sm { height: 32px; gap: 6px; padding: 0 12px; }
 .btn--link { height: auto; padding: 0 !important; color: var(--primary); }
 .btn--link:hover { text-decoration: underline; text-underline-offset: 4px; }
+.btn:active, .tab:active, .side__item:active { transform: scale(.985); }
+.is-phone .todo .btn--default { height: 44px; }
 .badge { display: inline-flex; align-items: center; gap: 4px; border-radius: calc(var(--radius) - 2px); border: 1px solid transparent; padding: 2px 8px; font-size: 12px; line-height: 16px; font-weight: 500; white-space: nowrap; }
 .badge--orange { background: rgb(255 149 0 / .12); color: var(--orange-ink); }
 .badge--live { background: rgb(1 176 255 / .12); color: #00639a; }
@@ -147,11 +149,12 @@ html.full .d-shell, html.full .d-main { height: auto; }
 .w__body { position: relative; z-index: 2; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 4px; }
 .w__name { font-size: 20px; line-height: 28px; font-weight: 600; color: var(--neutral-700); }
 .w__links { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-size: 14px; }
-.rec { height: 330px; }
-.latest { height: 310px; }
-.latest__img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 45%); mask-image: linear-gradient(to top, transparent 0%, #000 45%); }
+.rec { height: 344px; }
+.latest { display: flex; flex-direction: column; }
+.latest .w__body { margin-top: auto; padding-top: 4px; }
+.latest__img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; flex-shrink: 0; -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 38%); mask-image: linear-gradient(to top, transparent 0%, #000 38%); }
 /* mini calendar (shadcn Calendar כרקע, כמו ב-bento-demo.tsx), כמו ב-14 */
-.cal { position: absolute; top: -46px; inset-inline-start: 50%; transform: translateX(50%) scale(.8); transform-origin: top center; border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px);
+.cal { position: absolute; top: -60px; inset-inline-start: 50%; transform: translateX(50%) scale(.8); transform-origin: top center; border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px);
   padding: 12px; background: var(--background); -webkit-mask-image: linear-gradient(to bottom, transparent 22%, #000 58%); mask-image: linear-gradient(to bottom, transparent 22%, #000 58%);
   transition: transform .3s ease-out; }
 .rec:hover .cal { transform: translateX(50%) scale(.88); }
@@ -174,9 +177,10 @@ html.full .d-shell, html.full .d-main { height: auto; }
 .gauge.is-on .gauge__value { animation: mu-gauge 1s ease-out .2s forwards; }
 @keyframes mu-gauge { to { stroke-dashoffset: 198.55; } }
 .gauge__label { position: absolute; inset: 0; display: grid; place-items: center; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
-/* CountUp mode="roll" (react-bits src/content/TextAnimations/CountUp/CountUp.jsx): עמודת-ספרות לכל מקום */
+/* CountUp mode="roll" (react-bits src/content/TextAnimations/CountUp/CountUp.jsx): עמודת-ספרות לכל מקום; חלון רך בקצוות, רק בזמן הגלגול */
 .roll { display: inline-flex; direction: ltr; unicode-bidi: isolate; white-space: pre; vertical-align: top; user-select: none; }
-.roll__slot { display: inline-block; height: 1.2em; line-height: 1.2em; overflow: hidden; text-align: center; }
+.roll__slot { display: inline-block; height: 1.2em; line-height: 1.2em; overflow: hidden; text-align: center;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent); mask-image: linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent); }
 .roll__strip { display: flex; flex-direction: column; transform: translateY(-1.2em); }
 .roll__strip > span { height: 1.2em; }
 
@@ -230,7 +234,7 @@ html.full .d-shell, html.full .d-main { height: auto; }
 .is-desktop .ep-date { font-size: 18px; line-height: 28px; }
 .is-desktop .axis-wrap { width: 460px; margin-top: 26px; }
 .is-desktop .axis { --d: 30px; }
-.is-desktop .rec, .is-desktop .latest { height: auto; min-height: 340px; }
+.is-desktop .rec { height: auto; min-height: 344px; }
 .is-desktop .gauge { width: 80px; height: 80px; }
 .is-desktop .gauge__label { font-size: 17px; }
 .is-desktop .stat__num { font-size: 56px; }
@@ -334,9 +338,9 @@ html.full .d-shell, html.full .d-main { height: auto; }
             </div>
           </section>
 
-          <section class="w w--tonal w--col latest" data-spot="entry" data-flash>
+          <section class="w w--tonal latest" data-spot="entry" data-flash>
             <span class="bline" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
-            <div class="w__bg"><img class="latest__img" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""></div>
+            <img class="latest__img" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="">
             <div class="w__body">
               <p class="text-xs muted">עלה לאחרונה</p>
               <h3 class="w__name" style="text-wrap:balance">איך מקפיצים עסק בתיווך עם AI</h3>
@@ -467,9 +471,9 @@ html.full .d-shell, html.full .d-main { height: auto; }
                   </div>
                 </section>
 
-                <section class="w w--tonal w--col latest" data-spot="pointer" data-flash>
+                <section class="w w--tonal latest" data-spot="pointer" data-flash>
                   <span class="bline" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
-                  <div class="w__bg"><img class="latest__img" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""></div>
+                  <img class="latest__img" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="">
                   <div class="w__body">
                     <p class="text-xs muted">עלה לאחרונה</p>
                     <h3 class="w__name" style="text-wrap:balance">איך מקפיצים עסק בתיווך עם AI</h3>
