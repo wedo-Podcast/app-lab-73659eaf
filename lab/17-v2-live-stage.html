@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מעבדת-טעם 17: הבמה חיה</title>
+<style>
+@font-face { font-family: "Rag Sans"; src: url("./fonts/RagSans-VF.ttf"); font-weight: 100 900; font-display: block; }
+
+/* ===== מעטפת-המעבדה (לא חלק מהמוקאפ) ===== */
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: #e7e7ea; color: #1d1d1f; font-family: "Rag Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+.lab-cap { background: #fff; border-bottom: 1px solid #d9d9de; padding: 10px 20px 12px; font-size: 12px; line-height: 1.5; }
+.lab-cap__row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; max-width: 1320px; margin: 0 auto; }
+.lab-cap__title { font-size: 15px; font-weight: 700; }
+.lab-cap a { color: #0131ff; text-decoration: none; }
+.lab-cap__meta { color: #6e6e73; font-variant-numeric: tabular-nums; }
+.lab-cap__budget { max-width: 1320px; margin: 8px auto 0; display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; color: #3a3a3c; }
+.lab-cap__budget > b { grid-row: span 3; font-weight: 700; color: #1d1d1f; }
+.lab-cap__budget p { margin: 0; }
+.lab-cap__budget p b { color: #1d1d1f; font-weight: 600; }
+.lab-cap__src { max-width: 1320px; margin: 6px auto 0; color: #6e6e73; }
+.lab-cap__src bdi { color: #3a3a3c; }
+@media (max-width: 700px) { .lab-cap__budget { grid-template-columns: 1fr; } .lab-cap__budget > b { grid-row: auto; } }
+.lab-stage { padding: 28px 20px 8px; display: flex; flex-direction: column; align-items: safe center; gap: 10px; max-width: 100%; overflow-x: auto; }
+.lab-label { font-size: 12px; color: #6e6e73; font-variant-numeric: tabular-nums; }
+.device-phone { padding: 11px; border-radius: 66px; background: #0d0d0f; box-shadow: 0 0 0 1px #2b2b2e, 0 30px 60px -20px rgba(0,0,0,.45); }
+.device-phone .screen { width: 390px; height: 844px; border-radius: 55px; overflow: hidden; position: relative; isolation: isolate; }
+.island { position: absolute; top: 11px; inset-inline-start: 50%; transform: translateX(50%); width: 124px; height: 36px; border-radius: 20px; background: #000; z-index: 50; }
+.device-desktop { width: 1282px; border-radius: 12px; overflow: hidden; background: #f4f4f5; box-shadow: 0 0 0 1px #d4d4d8, 0 30px 70px -24px rgba(0,0,0,.35); flex-shrink: 0; }
+.device-desktop__bar { height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 14px; direction: ltr; }
+.device-desktop__bar i { width: 12px; height: 12px; border-radius: 50%; background: #d4d4d8; display: block; }
+.device-desktop .screen { width: 1280px; height: 800px; margin: 0 1px 1px; overflow: hidden; position: relative; isolation: isolate; }
+html.full .device-phone .screen, html.full .device-desktop .screen { height: auto; }
+html.full .scroll { height: auto !important; overflow: visible !important; }
+html.full .d-app, html.full .d-main { height: auto; }
+
+/* ===== Magic UI: הטוקנים של apps/www/styles/globals.css (shadcn new-york, neutral, בהיר), כמו ב-14 ===== */
+.mu {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0); --foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0); --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0); --muted: oklch(0.97 0 0); --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0); --border: oklch(0.922 0 0); --ring: oklch(0.708 0 0);
+  /* --sidebar-* מאותו globals.css, לתפריט-הצד (components/ui/sidebar.tsx) */
+  --sidebar: oklch(0.985 0 0); --sidebar-foreground: oklch(0.145 0 0); --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0); --sidebar-border: oklch(0.922 0 0);
+  /* Tailwind neutral, כמו ב-bento-grid.tsx */
+  --neutral-100: oklch(0.97 0 0); --neutral-200: oklch(0.922 0 0); --neutral-300: oklch(0.87 0 0); --neutral-400: oklch(0.708 0 0);
+  --neutral-500: oklch(0.556 0 0); --neutral-600: oklch(0.439 0 0); --neutral-700: oklch(0.371 0 0);
+  /* colorFrom / colorTo של האפקטים = גרדיאנט-המותג */
+  --color-from: #0131ff; --color-to: #01b0ff;
+  --orange: #ff9500; --orange-ink: #b45f00;
+  /* הקלילות של 10: פינות גדולות לכרטיסים (14: 14px; 10: 28px) */
+  --radius-card: 20px;
+  --shadow-bento: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.05);
+  background: var(--background); color: var(--foreground);
+  font-family: "Rag Sans", sans-serif; font-size: 16px; line-height: 1.5;
+}
+.mu h1, .mu h2, .mu h3, .mu p, .mu figure, .mu ul, .mu ol { margin: 0; }
+:where(.mu) a { color: inherit; text-decoration: none; }
+.mu svg.i { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.tnum { font-variant-numeric: tabular-nums; }
+.text-xs { font-size: 12px; line-height: 16px; } .text-sm { font-size: 14px; line-height: 20px; } .text-base { font-size: 16px; line-height: 24px; }
+.text-lg { font-size: 18px; line-height: 28px; }
+.font-medium { font-weight: 500; } .font-semibold { font-weight: 600; }
+.muted { color: var(--muted-foreground); } .n400 { color: var(--neutral-400); } .n700 { color: var(--neutral-700); }
+
+/* shadcn Button (new-york) */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; border-radius: calc(var(--radius) - 2px);
+  font: inherit; font-size: 14px; line-height: 20px; font-weight: 500; height: 36px; padding: 8px 16px; border: 1px solid transparent; cursor: pointer; transition: background .15s, color .15s; }
+.btn:has(> svg) { padding-inline: 12px; }
+.btn--default { background: var(--primary); color: var(--primary-foreground); box-shadow: 0 1px 2px 0 rgb(0 0 0 / .05); }
+.btn--default:hover { background: color-mix(in oklch, var(--primary) 90%, transparent); }
+.btn--outline { background: var(--background); border-color: var(--border); box-shadow: 0 1px 2px 0 rgb(0 0 0 / .05); }
+.btn--outline:hover { background: var(--accent); }
+.btn--ghost { background: transparent; }
+.btn--ghost:hover { background: rgb(0 0 0 / .05); }
+.btn--sm { height: 32px; gap: 6px; padding: 0 12px; }
+.btn--block { width: 100%; }
+.badge { display: inline-flex; align-items: center; gap: 4px; border-radius: calc(var(--radius) - 2px); border: 1px solid transparent; padding: 2px 8px; font-size: 12px; line-height: 16px; font-weight: 500; white-space: nowrap; }
+.badge--orange { background: rgb(255 149 0 / .12); color: var(--orange-ink); }
+.dot-orange { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); display: inline-block; flex-shrink: 0; }
+
+/* ===== הבמה: האובייקט היחיד שזז ===== */
+/* bento-grid.tsx: כרטיס לבן עם הצל המשולש; isolate כדי שה-multiply של האור יישאר בתוך הבמה */
+.stage { position: relative; overflow: hidden; isolation: isolate; border-radius: var(--radius-card); background: var(--background); box-shadow: var(--shadow-bento); }
+/* dot-pattern.tsx: width 16, height 16, cx 1, cy 1, cr 1, text-neutral-400/80; מסכה רדיאלית כמו ב-dot-pattern-demo.tsx */
+.stage__dots { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; color: rgb(163 163 163 / .8);
+  -webkit-mask-image: radial-gradient(var(--dots-r, 240px) circle at 50% 30%, #fff, transparent); mask-image: radial-gradient(var(--dots-r, 240px) circle at 50% 30%, #fff, transparent); }
+/* האור של המותג: /brand/aurora-glow.jpg; השחור שלו נעלם במסנן #aurora-unscreen, והוא מוכפל על הלבן ועל הנקודות */
+.stage__light { position: absolute; z-index: 1; inset-inline: -14%; bottom: var(--light-bottom, -16%); height: var(--light-h, 66%); pointer-events: none;
+  background: url("../brand/aurora-glow.jpg") center bottom / 100% 100% no-repeat;
+  filter: url(#aurora-unscreen); mix-blend-mode: multiply; opacity: .4;
+  transform-origin: 50% 100%; animation: stage-light 36s ease-in-out infinite alternate; }
+/* המבנה של @keyframes aurora (globals.css: חמש תחנות, ease-in-out, alternate), מואט ל-36 שניות ובמשרעת קטנה */
+@keyframes stage-light {
+  0%   { transform: translate3d(-5%, 0, 0) scale(1); }
+  25%  { transform: translate3d(2%, -5%, 0) scale(1.06); }
+  50%  { transform: translate3d(6%, -1%, 0) scale(1.02); }
+  75%  { transform: translate3d(0, -6%, 0) scale(1.07); }
+  100% { transform: translate3d(-4%, -2%, 0) scale(1); }
+}
+.stage__body { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+/* animated-shiny-text.tsx בתוך הגלולה (animated-shiny-text-demo.tsx); shimmerWidth 100 */
+.pill { display: inline-flex; border-radius: 999px; border: 1px solid rgb(0 0 0 / .05); background: var(--neutral-100); }
+.shiny { --shiny-width: 100px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 16px; color: rgb(82 82 82 / .7);
+  background-image: linear-gradient(to right, transparent, rgb(0 0 0 / .8) 50%, transparent); background-size: var(--shiny-width) 100%;
+  background-repeat: no-repeat; background-position: 0 0; -webkit-background-clip: text; background-clip: text; animation: shiny-text 8s infinite; }
+.shiny svg.i { color: var(--neutral-500); }
+@keyframes shiny-text { 0%, 90%, 100% { background-position: calc(-100% - var(--shiny-width)) 0; } 30%, 60% { background-position: calc(100% + var(--shiny-width)) 0; } }
+
+/* animated-gradient-text.tsx: speed 1 = bg-size 300%, from > via > to = Prod Blue > SaaS Blue > Prod Blue, gradient 8s linear */
+.stage__num { font-size: 60px; line-height: 1; font-weight: 600; letter-spacing: -0.03em; padding: 14px 0 8px; }
+.grad-text { --bg-size: 300%; display: inline; background-image: linear-gradient(to right, var(--color-from), var(--color-to), var(--color-from));
+  background-size: var(--bg-size) 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: gradient 8s linear infinite; }
+@keyframes gradient { to { background-position: var(--bg-size, 300%) 0; } }
+.stage__guest { font-size: 24px; line-height: 32px; font-weight: 600; letter-spacing: -0.03em; color: var(--neutral-700); }
+.stage__date { font-size: 16px; line-height: 24px; color: var(--muted-foreground); }
+
+/* ציר-הפרק: עיגולים ממוספרים 1 עד 7 כמו ה-steps של 12, שלושה מלאים בצבע-הפעולה */
+.axis-wrap { width: min(440px, 100%); margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
+.axis { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(7, 1fr); }
+.axis li { position: relative; display: grid; place-items: center; }
+.axis li + li::before { content: ""; position: absolute; top: 50%; inset-inline-start: -50%; width: 100%; height: 2px; margin-top: -1px; background: var(--neutral-200); }
+.axis b { position: relative; z-index: 1; width: var(--step, 28px); height: var(--step, 28px); border-radius: 999px; display: grid; place-items: center;
+  font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; background: var(--background); color: var(--neutral-500); box-shadow: inset 0 0 0 1.5px var(--neutral-200); }
+.axis .is-done b { background: var(--color-from); color: #fff; box-shadow: none; }
+.axis .is-done + .is-done::before { background: var(--color-from); }
+.axis .is-done + .is-now::before { background: linear-gradient(to left, var(--color-from), var(--neutral-200)); }
+.axis .is-now b { color: var(--foreground); box-shadow: inset 0 0 0 1.5px var(--color-from); }
+.axis-meta { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; line-height: 20px; }
+
+/* border-beam.tsx: גבול שקוף, מסכת padding-box/border-box ב-intersect, ריבוע שנוסע על offset-path rect() בגרדיאנט to-l; reverse כי ב-RTL הקרן נעה בכיוון הקריאה */
+.beam { position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit; border: var(--beam-w, 1.5px) solid transparent;
+  mask: linear-gradient(transparent, transparent) padding-box, linear-gradient(#000, #000) border-box; mask-composite: intersect; }
+.beam > i { position: absolute; top: 0; left: 0; display: block; width: var(--beam-size, 160px); aspect-ratio: 1;
+  background: linear-gradient(to left, var(--color-from), var(--color-to), transparent);
+  offset-path: rect(0 auto auto 0 round var(--beam-size, 160px)); offset-distance: 0%; animation: border-beam 8s linear infinite reverse; }
+@keyframes border-beam { to { offset-distance: 100%; } }
+
+/* ===== «חסר ממך»: כרטיס נפרד, לבן ומורם כמו הבמה, בלי שום תנועה ===== */
+.card { position: relative; border-radius: var(--radius-card); background: var(--background); box-shadow: var(--shadow-bento); }
+.todo-card { padding: 18px 20px 6px; }
+.todo-card__head { display: flex; align-items: center; gap: 8px; padding-bottom: 12px; }
+.todo-card__head h3 { font-size: 18px; line-height: 28px; font-weight: 600; letter-spacing: -0.02em; }
+.todo { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); }
+.todo__ic { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; background: var(--neutral-100); color: var(--neutral-600); flex-shrink: 0; }
+.todo__ic--orange { background: rgb(255 149 0 / .12); color: var(--orange-ink); }
+.todo__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.todo__row { display: flex; align-items: center; gap: 8px; }
+.todo.is-locked .todo__title { color: var(--neutral-400); }
+.todo.is-locked .todo__ic { background: transparent; border: 1px dashed var(--neutral-300); color: var(--neutral-400); }
+.todo .btn--block { margin-top: 2px; }
+
+/* ===== הווידג'טים המשניים: משטח טונאלי רך ופינות גדולות (הקלילות של 10), בלי צל ובלי תנועה ===== */
+.tile { position: relative; border-radius: var(--radius-card); background: var(--muted); padding: 20px; display: flex; flex-direction: column; gap: 2px; }
+.label { font-size: 14px; line-height: 20px; font-weight: 500; color: var(--muted-foreground); }
+.tile__title { font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.02em; color: var(--foreground); }
+.facts { list-style: none; padding: 0; margin-top: 10px !important; display: flex; flex-direction: column; gap: 8px; }
+.facts li { display: flex; align-items: center; gap: 10px; font-size: 14px; line-height: 20px; color: var(--neutral-700); }
+.facts svg.i { color: var(--neutral-500); }
+.tile__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.tile__thumb { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 14px; margin-bottom: 12px; }
+.tile__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
+.stat { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
+.stat__num { font-size: 52px; line-height: 1; font-weight: 500; letter-spacing: 0.02em; color: #000; }
+.stat__name { font-size: 16px; line-height: 24px; font-weight: 600; color: var(--neutral-700); margin-top: 8px; }
+/* animated-circular-progress-bar.tsx, עומד: 21% */
+.gauge { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+.gauge svg { width: 100%; height: 100%; transform: rotate(-90deg) scaleY(-1); }
+.gauge circle { fill: none; stroke-width: 10; stroke-linecap: round; }
+.gauge__track { stroke: var(--neutral-200); }
+.gauge__value { stroke: var(--color-from); stroke-dasharray: 251.33; stroke-dashoffset: 198.55; }
+.gauge__label { position: absolute; inset: 0; display: grid; place-items: center; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.quick { display: flex; flex-direction: column; gap: 10px; }
+.quick__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.qa { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 10px; border-radius: 16px; background: var(--muted); font-size: 14px; line-height: 20px; font-weight: 500; transition: background .15s; }
+.qa:hover { background: var(--neutral-200); }
+.qa__ic { width: 32px; height: 32px; border-radius: 999px; display: grid; place-items: center; background: var(--background); color: var(--neutral-700); flex-shrink: 0; }
+.quick--tile .qa { background: var(--background); height: 48px; }
+.quick--tile .qa:hover { background: var(--neutral-100); }
+.quick--tile .qa__ic { background: var(--muted); width: 28px; height: 28px; }
+
+/* marquee.tsx (pauseOnHover; ב-RTL המסלול זז ימינה) */
+.marquee { --duration: 80s; --gap: 16px; position: relative; display: flex; gap: var(--gap); overflow: hidden; padding: 8px; }
+.marquee__track { display: flex; flex-shrink: 0; gap: var(--gap); justify-content: space-around; animation: marquee var(--duration) linear infinite; }
+.marquee:hover .marquee__track { animation-play-state: paused; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(calc(100% + var(--gap))); } }
+.ep { width: 220px; flex-shrink: 0; border-radius: 14px; background: var(--background); padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+.ep img, .ep .ep__ph { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; display: block; }
+.ep .ep__ph { border: 1px dashed var(--neutral-300); background: var(--neutral-100); }
+.ep__title { font-size: 14px; line-height: 20px; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 40px; }
+.edge-fade { position: absolute; inset-block: 0; width: 10%; pointer-events: none; z-index: 1; }
+.edge-fade--start { inset-inline-start: 0; background: linear-gradient(to left, var(--muted), transparent); }
+.edge-fade--end { inset-inline-end: 0; background: linear-gradient(to right, var(--muted), transparent); }
+
+/* ===== טלפון ===== */
+.is-phone .scroll { height: 844px; overflow-y: auto; scrollbar-width: none; }
+.is-phone .scroll::-webkit-scrollbar { display: none; }
+.p-wrap { padding: 62px 16px 108px; display: flex; flex-direction: column; gap: 16px; }
+.p-head { display: flex; align-items: center; gap: 12px; padding: 0 4px 2px; }
+.p-head img.av { width: 40px; height: 40px; border-radius: 999px; object-fit: cover; }
+.p-head__name { font-size: 18px; line-height: 22px; font-weight: 600; letter-spacing: -0.03em; }
+.p-head__logo { height: 14px; margin-inline-start: auto; }
+.icon-btn { width: 36px; height: 36px; border-radius: calc(var(--radius) - 2px); display: grid; place-items: center; color: var(--neutral-600); transition: background .15s; }
+.icon-btn:hover { background: var(--accent); }
+.icon-btn svg.i { width: 20px; height: 20px; stroke-width: 1.75; }
+.is-phone .stage { --dots-r: 210px; --light-h: 62%; --light-bottom: -14%; padding: 26px 20px 22px; }
+.is-phone .stage .beam { --beam-size: 150px; }
+.p-tabs { position: absolute; inset-inline: 0; bottom: 0; z-index: 20; display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px 10px 26px;
+  background: rgb(255 255 255 / .86); -webkit-backdrop-filter: blur(12px) saturate(1.4); backdrop-filter: blur(12px) saturate(1.4); border-top: 1px solid var(--border); }
+.p-tab { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; line-height: 14px; font-weight: 500; color: var(--muted-foreground); }
+.p-tab__ic { position: relative; width: 52px; height: 30px; border-radius: 999px; display: grid; place-items: center; }
+.p-tab__ic svg.i { width: 21px; height: 21px; stroke-width: 1.75; }
+.p-tab.is-active { color: var(--foreground); font-weight: 600; }
+.p-tab.is-active .p-tab__ic { background: var(--accent); }
+.p-tab .dot-orange { position: absolute; top: 3px; inset-inline-end: 12px; box-shadow: 0 0 0 2px #fff; }
+
+/* ===== מחשב: תפריט-צד עם תוויות (components/ui/sidebar.tsx: רוחב 16rem, bg-sidebar, כפתור rounded-md, פעיל bg-sidebar-accent) ===== */
+.d-app { display: grid; grid-template-columns: 256px minmax(0, 1fr); height: 800px; }
+.sidebar { background: var(--sidebar); color: var(--sidebar-foreground); border-inline-end: 1px solid var(--sidebar-border); display: flex; flex-direction: column; padding: 18px 12px 14px; }
+.sidebar__brand { padding: 4px 10px 22px; }
+.sidebar__brand img { height: 18px; display: block; }
+.sidebar__show { display: flex; align-items: center; gap: 10px; padding: 0 10px 18px; }
+.sidebar__show img { width: 36px; height: 36px; border-radius: 999px; object-fit: cover; }
+.sb-menu { display: flex; flex-direction: column; gap: 2px; }
+.sb-item { display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 10px; border-radius: calc(var(--radius) - 2px); font-size: 14px; line-height: 20px; color: var(--neutral-700); transition: background .15s; }
+.sb-item:hover { background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); }
+.sb-item.is-active { background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); font-weight: 600; }
+.sb-item svg.i { color: var(--neutral-500); }
+.sb-item.is-active svg.i { color: var(--foreground); }
+.sb-item .dot-orange { margin-inline-start: -2px; }
+.sidebar__foot { margin-top: auto; }
+.d-main { position: relative; min-width: 0; height: 800px; }
+.d-main .scroll { height: 800px; overflow-y: auto; scrollbar-width: thin; }
+.d-wrap { padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 18px; }
+.d-head h1 { font-size: 26px; line-height: 32px; font-weight: 600; letter-spacing: -0.03em; }
+.d-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: stretch; }
+.span-2 { grid-column: span 2; } .span-3 { grid-column: 1 / -1; }
+.is-desktop .tile__expl { margin-top: auto; }
+.is-desktop .quick__grid { grid-template-columns: repeat(4, 1fr); }
+.is-desktop .stage { --beam-rest: 7%; --dots-r: 330px; --light-h: 70%; --light-bottom: -18%; --beam-size: 230px; padding: 28px 40px 26px; display: flex; flex-direction: column; justify-content: center; }
+.is-desktop .stage__num { font-size: 96px; letter-spacing: -0.035em; padding: 18px 0 10px; }
+.is-desktop .stage__guest { font-size: 30px; line-height: 36px; }
+.is-desktop .stage__date { font-size: 18px; line-height: 28px; margin-top: 2px; }
+.is-desktop .axis-wrap { margin-top: 24px; }
+.is-desktop .axis { --step: 32px; }
+.is-desktop .axis b { font-size: 13px; }
+.is-desktop .stat__num { font-size: 48px; }
+.eps { padding: 20px 0 12px; overflow: hidden; }
+.eps .label { padding: 0 20px 4px; }
+
+/* תקציב-האפקטים: ב-reduce הכול נעצר במצב הסופי */
+@media (prefers-reduced-motion: reduce) {
+  .grad-text, .beam > i, .shiny, .stage__light, .marquee__track { animation: none; }
+  .beam > i { offset-distance: var(--beam-rest, 3%); }
+  .shiny { background-image: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="lab-cap">
+  <div class="lab-cap__row">
+    <span class="lab-cap__title">17. הבמה חיה</span>
+    <a href="https://github.com/magicuidesign/magicui">github.com/magicuidesign/magicui</a>
+    <span class="lab-cap__meta">22,870 כוכבים, push אחרון 17.10.2026</span>
+    <span class="lab-cap__meta">וריאציה על 14: כל התנועה בבמה של הפרק הבא, כל השאר עומד</span>
+  </div>
+  <div class="lab-cap__budget">
+    <b>תקציב-האפקטים</b>
+    <p><b>הבמה, כל הזמן:</b> הגרדיאנט זורם על «פרק 19» בסבב של 8 שניות, קרן אחת מקיפה את מסגרת-הבמה ב-8 שניות, ברק עובר על «בעוד יומיים» פעם ב-8 שניות, ואור-המותג נע מאחור לאט מאוד (36 שניות לכל כיוון, אטימות 40%). רשת-הנקודות עומדת.</p>
+    <p><b>במחשב בלבד:</b> רשימת-הפרקים נגללת לאט (80 שניות לסבב) ונעצרת כשהעכבר עליה. זה האלמנט הזז השני והיחיד.</p>
+    <p><b>כל השאר עומד:</b> «חסר ממך», ההקלטה, עלה לאחרונה, המספר והפעולות בלי שום תנועה, גם לא במעבר-עכבר מלבד מצבי-כפתור. ב-prefers-reduced-motion הכול נעצר במצב הסופי.</p>
+  </div>
+  <p class="lab-cap__src">מקורות בריפו: <bdi dir="ltr">apps/www/registry/magicui/animated-gradient-text.tsx, dot-pattern.tsx, border-beam.tsx, animated-shiny-text.tsx, marquee.tsx</bdi>; הקיפריימים <bdi dir="ltr">gradient, shiny-text, marquee</bdi> מ-<bdi dir="ltr">apps/www/styles/globals.css</bdi>, ותנועת-האור בנויה על המבנה של <bdi dir="ltr">@keyframes aurora</bdi> שם. האור הוא <bdi dir="ltr">/brand/aurora-glow.jpg</bdi>: מסנן SVG הופך את השחור שלו לשקיפות, והוא מוכפל (multiply) על הלבן, כך שגם הנקודות נצבעות כשהוא עובר. תפריט-הצד לפי <bdi dir="ltr">apps/www/components/ui/sidebar.tsx</bdi>; השלד של 12, המשטחים הטונאליים והפינות של 10.</p>
+</header>
+
+<section class="lab-stage">
+  <div class="lab-label">טלפון <span dir="ltr">390×844</span></div>
+  <div class="device-phone">
+    <div class="screen mu is-phone">
+      <div class="island"></div>
+      <div class="scroll">
+        <div class="p-wrap">
+          <div class="p-head">
+            <img class="av" src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="">
+            <div>
+              <div class="p-head__name">הפיצוח</div>
+              <div class="text-sm muted">גיל לי-רן</div>
+            </div>
+            <img class="p-head__logo" src="../brand/wedo-logotype-black.svg" alt="wedo">
+            <a class="icon-btn" href="#" aria-label="הגדרות"><svg class="i"><use href="#lu-settings"/></svg></a>
+          </div>
+
+          <section class="stage" aria-label="הפרק הבא שעולה">
+            <svg class="stage__dots" aria-hidden="true"><rect width="100%" height="100%" fill="url(#dot-pattern)"/></svg>
+            <div class="stage__light" aria-hidden="true"></div>
+            <div class="stage__body">
+              <span class="pill"><span class="shiny text-sm"><svg class="i"><use href="#lu-calendar-days"/></svg>בעוד יומיים</span></span>
+              <h2 class="stage__num"><span class="grad-text">פרק 19</span></h2>
+              <p class="stage__guest">עם אורלי אורן</p>
+              <p class="stage__date">עולה ביום רביעי 28.10</p>
+              <div class="axis-wrap">
+                <ol class="axis" aria-label="3 מתוך 7"><li class="is-done"><b>1</b></li><li class="is-done"><b>2</b></li><li class="is-done"><b>3</b></li><li class="is-now"><b>4</b></li><li><b>5</b></li><li><b>6</b></li><li><b>7</b></li></ol>
+                <div class="axis-meta"><span class="font-medium tnum">3 מתוך 7</span><span class="muted">עכשיו: עריכה, ממתין לעורך</span></div>
+              </div>
+            </div>
+            <div class="beam" aria-hidden="true"><i></i></div>
+          </section>
+
+          <section class="card todo-card">
+            <div class="todo-card__head"><span class="dot-orange"></span><h3>חסר ממך</h3></div>
+            <div class="todo">
+              <span class="todo__ic todo__ic--orange"><svg class="i"><use href="#lu-pencil"/></svg></span>
+              <div class="todo__main"><div class="todo__row"><span class="text-sm font-medium">שם לפרק</span><span class="badge badge--orange">פתוח</span></div><span class="text-xs muted">לפני העריכה</span></div>
+              <a class="btn btn--default btn--block" href="#"><svg class="i"><use href="#lu-pencil"/></svg>לבחור שם</a>
+            </div>
+            <div class="todo">
+              <span class="todo__ic"><svg class="i"><use href="#lu-image"/></svg></span>
+              <div class="todo__main"><span class="text-sm font-medium">תמונת-מרואיין</span><span class="text-xs muted">התקבלה ב-25.10, ממתינה לאישור</span></div>
+            </div>
+            <div class="todo is-locked">
+              <span class="todo__ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span>
+              <div class="todo__main"><span class="text-sm font-medium todo__title">בחירת-טיזרים</span><span class="text-xs muted">אחרי העריכה</span></div>
+            </div>
+            <div class="todo is-locked">
+              <span class="todo__ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span>
+              <div class="todo__main"><span class="text-sm font-medium todo__title">אישור-לפרסום</span><span class="text-xs muted">בהמשך</span></div>
+            </div>
+          </section>
+
+          <section class="tile">
+            <p class="label">ההקלטה הבאה</p>
+            <h3 class="tile__title">חמישי 29.10, 11:00</h3>
+            <ul class="facts">
+              <li><svg class="i"><use href="#lu-clock"/></svg>11:00 עד 13:00</li>
+              <li><svg class="i"><use href="#lu-map-pin"/></svg>אולפן רימקס</li>
+              <li><svg class="i"><use href="#lu-users"/></svg>עם נועה בוקרה ורלי זדרב</li>
+              <li><svg class="i"><use href="#lu-user"/></svg>מפיק: יהלי</li>
+            </ul>
+            <div class="tile__actions">
+              <a class="btn btn--outline btn--sm" href="#">לשנות מועד</a>
+              <a class="btn btn--outline btn--sm" href="#">להוסיף פרטי-אורח</a>
+              <a class="btn btn--ghost btn--sm" href="#">לתאם הקלטה נוספת</a>
+            </div>
+          </section>
+
+          <section class="tile">
+            <img class="tile__thumb" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="">
+            <p class="label">עלה לאחרונה</p>
+            <p class="text-sm n700">פרק 18 עם אלכס קפ</p>
+            <h3 class="tile__title" style="text-wrap:balance">איך מקפיצים עסק בתיווך עם AI</h3>
+            <div class="tile__foot"><span class="text-xs muted">עלה ב-14.10</span><a class="btn btn--outline btn--sm" href="#"><svg class="i"><use href="#lu-share-2"/></svg>לשתף</a></div>
+          </section>
+
+          <section class="tile">
+            <p class="label">איך התוכנית עושה</p>
+            <div class="stat">
+              <div>
+                <p class="stat__num tnum">5,941</p>
+                <p class="stat__name">צפיות ביוטיוב</p>
+              </div>
+              <div class="gauge" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="gauge__track" cx="50" cy="50" r="40"/><circle class="gauge__value" cx="50" cy="50" r="40"/></svg><span class="gauge__label">21%</span></div>
+            </div>
+            <div class="tile__expl">
+              <p class="text-sm n700" style="margin-top:6px">כל פרק נצפה בממוצע 21% מאורכו</p>
+              <p class="text-xs muted" style="margin-top:4px">נכון ל-25.10.2026, 18 פרקים</p>
+            </div>
+          </section>
+
+          <section class="quick">
+            <h3 class="label" style="padding:0 4px">פעולות מהירות</h3>
+            <div class="quick__grid">
+              <a class="qa" href="#"><span class="qa__ic"><svg class="i"><use href="#lu-calendar-plus"/></svg></span>לתאם הקלטה</a>
+              <a class="qa" href="#"><span class="qa__ic"><svg class="i"><use href="#lu-upload"/></svg></span>להעלות תמונה</a>
+              <a class="qa" href="#"><span class="qa__ic"><svg class="i"><use href="#lu-pencil"/></svg></span>לבחור שם</a>
+              <a class="qa" href="#"><span class="qa__ic"><svg class="i"><use href="#lu-share-2"/></svg></span>לשתף פרק</a>
+            </div>
+          </section>
+        </div>
+      </div>
+      <nav class="p-tabs" aria-label="ניווט">
+        <a class="p-tab is-active" href="#" aria-current="page"><span class="p-tab__ic"><svg class="i"><use href="#lu-house"/></svg></span>בית</a>
+        <a class="p-tab" href="#"><span class="p-tab__ic"><svg class="i"><use href="#lu-target"/></svg></span>אסטרטגיה</a>
+        <a class="p-tab" href="#"><span class="p-tab__ic"><svg class="i"><use href="#lu-mic"/></svg><span class="dot-orange"></span></span>הפקה</a>
+        <a class="p-tab" href="#"><span class="p-tab__ic"><svg class="i"><use href="#lu-send"/></svg></span>הפצה</a>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<section class="lab-stage">
+  <div class="lab-label">מחשב <span dir="ltr">1280×800</span></div>
+  <div class="device-desktop">
+    <div class="device-desktop__bar"><i></i><i></i><i></i></div>
+    <div class="screen mu is-desktop">
+      <div class="d-app">
+        <aside class="sidebar">
+          <div class="sidebar__brand"><img src="../brand/wedo-logotype-black.svg" alt="wedo"></div>
+          <div class="sidebar__show">
+            <img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="">
+            <div><div class="text-sm font-semibold">הפיצוח</div><div class="text-xs muted">גיל לי-רן</div></div>
+          </div>
+          <nav class="sb-menu" aria-label="ניווט">
+            <a class="sb-item is-active" href="#" aria-current="page"><svg class="i"><use href="#lu-house"/></svg>בית</a>
+            <a class="sb-item" href="#"><svg class="i"><use href="#lu-target"/></svg>אסטרטגיה</a>
+            <a class="sb-item" href="#"><svg class="i"><use href="#lu-mic"/></svg>הפקה<span class="dot-orange"></span></a>
+            <a class="sb-item" href="#"><svg class="i"><use href="#lu-send"/></svg>הפצה</a>
+          </nav>
+          <nav class="sb-menu sidebar__foot" aria-label="הגדרות">
+            <a class="sb-item" href="#"><svg class="i"><use href="#lu-settings"/></svg>הגדרות</a>
+          </nav>
+        </aside>
+
+        <main class="d-main">
+          <div class="scroll">
+            <div class="d-wrap">
+              <header class="d-head"><h1>בית</h1></header>
+
+              <div class="d-grid">
+                <section class="stage span-2" aria-label="הפרק הבא שעולה">
+                  <svg class="stage__dots" aria-hidden="true"><rect width="100%" height="100%" fill="url(#dot-pattern)"/></svg>
+                  <div class="stage__light" aria-hidden="true"></div>
+                  <div class="stage__body">
+                    <span class="pill"><span class="shiny text-sm"><svg class="i"><use href="#lu-calendar-days"/></svg>בעוד יומיים</span></span>
+                    <h2 class="stage__num"><span class="grad-text">פרק 19</span></h2>
+                    <p class="stage__guest">עם אורלי אורן</p>
+                    <p class="stage__date">עולה ביום רביעי 28.10</p>
+                    <div class="axis-wrap">
+                      <ol class="axis" aria-label="3 מתוך 7"><li class="is-done"><b>1</b></li><li class="is-done"><b>2</b></li><li class="is-done"><b>3</b></li><li class="is-now"><b>4</b></li><li><b>5</b></li><li><b>6</b></li><li><b>7</b></li></ol>
+                      <div class="axis-meta"><span class="font-medium tnum">3 מתוך 7</span><span class="muted">עכשיו: עריכה, ממתין לעורך</span></div>
+                    </div>
+                  </div>
+                  <div class="beam" aria-hidden="true"><i></i></div>
+                </section>
+
+                <section class="card todo-card">
+                  <div class="todo-card__head"><span class="dot-orange"></span><h3>חסר ממך</h3></div>
+                  <div class="todo">
+                    <span class="todo__ic todo__ic--orange"><svg class="i"><use href="#lu-pencil"/></svg></span>
+                    <div class="todo__main"><div class="todo__row"><span class="text-sm font-medium">שם לפרק</span><span class="badge badge--orange">פתוח</span></div><span class="text-xs muted">לפני העריכה</span></div>
+                    <a class="btn btn--default btn--block" href="#"><svg class="i"><use href="#lu-pencil"/></svg>לבחור שם</a>
+                  </div>
+                  <div class="todo">
+                    <span class="todo__ic"><svg class="i"><use href="#lu-image"/></svg></span>
+                    <div class="todo__main"><span class="text-sm font-medium">תמונת-מרואיין</span><span class="text-xs muted">התקבלה ב-25.10, ממתינה לאישור</span></div>
+                  </div>
+                  <div class="todo is-locked">
+                    <span class="todo__ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span>
+                    <div class="todo__main"><span class="text-sm font-medium todo__title">בחירת-טיזרים</span><span class="text-xs muted">אחרי העריכה</span></div>
+                  </div>
+                  <div class="todo is-locked">
+                    <span class="todo__ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span>
+                    <div class="todo__main"><span class="text-sm font-medium todo__title">אישור-לפרסום</span><span class="text-xs muted">בהמשך</span></div>
+                  </div>
+                </section>
+
+                <section class="tile">
+                  <p class="label">ההקלטה הבאה</p>
+                  <h3 class="tile__title">חמישי 29.10, 11:00</h3>
+                  <ul class="facts">
+                    <li><svg class="i"><use href="#lu-clock"/></svg>11:00 עד 13:00</li>
+                    <li><svg class="i"><use href="#lu-map-pin"/></svg>אולפן רימקס</li>
+                    <li><svg class="i"><use href="#lu-users"/></svg>עם נועה בוקרה ורלי זדרב</li>
+                    <li><svg class="i"><use href="#lu-user"/></svg>מפיק: יהלי</li>
+                  </ul>
+                  <div class="tile__actions">
+                    <a class="btn btn--outline btn--sm" href="#">לשנות מועד</a>
+                    <a class="btn btn--outline btn--sm" href="#">להוסיף פרטי-אורח</a>
+                    <a class="btn btn--ghost btn--sm" href="#">לתאם הקלטה נוספת</a>
+                  </div>
+                </section>
+
+                <section class="tile">
+                  <img class="tile__thumb" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="">
+                  <p class="label">עלה לאחרונה</p>
+                  <p class="text-sm n700">פרק 18 עם אלכס קפ</p>
+                  <h3 class="tile__title" style="text-wrap:balance">איך מקפיצים עסק בתיווך עם AI</h3>
+                  <div class="tile__foot"><span class="text-xs muted">עלה ב-14.10</span><a class="btn btn--outline btn--sm" href="#"><svg class="i"><use href="#lu-share-2"/></svg>לשתף</a></div>
+                </section>
+
+                <section class="tile">
+                  <p class="label">איך התוכנית עושה</p>
+                  <div class="stat">
+                    <div>
+                      <p class="stat__num tnum">5,941</p>
+                      <p class="stat__name">צפיות ביוטיוב</p>
+                    </div>
+                    <div class="gauge" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="gauge__track" cx="50" cy="50" r="40"/><circle class="gauge__value" cx="50" cy="50" r="40"/></svg><span class="gauge__label">21%</span></div>
+                  </div>
+                  <div class="tile__expl">
+                    <p class="text-sm n700" style="margin-top:6px">כל פרק נצפה בממוצע 21% מאורכו</p>
+                    <p class="text-xs muted" style="margin-top:4px">נכון ל-25.10.2026, 18 פרקים</p>
+                  </div>
+                </section>
+
+                <section class="tile quick quick--tile span-3">
+                  <h3 class="label">פעולות מהירות</h3>
+                  <div class="quick__grid">
+                    <a class="qa" href="#"><span class="qa__ic"><svg class="i"><use href="#lu-calendar-plus"/></svg></span>לתאם הקלטה</a>
+                    <a class="qa" href="#"><span class="qa__ic"><svg class="i"><use href="#lu-upload"/></svg></span>להעלות תמונה</a>
+                    <a class="qa" href="#"><span class="qa__ic"><svg class="i"><use href="#lu-pencil"/></svg></span>לבחור שם</a>
+                    <a class="qa" href="#"><span class="qa__ic"><svg class="i"><use href="#lu-share-2"/></svg></span>לשתף פרק</a>
+                  </div>
+                </section>
+
+                <section class="tile eps span-3">
+                  <p class="label">פרקים</p>
+                  <div class="marquee">
+                    <div class="edge-fade edge-fade--start"></div><div class="edge-fade edge-fade--end"></div>
+                    <div class="marquee__track">
+                      <figure class="ep"><span class="ep__ph"></span><span class="text-xs muted">פרק 19, אורלי אורן, בעריכה</span><span class="ep__title n400">(עוד אין שם)</span></figure>
+                      <figure class="ep"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 18, אלכס קפ, עלה ב-14.10</span><span class="ep__title">איך מקפיצים עסק בתיווך עם AI</span></figure>
+                      <figure class="ep"><img src="https://i.ytimg.com/vi/P463I2IV9Xo/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 17, אהרון וחביבה איציקזון, עלה ב-7.10</span><span class="ep__title">איך ממשיכים מכאן?</span></figure>
+                      <figure class="ep"><img src="https://i.ytimg.com/vi/epNQhrsKjxI/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 16, ונסה סיימן, עלה ב-30.9</span><span class="ep__title">חמשת הכללים למשא ומתן</span></figure>
+                      <figure class="ep"><img src="https://i.ytimg.com/vi/fCG8ceGVDRo/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 15, דקלה ביבי, עלה ב-23.9</span><span class="ep__title">איך לעשות שינוי קריירה בגיל 40</span></figure>
+                      <figure class="ep"><img src="https://i.ytimg.com/vi/pp-nzLON8vY/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 14, אריק זאבי, עלה ב-16.9</span><span class="ep__title">מי נשאר ומי נשבר</span></figure>
+                      <figure class="ep"><img src="https://i.ytimg.com/vi/Sh0J8sIBfHs/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 13, איתי דוד, עלה ב-9.9</span><span class="ep__title">הסוד הכי שמור ברי/מקס</span></figure>
+                    </div>
+                    <div class="marquee__track" aria-hidden="true"></div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- הגדרות לאפקטים של הבמה: רשת-הנקודות (dot-pattern.tsx) והמסנן שמעלים את השחור של אור-המותג -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <pattern id="dot-pattern" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="currentColor"/></pattern>
+    <!-- unscreen: הערוץ הבהיר של כל פיקסל הוא כמות-האור; התוצאה = הצבע + לבן − הערוץ הבהיר, כלומר אותו אור כשהוא על לבן במקום על שחור -->
+    <filter id="aurora-unscreen" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 1 0" result="r"/>
+      <feColorMatrix in="SourceGraphic" type="matrix" values="0 1 0 0 0  0 1 0 0 0  0 1 0 0 0  0 0 0 1 0" result="g"/>
+      <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 1 0 0  0 0 1 0 0  0 0 1 0 0  0 0 0 1 0" result="b"/>
+      <feBlend in="r" in2="g" mode="lighten" result="rg"/>
+      <feBlend in="rg" in2="b" mode="lighten" result="max"/>
+      <feComposite in="SourceGraphic" in2="max" operator="arithmetic" k1="0" k2="1" k3="-1" k4="1"/>
+    </filter>
+  </defs>
+</svg>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><symbol id="lu-calendar-days" viewBox="0 0 24 24"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /> <path d="M8 14h.01" /> <path d="M12 14h.01" /> <path d="M16 14h.01" /> <path d="M8 18h.01" /> <path d="M12 18h.01" /> <path d="M16 18h.01" /></symbol><symbol id="lu-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></symbol><symbol id="lu-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /> <circle cx="9" cy="9" r="2" /> <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></symbol><symbol id="lu-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /> <path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol><symbol id="lu-share-2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3" /> <circle cx="6" cy="12" r="3" /> <circle cx="18" cy="19" r="3" /> <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /> <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" /></symbol><symbol id="lu-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" /> <path d="M19 10v2a7 7 0 0 1-14 0v-2" /> <line x1="12" x2="12" y1="19" y2="22" /></symbol><symbol id="lu-calendar-plus" viewBox="0 0 24 24"><path d="M8 2v4" /> <path d="M16 2v4" /> <path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8" /> <path d="M3 10h18" /> <path d="M16 19h6" /> <path d="M19 16v6" /></symbol><symbol id="lu-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /> <polyline points="17 8 12 3 7 8" /> <line x1="12" x2="12" y1="3" y2="15" /></symbol><symbol id="lu-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /> <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></symbol><symbol id="lu-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="6" /> <circle cx="12" cy="12" r="2" /></symbol><symbol id="lu-send" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" /> <path d="m21.854 2.147-10.94 10.939" /></symbol><symbol id="lu-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /> <circle cx="12" cy="12" r="3" /></symbol><symbol id="lu-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></symbol><symbol id="lu-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" /></symbol><symbol id="lu-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <circle cx="9" cy="7" r="4" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <path d="M16 3.13a4 4 0 0 1 0 7.75" /></symbol><symbol id="lu-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /> <circle cx="12" cy="7" r="4" /></symbol></svg>
+<script>
+  if (new URLSearchParams(location.search).has('full')) document.documentElement.classList.add('full');
+
+  // marquee.tsx: repeat the children so the loop is seamless
+  document.querySelectorAll('.marquee').forEach(function (m) {
+    var tracks = m.querySelectorAll('.marquee__track');
+    for (var i = 1; i < tracks.length; i++) tracks[i].innerHTML = tracks[0].innerHTML;
+  });
+</script>
+</body>
+</html>

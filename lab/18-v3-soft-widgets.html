@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מעבדת-טעם 18: ווידג'טים רכים</title>
+<script>
+  // ?full פורש את המסכים לגובה מלא; mp-anim נדלק רק כשמותר לזוז, ובלעדיו הדף הוא המצב הסופי
+  (function () {
+    var d = document.documentElement;
+    if (new URLSearchParams(location.search).has('full')) d.classList.add('full');
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) d.classList.add('mp-anim');
+  })();
+</script>
+<style>
+@font-face { font-family: "Rag Sans"; src: url("./fonts/RagSans-VF.ttf"); font-weight: 100 900; font-display: block; }
+
+/* ===== מעטפת-המעבדה (לא חלק מהמוקאפ) ===== */
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: #e7e7ea; color: #1d1d1f; font-family: "Rag Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+.lab-cap { background: #fff; border-bottom: 1px solid #d9d9de; padding: 10px 20px 12px; font-size: 12px; line-height: 1.5; }
+.lab-cap__row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; max-width: 1320px; margin: 0 auto; }
+.lab-cap__title { font-size: 15px; font-weight: 700; }
+.lab-cap a { color: #0131ff; text-decoration: none; }
+.lab-cap__meta { color: #6e6e73; font-variant-numeric: tabular-nums; }
+.lab-cap__points { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 4px 20px; max-width: 1320px; margin: 6px auto 0; color: #3a3a3c; }
+.lab-cap__points p { margin: 0; }
+.lab-cap__points b { color: #1d1d1f; font-weight: 600; }
+.lab-stage { padding: 28px 20px 8px; display: flex; flex-direction: column; align-items: safe center; gap: 10px; max-width: 100%; overflow-x: auto; }
+.lab-label { font-size: 12px; color: #6e6e73; font-variant-numeric: tabular-nums; }
+.device-phone { padding: 11px; border-radius: 66px; background: #0d0d0f; box-shadow: 0 0 0 1px #2b2b2e, 0 30px 60px -20px rgba(0,0,0,.45); }
+.device-phone .screen { width: 390px; height: 844px; border-radius: 55px; overflow: hidden; position: relative; isolation: isolate; }
+.island { position: absolute; top: 11px; inset-inline-start: 50%; transform: translateX(50%); width: 124px; height: 36px; border-radius: 20px; background: #000; z-index: 50; }
+.device-desktop { width: 1282px; border-radius: 12px; overflow: hidden; background: #f4f4f5; box-shadow: 0 0 0 1px #d4d4d8, 0 30px 70px -24px rgba(0,0,0,.35); }
+.device-desktop__bar { height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 14px; direction: ltr; }
+.device-desktop__bar i { width: 12px; height: 12px; border-radius: 50%; background: #d4d4d8; display: block; }
+.device-desktop .screen { width: 1280px; height: 800px; margin: 0 1px 1px; overflow: hidden; position: relative; isolation: isolate; }
+html.full .device-phone .screen, html.full .device-desktop .screen { height: auto; }
+html.full .scroll { height: auto !important; overflow: visible !important; }
+html.full .d-main { height: auto; }
+.lab-cap__budget { max-width: 1320px; margin: 8px auto 0; padding: 8px 12px 9px; border-radius: 10px; background: #f5f5f7; color: #3a3a3c; display: grid; gap: 2px; }
+.lab-cap__budget > b { font-size: 12.5px; color: #1d1d1f; font-weight: 700; }
+.lab-cap__budget p { margin: 0; }
+.lab-cap__budget p b { color: #1d1d1f; font-weight: 600; }
+.lab-cap code { font: inherit; font-size: 11.5px; direction: ltr; unicode-bidi: isolate; color: #1d1d1f; background: #f0f0f2; border-radius: 4px; padding: 0 4px; }
+
+/* ===== Magic UI: טוקנים של apps/www/styles/globals.css (shadcn new-york, neutral, ברירת-מחדל בהירה), כמו ב-14 ===== */
+.mu {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0); --foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0); --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0); --muted: oklch(0.97 0 0); --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0); --border: oklch(0.922 0 0); --ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.985 0 0);
+  --neutral-100: oklch(0.97 0 0); --neutral-200: oklch(0.922 0 0); --neutral-300: oklch(0.87 0 0); --neutral-400: oklch(0.708 0 0);
+  --neutral-500: oklch(0.556 0 0); --neutral-600: oklch(0.439 0 0); --neutral-700: oklch(0.371 0 0);
+  /* צבעי-המותג */
+  --prod-blue: #0131ff; --main-tint: #e6eaff; --main-shade: #00051a; --off-black: #1d1d1f;
+  --orange: #ff9500; --orange-ink: #b45f00;
+  /* הווידג'טים הרכים: המשטחים הטונאליים של 10, בכרומה נמוכה */
+  --w-radius: 28px; --w-inner-radius: 20px;
+  --w-stage: var(--main-tint);              /* תכלת-רך */
+  --w-missing: oklch(0.968 0.022 68);       /* כתום-רך מאוד */
+  --w-rec: oklch(0.956 0.006 72);           /* ניטרלי חם-רך */
+  --w-plain: #fff;                          /* לבן למספר */
+  --w-tile: oklch(0.97 0.002 286);
+  --w-shadow: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.05); /* הצל המשולש של bento-grid.tsx ב-14 */
+  /* תנועה, מהערכים של motion-primitives */
+  --ease-in-out: cubic-bezier(0.42, 0, 0.58, 1); /* 'easeInOut' של Motion: ברירת-המחדל של TextEffect ו-InView */
+  --spring: cubic-bezier(0.2, 0.9, 0.3, 1);       /* גיבוי לדפדפן בלי linear() */
+  --ink: var(--off-black); --ink-2: oklch(0.44 0 0); --ink-3: oklch(0.56 0 0);
+  background: var(--background); color: var(--ink);
+  font-family: "Rag Sans", sans-serif; font-size: 16px; line-height: 1.5;
+}
+/* { type: 'spring', bounce: 0, duration: 0.25 } (app/docs/dialog/dialog-custom-exit.tsx): findSpring נותן ω=36.93, נדגם כל 10ms ל-linear() כמו ש-Motion עושה ב-WAAPI */
+@supports (transition-timing-function: linear(0, 1)) {
+  .mu { --spring: linear(0, 0.0535, 0.1694, 0.3039, 0.4346, 0.5509, 0.6493, 0.7298, 0.794, 0.8443, 0.8832, 0.9129, 0.9354, 0.9523, 0.9649, 0.9743, 0.9812, 0.9863, 0.9901, 0.9928, 0.9948, 0.9963, 0.9973, 0.9981, 0.9986, 1); }
+}
+.mu h1, .mu h2, .mu h3, .mu p, .mu figure, .mu ul, .mu ol { margin: 0; padding: 0; }
+.mu ul, .mu ol { list-style: none; }
+:where(.mu) a { color: inherit; text-decoration: none; }
+.mu svg.i { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.mu :focus-visible { outline: 2px solid var(--prod-blue); outline-offset: 2px; }
+.tnum { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.dot-orange { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); display: inline-block; flex-shrink: 0; }
+
+/* כפתורים: shadcn Button של 14, בצורת גלולה */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; border-radius: 999px; border: 0;
+  font: inherit; font-size: 14px; line-height: 20px; font-weight: 500; height: 36px; padding: 0 16px; cursor: pointer; color: var(--ink);
+  transition: background-color .15s, box-shadow .15s, transform .25s var(--spring); }
+.btn:has(> svg) { padding-inline: 14px 16px; }
+.btn--action { background: var(--prod-blue); color: #fff; font-weight: 600; box-shadow: 0 1px 2px rgb(1 49 255 / .25); }
+.btn--action:hover { background: color-mix(in oklch, var(--prod-blue) 88%, black); }
+.btn--white { background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / .05); }
+.btn--white:hover { background: color-mix(in oklch, #fff 94%, var(--ink)); }
+.btn--line { background: transparent; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .12); }
+.btn--line:hover { background: rgb(255 255 255 / .55); }
+.btn--tonal { background: var(--neutral-100); }
+.btn--tonal:hover { background: var(--neutral-200); }
+.btn--sm { height: 32px; font-size: 13px; }
+.btn--block { width: 100%; height: 44px; font-size: 15px; }
+.badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 2px 9px; font-size: 12px; line-height: 16px; font-weight: 600; white-space: nowrap; }
+.badge--orange { background: rgb(255 149 0 / .16); color: var(--orange-ink); }
+.badge--tint { background: var(--main-tint); color: var(--main-shade); }
+
+/* ===== הווידג'ט הרך ===== */
+.w { position: relative; display: flex; flex-direction: column; border-radius: var(--w-radius); padding: 20px; color: var(--ink);
+  transition: transform .25s var(--spring), box-shadow .25s var(--spring); }
+.w--stage { background: var(--w-stage); --ink: var(--main-shade); --ink-2: oklch(0.42 0.05 272); --ink-3: oklch(0.54 0.045 272); }
+.w--missing { background: var(--w-missing); --ink-2: oklch(0.45 0.025 62); --ink-3: oklch(0.57 0.025 62); }
+.w--rec { background: var(--w-rec); --ink-2: oklch(0.44 0.008 72); --ink-3: oklch(0.56 0.008 72); }
+.w--plain { background: var(--w-plain); box-shadow: var(--w-shadow); }
+.w-label { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--ink-3); }
+.is-press { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+/* ריחוף 2px ולחיצה 0.985, בקפיץ bounce 0 */
+@media (prefers-reduced-motion: no-preference) {
+  @media (hover: hover) {
+    .is-press:hover { transform: translateY(-2px); }
+    .w.is-press:hover { box-shadow: 0 12px 26px -16px rgb(0 5 26 / .28); }
+    .w--plain.is-press:hover { box-shadow: var(--w-shadow), 0 12px 26px -16px rgb(0 5 26 / .2); }
+    .is-press:active:not(:has(.btn:active)) { transform: translateY(-2px) scale(.985); }
+  }
+  @media (hover: none) { .is-press:active:not(:has(.btn:active)) { transform: scale(.985); } }
+  .btn:active { transform: scale(.985); }
+}
+
+/* הבמה: הפרק הבא */
+.stage { gap: 0; }
+.stage__top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px; background: rgb(255 255 255 / .82); color: var(--ink); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.chip svg.i { width: 14px; height: 14px; color: var(--ink-2); }
+.stage__title { margin-top: 14px; }
+.stage__ep { font-size: 60px; line-height: 1; font-weight: 600; letter-spacing: -0.035em; padding-bottom: 6px; }
+.stage__guest { font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -0.02em; }
+.stage__date { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 15px; line-height: 22px; color: var(--ink-2); }
+.stage__date svg.i { color: var(--ink-3); }
+.stage__progress { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+.stage__foot { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-size: 14px; line-height: 20px; color: var(--ink-2); }
+.stage__foot b { font-weight: 600; color: var(--ink); }
+
+/* ציר-הפרק: עיגולים ממוספרים 1 עד 7, כמו steps של 12 */
+.axis { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.axis li { position: relative; display: grid; place-items: center; height: 28px; }
+.axis li::before { content: ""; position: absolute; top: 50%; height: 2px; margin-top: -1px; inset-inline-start: -50%; width: 100%; background: rgb(255 255 255 / .9); }
+.axis li:first-child::before { content: none; }
+.axis li span { position: relative; z-index: 1; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; background: #fff; color: var(--ink-3); }
+.axis li.is-done span { background: var(--main-shade); color: #fff; }
+.axis li.is-done::before, .axis li.is-now::before { background: var(--main-shade); }
+.axis li.is-now span { color: var(--main-shade); box-shadow: inset 0 0 0 1.5px var(--main-shade); }
+
+/* חסר ממך */
+.w-head { display: flex; align-items: center; gap: 8px; font-size: 18px; line-height: 26px; font-weight: 600; letter-spacing: -0.01em; }
+.todo-main { margin-top: 14px; padding: 14px; border-radius: var(--w-inner-radius); background: #fff; box-shadow: 0 1px 2px rgb(180 95 0 / .06); display: flex; flex-direction: column; gap: 14px; }
+.todo-row { display: flex; align-items: center; gap: 12px; }
+.todo-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.todo-t { display: flex; align-items: center; gap: 8px; font-size: 15px; line-height: 22px; font-weight: 600; }
+.todo-s { font-size: 13px; line-height: 18px; color: var(--ink-3); }
+.ic { width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; background: rgb(255 255 255 / .75); color: var(--ink-2); }
+.ic--orange { background: rgb(255 149 0 / .14); color: var(--orange-ink); }
+.todo-list { margin-top: 6px; }
+.todo-list .todo-row { padding: 12px 2px; border-top: 1px solid rgb(180 95 0 / .12); }
+.todo-list .todo-row:first-child { border-top: 0; }
+.todo-chev { color: var(--ink-3); }
+.todo-row.is-locked .todo-t { color: var(--ink-3); font-weight: 500; }
+.todo-row.is-locked .ic { background: transparent; border: 1px dashed rgb(120 80 30 / .28); color: var(--ink-3); }
+
+/* ההקלטה הבאה */
+.rec__when { margin-top: 4px; font-size: 26px; line-height: 32px; font-weight: 600; letter-spacing: -0.025em; }
+.facts { margin-top: 14px; display: flex; flex-direction: column; gap: 9px; }
+.facts li { display: flex; align-items: center; gap: 10px; font-size: 15px; line-height: 22px; color: var(--ink-2); }
+.facts svg.i { color: var(--ink-3); }
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+
+/* עלה לאחרונה */
+.recent { padding: 10px; }
+.recent__img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 18px; background: var(--neutral-100); }
+.recent__body { padding: 12px 10px 10px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.recent__title { font-size: 19px; line-height: 25px; font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; }
+.recent__meta { font-size: 14px; line-height: 20px; color: var(--ink-2); }
+.recent__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 10px; }
+
+/* המספר */
+.stat__num { margin-top: 6px; font-size: 64px; line-height: 1; font-weight: 600; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.stat__label { margin-top: 8px; font-size: 16px; line-height: 24px; font-weight: 600; }
+.stat__sentence { font-size: 14px; line-height: 20px; color: var(--ink-2); }
+.stat__bar { margin-top: 12px; height: 4px; border-radius: 999px; background: var(--neutral-200); overflow: hidden; }
+.stat__bar i { display: block; height: 100%; border-radius: inherit; background: var(--off-black); }
+.stat__asof { margin-top: 10px; font-size: 12px; line-height: 16px; color: var(--ink-3); }
+
+/* פעולות מהירות */
+.quick__head { padding: 0 4px 10px; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tile { display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 10px; border-radius: var(--w-inner-radius); background: var(--w-tile);
+  font-size: 14px; line-height: 20px; font-weight: 500; transition: transform .25s var(--spring), background-color .15s; }
+.tile:hover { background: color-mix(in oklch, var(--w-tile) 94%, var(--ink)); }
+.tile__ic { width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; background: #fff; color: var(--ink-2); flex-shrink: 0; box-shadow: 0 1px 2px rgb(0 0 0 / .05); }
+
+/* ===== InView + TextEffect (המצב הנסתר קיים רק כשמותר לזוז; בלעדיו הדף הוא המצב הסופי) ===== */
+html.mp-anim .mp-item { --item-delay: calc(var(--i, 0) * 70ms); opacity: 0; filter: blur(4px); transform: translateY(20px); }
+html.mp-anim .mp-in .mp-item { opacity: 1; filter: blur(0); transform: none;
+  transition: opacity .3s var(--ease-in-out), filter .3s var(--ease-in-out), transform .3s var(--ease-in-out); transition-delay: var(--item-delay); }
+.te-seg { display: inline-block; white-space: pre; }
+html.mp-anim .te-seg { opacity: 0; filter: blur(12px); }
+html.mp-anim .mp-in .te-seg { animation: mp-te-blur .3s var(--ease-in-out) calc(var(--item-delay, 0ms) + 120ms + var(--te-i, 0) * 50ms) both; }
+@keyframes mp-te-blur { from { opacity: 0; filter: blur(12px); } to { opacity: 1; filter: blur(0); } }
+html.mp-anim .mp-done .mp-item, html.mp-anim .mp-done .te-seg { opacity: 1; filter: none; transform: none; transition: none; animation: none; }
+
+/* ===== טלפון ===== */
+.is-phone .scroll { height: 844px; overflow-y: auto; scrollbar-width: none; }
+.is-phone .scroll::-webkit-scrollbar { display: none; }
+.p-wrap { padding: 62px 16px 112px; display: flex; flex-direction: column; gap: 12px; }
+.p-head { display: flex; align-items: center; gap: 12px; padding: 0 4px 4px; }
+.p-head img.av { width: 40px; height: 40px; border-radius: 999px; object-fit: cover; }
+.p-head__t { font-size: 18px; line-height: 22px; font-weight: 600; letter-spacing: -0.03em; }
+.p-head__s { font-size: 14px; line-height: 20px; color: var(--muted-foreground); }
+.p-head__logo { height: 14px; margin-inline-start: auto; }
+.icon-btn { width: 36px; height: 36px; border-radius: 999px; display: grid; place-items: center; color: var(--neutral-600); }
+.icon-btn:hover { background: var(--neutral-100); }
+.icon-btn svg.i { width: 18px; height: 18px; }
+.p-quick { padding-top: 8px; }
+.tabbar { position: absolute; inset-inline: 0; bottom: 0; z-index: 20; height: 84px; padding: 6px 8px 28px; display: grid; grid-template-columns: repeat(4, 1fr);
+  background: rgb(255 255 255 / .88); -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4); border-top: 1px solid rgb(0 0 0 / .06); }
+.tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--neutral-500); }
+.tab__ic { position: relative; width: 52px; height: 28px; border-radius: 999px; display: grid; place-items: center; transition: background-color .2s; }
+.tab__ic svg.i { width: 20px; height: 20px; }
+.tab__lbl { font-size: 11px; line-height: 14px; font-weight: 500; }
+.tab.is-active { color: var(--main-shade); }
+.tab.is-active .tab__ic { background: var(--main-tint); }
+.tab.is-active .tab__lbl { font-weight: 600; }
+.tab .badge-dot { position: absolute; top: 2px; inset-inline-end: 12px; width: 8px; height: 8px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 2px #fff; }
+.home-ind { position: absolute; bottom: 8px; inset-inline-start: 50%; transform: translateX(50%); width: 134px; height: 5px; border-radius: 3px; background: #000; z-index: 30; }
+
+/* ===== מחשב: תפריט-צד עם תוויות ===== */
+.d-shell { display: grid; grid-template-columns: 240px minmax(0, 1fr); height: 800px; }
+html.full .d-shell { height: auto; }
+.side { display: flex; flex-direction: column; gap: 4px; padding: 20px 12px 16px; background: var(--sidebar); border-inline-end: 1px solid var(--border); }
+.side__logo { height: 18px; width: auto; align-self: flex-start; margin: 6px 12px 22px; }
+.side__show { display: flex; align-items: center; gap: 10px; padding: 0 10px 16px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+.side__show img { width: 36px; height: 36px; border-radius: 999px; object-fit: cover; }
+.side__t { font-size: 15px; line-height: 20px; font-weight: 600; letter-spacing: -0.02em; }
+.side__s { font-size: 13px; line-height: 18px; color: var(--muted-foreground); }
+.side__nav { display: flex; flex-direction: column; gap: 2px; }
+.side__item { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px; border-radius: 12px; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--neutral-600); transition: background-color .15s, color .15s; }
+.side__item svg.i { width: 18px; height: 18px; }
+.side__item:hover { background: rgb(0 0 0 / .04); color: var(--ink); }
+.side__item.is-active { background: var(--main-tint); color: var(--main-shade); font-weight: 600; }
+.side__dot { margin-inline-start: auto; }
+.side__foot { margin-top: auto; }
+.d-main { position: relative; min-width: 0; height: 800px; }
+.d-main .scroll { height: 800px; overflow-y: auto; scrollbar-width: thin; }
+html.full .d-main { height: auto; }
+.d-wrap { padding: 26px 32px 40px; display: flex; flex-direction: column; gap: 20px; }
+.d-head h1 { font-size: 28px; line-height: 34px; font-weight: 600; letter-spacing: -0.03em; }
+.d-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.d-grid > .mp-item { display: flex; flex-direction: column; min-width: 0; }
+.d-grid > .mp-item > .w { flex: 1; }
+.d-span-2 { grid-column: span 2; } .d-span-3 { grid-column: 1 / -1; }
+.is-desktop .w { padding: 24px; }
+.is-desktop .stage { padding: 28px 32px 30px; }
+.is-desktop .stage__ep { font-size: 88px; letter-spacing: -0.04em; padding-bottom: 8px; }
+.is-desktop .stage__guest { font-size: 30px; line-height: 36px; }
+.is-desktop .stage__date { font-size: 16px; }
+.is-desktop .stage__progress { margin-top: auto; padding-top: 24px; }
+.is-desktop .axis li, .is-desktop .axis li span { height: 32px; }
+.is-desktop .axis li span { width: 32px; font-size: 13px; }
+.is-desktop .missing { padding: 20px; }
+.is-desktop .rec__when { font-size: 24px; line-height: 30px; }
+.is-desktop .recent { padding: 10px; }
+.is-desktop .stat__num { font-size: 72px; }
+.is-desktop .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.is-desktop .quick__head { padding-top: 4px; }
+.eps { padding: 20px 16px 12px; }
+.eps .w-label { padding: 0 8px 8px; }
+.ep-row { display: grid; grid-template-columns: 88px 64px minmax(0, 1fr) 210px 110px; align-items: center; gap: 16px; padding: 8px; border-radius: 16px; transition: background-color .15s; }
+.ep-row + .ep-row { box-shadow: 0 -1px 0 var(--neutral-100); }
+.ep-row:hover { background: var(--neutral-100); box-shadow: none; }
+.ep-row:hover + .ep-row { box-shadow: none; }
+.ep-thumb { width: 88px; aspect-ratio: 16 / 9; border-radius: 10px; object-fit: cover; display: block; background: var(--neutral-100); }
+.ep-thumb--empty { display: grid; place-items: center; color: var(--neutral-400); border: 1px dashed var(--neutral-300); background: transparent; }
+.ep-no { font-size: 13px; color: var(--ink-3); }
+.ep-title { font-size: 15px; line-height: 22px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ep-title.is-none { color: var(--ink-3); font-weight: 400; }
+.ep-guest { font-size: 14px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ep-state { font-size: 13px; color: var(--ink-3); text-align: end; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.mp-anim .mp-item, html.mp-anim .te-seg { opacity: 1 !important; filter: none !important; transform: none !important; transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="lab-cap">
+  <div class="lab-cap__row">
+    <span class="lab-cap__title">18. ווידג'טים רכים</span>
+    <a href="https://github.com/ibelick/motion-primitives">github.com/ibelick/motion-primitives</a>
+    <span class="lab-cap__meta">6,828 כוכבים, push אחרון 28.09.2026</span>
+    <span class="lab-cap__meta">וריאציה על 14, עם הקלילות של 10 בלי הצורות והגלים שלו</span>
+  </div>
+  <div class="lab-cap__budget">
+    <b>תקציב-האפקטים</b>
+    <p><b>בכניסה, פעם אחת:</b> הווידג'טים עולים ברצף אחד מלמעלה למטה, 70ms בין ווידג'ט לווידג'ט ו-300ms לכל אחד (שקיפות, טשטוש 4px, 20px); הכותרת «פרק 19 עם אורלי אורן» מתבהרת מילה-מילה (טשטוש 12px, 300ms למילה).</p>
+    <p><b>מספר אחד:</b> 5,941 עולה מ-0 בקפיץ בלי קפיצה (bounce 0, שתי שניות), כשהוא נכנס לתצוגה, פעם אחת.</p>
+    <p><b>בתגובה ליד:</b> ריחוף מרים ווידג'ט ב-2px ולחיצה מכווצת ל-0.985, בקפיץ של 250ms בלי קפיצה. שום דבר לא זז ברקע; עם reduced-motion הכול עומד במצבו הסופי.</p>
+  </div>
+  <div class="lab-cap__points">
+    <p><b>מאיפה.</b> TextEffect מ-<code>components/core/text-effect.tsx</code> (per="word", preset="blur": מקטע 0.3s, 0.05s בין מקטעים, ורווח נספר כמקטע). InView מ-<code>components/core/in-view.tsx</code> עם once ו-staggerChildren כמו ב-<code>app/docs/in-view/in-view-images-grid.tsx</code> (שם 0.09, כאן 0.07), והמצב הנסתר מה-preset ‏blur-slide של <code>components/core/animated-group.tsx</code>.</p>
+    <p><b>המספר והקפיץ.</b> AnimatedNumber מ-<code>components/core/animated-number.tsx</code> עם <code>{ bounce: 0, duration: 2000 }</code> של <code>app/docs/animated-number/animated-number-basic.tsx</code>, מופעל בכניסה לתצוגה כמו ב-<code>animated-number-in-view.tsx</code>. הריחוף והלחיצה בקפיץ <code>{ bounce: 0, duration: 0.25 }</code> של <code>app/docs/dialog/dialog-custom-exit.tsx</code>, מתורגם ל-CSS ‏linear(). הכול משוחזר בלי ספריות.</p>
+    <p><b>המשטחים.</b> תכלת-רך (Main Tint) לבמה, כתום-רך מאוד ל«חסר ממך», ניטרלי חם-רך להקלטה, לבן עם הצל המשולש של 14 למספר ולפרק האחרון. פינות 28px לווידג'ט ו-20px למה שבתוכו. ציר-הפרק בעיגולים 1 עד 7 כמו ב-12.</p>
+    <p><b>לא ילדותי.</b> הגוונים בכרומה נמוכה, וצבע מלא רק בשלושה מקומות: «לבחור שם» ב-Prod Blue, הנקודה הכתומה, והשלבים שעברו בכחול-הכהה של המותג. בלי צורות, בלי גרדיאנט, בלי קפיצה בתנועה. גופן: Rag Sans כמו ב-14, 600 עם ריווח שלילי, ספרות שוות-רוחב.</p>
+  </div>
+</header>
+
+<section class="lab-stage">
+  <div class="lab-label">טלפון <span dir="ltr">390×844</span></div>
+  <div class="device-phone">
+    <div class="screen mu is-phone">
+      <div class="island"></div>
+      <div class="scroll">
+        <div class="p-wrap mp-group">
+          <div class="p-head">
+            <img class="av" src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="">
+            <div>
+              <div class="p-head__t">הפיצוח</div>
+              <div class="p-head__s">גיל לי-רן</div>
+            </div>
+            <img class="p-head__logo" src="../brand/wedo-logotype-black.svg" alt="wedo">
+            <a class="icon-btn" href="#" aria-label="הגדרות"><svg class="i"><use href="#lu-settings"/></svg></a>
+          </div>
+
+          <section class="mp-item" style="--i:0">
+            <a class="w w--stage stage is-press" href="#">
+              <div class="stage__top">
+                <span class="w-label">הפרק הבא שעולה</span>
+                <span class="chip"><svg class="i"><use href="#lu-calendar-days"/></svg>בעוד יומיים</span>
+              </div>
+              <div class="stage__title te">
+                <h2 class="stage__ep" data-te-line>פרק 19</h2>
+                <p class="stage__guest" data-te-line>עם אורלי אורן</p>
+              </div>
+              <p class="stage__date">עולה ביום רביעי 28.10</p>
+              <div class="stage__progress">
+                <ol class="axis" aria-label="3 מתוך 7"><li class="is-done"><span>1</span></li><li class="is-done"><span>2</span></li><li class="is-done"><span>3</span></li><li class="is-now"><span>4</span></li><li><span>5</span></li><li><span>6</span></li><li><span>7</span></li></ol>
+                <div class="stage__foot"><b class="tnum">3 מתוך 7</b><span>עכשיו: עריכה, ממתין לעורך</span></div>
+              </div>
+            </a>
+          </section>
+
+          <section class="mp-item" style="--i:1">
+            <div class="w w--missing missing">
+              <h3 class="w-head"><span class="dot-orange"></span>חסר ממך</h3>
+              <div class="todo-main">
+                <div class="todo-row">
+                  <span class="ic ic--orange"><svg class="i"><use href="#lu-pencil"/></svg></span>
+                  <div class="todo-txt"><span class="todo-t">שם לפרק <span class="badge badge--orange">פתוח</span></span><span class="todo-s">לפני העריכה</span></div>
+                </div>
+                <a class="btn btn--action btn--block" href="#"><svg class="i"><use href="#lu-pencil"/></svg>לבחור שם</a>
+              </div>
+              <ul class="todo-list">
+                <li class="todo-row"><span class="ic"><svg class="i"><use href="#lu-image"/></svg></span><div class="todo-txt"><span class="todo-t">תמונת-מרואיין</span><span class="todo-s">התקבלה ב-25.10, ממתינה לאישור</span></div><svg class="i todo-chev"><use href="#lu-chevron-left"/></svg></li>
+                <li class="todo-row is-locked"><span class="ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span><div class="todo-txt"><span class="todo-t">בחירת-טיזרים</span><span class="todo-s">אחרי העריכה</span></div></li>
+                <li class="todo-row is-locked"><span class="ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span><div class="todo-txt"><span class="todo-t">אישור-לפרסום</span><span class="todo-s">בהמשך</span></div></li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="mp-item" style="--i:2">
+            <div class="w w--rec rec is-press">
+              <span class="w-label">ההקלטה הבאה</span>
+              <p class="rec__when tnum">חמישי 29.10, 11:00</p>
+              <ul class="facts">
+                <li><svg class="i"><use href="#lu-clock"/></svg>11:00 עד 13:00</li>
+                <li><svg class="i"><use href="#lu-map-pin"/></svg>אולפן רימקס</li>
+                <li><svg class="i"><use href="#lu-users"/></svg>עם נועה בוקרה ורלי זדרב</li>
+                <li><svg class="i"><use href="#lu-user"/></svg>מפיק: יהלי</li>
+              </ul>
+              <div class="btn-row">
+                <a class="btn btn--white" href="#">לשנות מועד</a>
+                <a class="btn btn--white" href="#">להוסיף פרטי-אורח</a>
+                <a class="btn btn--line" href="#">לתאם הקלטה נוספת</a>
+              </div>
+            </div>
+          </section>
+
+          <section class="mp-item" style="--i:3">
+            <div class="w w--plain recent is-press">
+              <img class="recent__img" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="">
+              <div class="recent__body">
+                <span class="w-label">עלה לאחרונה</span>
+                <h3 class="recent__title">איך מקפיצים עסק בתיווך עם AI</h3>
+                <p class="recent__meta">פרק 18 עם אלכס קפ</p>
+                <div class="recent__foot"><span class="w-label tnum">עלה ב-14.10</span><a class="btn btn--tonal btn--sm" href="#"><svg class="i"><use href="#lu-share-2"/></svg>לשתף</a></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="mp-item" style="--i:4">
+            <div class="w w--plain stat is-press">
+              <span class="w-label">איך התוכנית עושה</span>
+              <p class="stat__num"><span class="anum" data-value="5941">5,941</span></p>
+              <p class="stat__label">צפיות ביוטיוב</p>
+              <p class="stat__sentence">כל פרק נצפה בממוצע 21% מאורכו</p>
+              <div class="stat__bar" aria-hidden="true"><i style="width:21%"></i></div>
+              <p class="stat__asof tnum">נכון ל-25.10.2026, 18 פרקים</p>
+            </div>
+          </section>
+
+          <section class="mp-item p-quick" style="--i:5">
+            <h3 class="w-label quick__head">פעולות מהירות</h3>
+            <div class="tiles">
+              <a class="tile is-press" href="#"><span class="tile__ic"><svg class="i"><use href="#lu-calendar-plus"/></svg></span>לתאם הקלטה</a>
+              <a class="tile is-press" href="#"><span class="tile__ic"><svg class="i"><use href="#lu-upload"/></svg></span>להעלות תמונה</a>
+              <a class="tile is-press" href="#"><span class="tile__ic"><svg class="i"><use href="#lu-pencil"/></svg></span>לבחור שם</a>
+              <a class="tile is-press" href="#"><span class="tile__ic"><svg class="i"><use href="#lu-share-2"/></svg></span>לשתף פרק</a>
+            </div>
+          </section>
+        </div>
+      </div>
+      <nav class="tabbar" aria-label="ניווט">
+        <a class="tab is-active" href="#" aria-current="page"><span class="tab__ic"><svg class="i"><use href="#lu-house"/></svg></span><span class="tab__lbl">בית</span></a>
+        <a class="tab" href="#"><span class="tab__ic"><svg class="i"><use href="#lu-target"/></svg></span><span class="tab__lbl">אסטרטגיה</span></a>
+        <a class="tab" href="#"><span class="tab__ic"><svg class="i"><use href="#lu-mic"/></svg><span class="badge-dot"></span></span><span class="tab__lbl">הפקה</span></a>
+        <a class="tab" href="#"><span class="tab__ic"><svg class="i"><use href="#lu-send"/></svg></span><span class="tab__lbl">הפצה</span></a>
+      </nav>
+      <span class="home-ind" aria-hidden="true"></span>
+    </div>
+  </div>
+</section>
+
+<section class="lab-stage">
+  <div class="lab-label">מחשב <span dir="ltr">1280×800</span></div>
+  <div class="device-desktop">
+    <div class="device-desktop__bar"><i></i><i></i><i></i></div>
+    <div class="screen mu is-desktop">
+      <div class="d-shell">
+        <aside class="side">
+          <img class="side__logo" src="../brand/wedo-logotype-black.svg" alt="wedo">
+          <div class="side__show">
+            <img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="">
+            <div><div class="side__t">הפיצוח</div><div class="side__s">גיל לי-רן</div></div>
+          </div>
+          <nav class="side__nav" aria-label="ניווט">
+            <a class="side__item is-active" href="#" aria-current="page"><svg class="i"><use href="#lu-house"/></svg>בית</a>
+            <a class="side__item" href="#"><svg class="i"><use href="#lu-target"/></svg>אסטרטגיה</a>
+            <a class="side__item" href="#"><svg class="i"><use href="#lu-mic"/></svg>הפקה<span class="dot-orange side__dot" role="img" aria-label="חסר ממך"></span></a>
+            <a class="side__item" href="#"><svg class="i"><use href="#lu-send"/></svg>הפצה</a>
+          </nav>
+          <a class="side__item side__foot" href="#"><svg class="i"><use href="#lu-settings"/></svg>הגדרות</a>
+        </aside>
+
+        <main class="d-main">
+          <div class="scroll">
+            <div class="d-wrap">
+              <header class="d-head"><h1>בית</h1></header>
+              <div class="d-grid mp-group">
+                <section class="mp-item d-span-2" style="--i:0">
+                  <a class="w w--stage stage is-press" href="#">
+                    <div class="stage__top">
+                      <span class="w-label">הפרק הבא שעולה</span>
+                      <span class="chip"><svg class="i"><use href="#lu-calendar-days"/></svg>בעוד יומיים</span>
+                    </div>
+                    <div class="stage__title te">
+                      <h2 class="stage__ep" data-te-line>פרק 19</h2>
+                      <p class="stage__guest" data-te-line>עם אורלי אורן</p>
+                    </div>
+                    <p class="stage__date">עולה ביום רביעי 28.10</p>
+                    <div class="stage__progress">
+                      <ol class="axis" aria-label="3 מתוך 7"><li class="is-done"><span>1</span></li><li class="is-done"><span>2</span></li><li class="is-done"><span>3</span></li><li class="is-now"><span>4</span></li><li><span>5</span></li><li><span>6</span></li><li><span>7</span></li></ol>
+                      <div class="stage__foot"><b class="tnum">3 מתוך 7</b><span>עכשיו: עריכה, ממתין לעורך</span></div>
+                    </div>
+                  </a>
+                </section>
+
+                <section class="mp-item" style="--i:1">
+                  <div class="w w--missing missing">
+                    <h3 class="w-head"><span class="dot-orange"></span>חסר ממך</h3>
+                    <div class="todo-main">
+                      <div class="todo-row">
+                        <span class="ic ic--orange"><svg class="i"><use href="#lu-pencil"/></svg></span>
+                        <div class="todo-txt"><span class="todo-t">שם לפרק <span class="badge badge--orange">פתוח</span></span><span class="todo-s">לפני העריכה</span></div>
+                      </div>
+                      <a class="btn btn--action btn--block" href="#" style="height:40px"><svg class="i"><use href="#lu-pencil"/></svg>לבחור שם</a>
+                    </div>
+                    <ul class="todo-list">
+                      <li class="todo-row"><span class="ic"><svg class="i"><use href="#lu-image"/></svg></span><div class="todo-txt"><span class="todo-t">תמונת-מרואיין</span><span class="todo-s">התקבלה ב-25.10, ממתינה לאישור</span></div><svg class="i todo-chev"><use href="#lu-chevron-left"/></svg></li>
+                      <li class="todo-row is-locked"><span class="ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span><div class="todo-txt"><span class="todo-t">בחירת-טיזרים</span><span class="todo-s">אחרי העריכה</span></div></li>
+                      <li class="todo-row is-locked"><span class="ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span><div class="todo-txt"><span class="todo-t">אישור-לפרסום</span><span class="todo-s">בהמשך</span></div></li>
+                    </ul>
+                  </div>
+                </section>
+
+                <section class="mp-item" style="--i:2">
+                  <div class="w w--rec rec is-press">
+                    <span class="w-label">ההקלטה הבאה</span>
+                    <p class="rec__when tnum">חמישי 29.10, 11:00</p>
+                    <ul class="facts">
+                      <li><svg class="i"><use href="#lu-clock"/></svg>11:00 עד 13:00</li>
+                      <li><svg class="i"><use href="#lu-map-pin"/></svg>אולפן רימקס</li>
+                      <li><svg class="i"><use href="#lu-users"/></svg>עם נועה בוקרה ורלי זדרב</li>
+                      <li><svg class="i"><use href="#lu-user"/></svg>מפיק: יהלי</li>
+                    </ul>
+                    <div class="btn-row" style="margin-top:auto; padding-top:18px">
+                      <a class="btn btn--white btn--sm" href="#">לשנות מועד</a>
+                      <a class="btn btn--white btn--sm" href="#">להוסיף פרטי-אורח</a>
+                      <a class="btn btn--line btn--sm" href="#">לתאם הקלטה נוספת</a>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="mp-item" style="--i:3">
+                  <div class="w w--plain recent is-press">
+                    <img class="recent__img" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="">
+                    <div class="recent__body">
+                      <span class="w-label">עלה לאחרונה</span>
+                      <h3 class="recent__title">איך מקפיצים עסק בתיווך עם AI</h3>
+                      <p class="recent__meta">פרק 18 עם אלכס קפ</p>
+                      <div class="recent__foot"><span class="w-label tnum">עלה ב-14.10</span><a class="btn btn--tonal btn--sm" href="#"><svg class="i"><use href="#lu-share-2"/></svg>לשתף</a></div>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="mp-item" style="--i:4">
+                  <div class="w w--plain stat is-press">
+                    <span class="w-label">איך התוכנית עושה</span>
+                    <p class="stat__num"><span class="anum" data-value="5941">5,941</span></p>
+                    <p class="stat__label">צפיות ביוטיוב</p>
+                    <p class="stat__sentence">כל פרק נצפה בממוצע 21% מאורכו</p>
+                    <div class="stat__bar" aria-hidden="true"><i style="width:21%"></i></div>
+                    <p class="stat__asof tnum" style="margin-top:auto; padding-top:10px">נכון ל-25.10.2026, 18 פרקים</p>
+                  </div>
+                </section>
+
+                <section class="mp-item d-span-3" style="--i:5">
+                  <h3 class="w-label quick__head">פעולות מהירות</h3>
+                  <div class="tiles">
+                    <a class="tile is-press" href="#"><span class="tile__ic"><svg class="i"><use href="#lu-calendar-plus"/></svg></span>לתאם הקלטה</a>
+                    <a class="tile is-press" href="#"><span class="tile__ic"><svg class="i"><use href="#lu-upload"/></svg></span>להעלות תמונה</a>
+                    <a class="tile is-press" href="#"><span class="tile__ic"><svg class="i"><use href="#lu-pencil"/></svg></span>לבחור שם</a>
+                    <a class="tile is-press" href="#"><span class="tile__ic"><svg class="i"><use href="#lu-share-2"/></svg></span>לשתף פרק</a>
+                  </div>
+                </section>
+
+                <section class="mp-item d-span-3" style="--i:6">
+                  <div class="w w--plain eps">
+                    <h3 class="w-label">פרקים</h3>
+                    <ul>
+                      <li class="ep-row"><span class="ep-thumb ep-thumb--empty"><svg class="i"><use href="#lu-image"/></svg></span><span class="ep-no tnum">פרק 19</span><span class="ep-title is-none">(עוד אין שם)</span><span class="ep-guest">אורלי אורן</span><span class="ep-state"><span class="badge badge--tint">בעריכה</span></span></li>
+                      <li class="ep-row"><img class="ep-thumb" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""><span class="ep-no tnum">פרק 18</span><span class="ep-title">איך מקפיצים עסק בתיווך עם AI</span><span class="ep-guest">אלכס קפ</span><span class="ep-state tnum">עלה ב-14.10</span></li>
+                      <li class="ep-row"><img class="ep-thumb" src="https://i.ytimg.com/vi/P463I2IV9Xo/mqdefault.jpg" alt=""><span class="ep-no tnum">פרק 17</span><span class="ep-title">איך ממשיכים מכאן?</span><span class="ep-guest">אהרון וחביבה איציקזון</span><span class="ep-state tnum">עלה ב-7.10</span></li>
+                      <li class="ep-row"><img class="ep-thumb" src="https://i.ytimg.com/vi/epNQhrsKjxI/mqdefault.jpg" alt=""><span class="ep-no tnum">פרק 16</span><span class="ep-title">חמשת הכללים למשא ומתן</span><span class="ep-guest">ונסה סיימן</span><span class="ep-state tnum">עלה ב-30.9</span></li>
+                      <li class="ep-row"><img class="ep-thumb" src="https://i.ytimg.com/vi/fCG8ceGVDRo/mqdefault.jpg" alt=""><span class="ep-no tnum">פרק 15</span><span class="ep-title">איך לעשות שינוי קריירה בגיל 40</span><span class="ep-guest">דקלה ביבי</span><span class="ep-state tnum">עלה ב-23.9</span></li>
+                      <li class="ep-row"><img class="ep-thumb" src="https://i.ytimg.com/vi/pp-nzLON8vY/mqdefault.jpg" alt=""><span class="ep-no tnum">פרק 14</span><span class="ep-title">מי נשאר ומי נשבר</span><span class="ep-guest">אריק זאבי</span><span class="ep-state tnum">עלה ב-16.9</span></li>
+                      <li class="ep-row"><img class="ep-thumb" src="https://i.ytimg.com/vi/Sh0J8sIBfHs/mqdefault.jpg" alt=""><span class="ep-no tnum">פרק 13</span><span class="ep-title">הסוד הכי שמור ברי/מקס</span><span class="ep-guest">איתי דוד</span><span class="ep-state tnum">עלה ב-9.9</span></li>
+                    </ul>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+</section>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><symbol id="lu-calendar-days" viewBox="0 0 24 24"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /> <path d="M8 14h.01" /> <path d="M12 14h.01" /> <path d="M16 14h.01" /> <path d="M8 18h.01" /> <path d="M12 18h.01" /> <path d="M16 18h.01" /></symbol><symbol id="lu-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></symbol><symbol id="lu-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /> <circle cx="9" cy="9" r="2" /> <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></symbol><symbol id="lu-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /> <path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol><symbol id="lu-share-2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3" /> <circle cx="6" cy="12" r="3" /> <circle cx="18" cy="19" r="3" /> <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /> <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" /></symbol><symbol id="lu-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" /> <path d="M19 10v2a7 7 0 0 1-14 0v-2" /> <line x1="12" x2="12" y1="19" y2="22" /></symbol><symbol id="lu-calendar-plus" viewBox="0 0 24 24"><path d="M8 2v4" /> <path d="M16 2v4" /> <path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8" /> <path d="M3 10h18" /> <path d="M16 19h6" /> <path d="M19 16v6" /></symbol><symbol id="lu-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /> <polyline points="17 8 12 3 7 8" /> <line x1="12" x2="12" y1="3" y2="15" /></symbol><symbol id="lu-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /> <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></symbol><symbol id="lu-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="6" /> <circle cx="12" cy="12" r="2" /></symbol><symbol id="lu-send" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" /> <path d="m21.854 2.147-10.94 10.939" /></symbol><symbol id="lu-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /> <circle cx="12" cy="12" r="3" /></symbol><symbol id="lu-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" /></symbol><symbol id="lu-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" /></symbol><symbol id="lu-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <circle cx="9" cy="7" r="4" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <path d="M16 3.13a4 4 0 0 1 0 7.75" /></symbol><symbol id="lu-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /> <circle cx="12" cy="7" r="4" /></symbol><symbol id="lu-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></symbol></svg>
+<script>
+(function () {
+  var html = document.documentElement;
+  if (!html.classList.contains('mp-anim')) return; // reduced-motion: the markup already is the final, static state
+
+  var STAGGER = 70;                                 // staggerChildren 0.07 (in-view-images-grid.tsx: 0.09)
+  var ENTER = 300;                                  // { duration: 0.3, ease: 'easeInOut' } (in-view-basic.tsx)
+  var TE_DELAY = 120, TE_STEP = 50, TE_SEG = 300;   // text-effect.tsx: delay, stagger 0.05 per segment, segment 0.3s
+
+  // TextEffect per="word": splitText() is text.split(/(\s+)/), so each whitespace run is a segment of its own
+  document.querySelectorAll('.te').forEach(function (te) {
+    var idx = 0, lastSeg = 0;
+    te.querySelectorAll('[data-te-line]').forEach(function (line) {
+      var text = line.textContent.trim();
+      var frag = document.createDocumentFragment();
+      var sr = document.createElement('span');
+      sr.className = 'sr-only'; sr.textContent = text; frag.appendChild(sr);
+      text.split(/(\s+)/).forEach(function (seg) {
+        if (!seg) return;
+        if (/^\s+$/.test(seg)) { frag.appendChild(document.createTextNode(' ')); idx++; return; }
+        var s = document.createElement('span');
+        s.className = 'te-seg'; s.setAttribute('aria-hidden', 'true');
+        s.style.setProperty('--te-i', idx); lastSeg = idx; idx++;
+        s.textContent = seg; frag.appendChild(s);
+      });
+      idx++; // the line break stands for the space in "פרק 19 עם אורלי אורן"
+      line.textContent = ''; line.appendChild(frag);
+    });
+    te.dataset.teLast = lastSeg;
+  });
+
+  // AnimatedNumber: useSpring(value, { bounce: 0, duration: 2000 }), display = Math.round(v).toLocaleString().
+  // The constants are what motion's findSpring() derives for bounce 0 (critically damped, 12 Newton steps).
+  function criticalOmega(durationMs) {
+    var T = durationMs / 1000, w = 5 / T;
+    for (var k = 1; k < 12; k++) {
+      var e = Math.exp(-w * T);
+      w = w - (-0.001 + e * (w * T + 1)) / (e * (0 - w) * T * T);
+    }
+    return w;
+  }
+  var OMEGA = criticalOmega(2000);
+  var fmt = new Intl.NumberFormat('en-US');
+  function countUp(el) {
+    var target = Number(el.dataset.value), t0 = null;
+    function step(now) {
+      if (t0 === null) t0 = now;
+      var t = (now - t0) / 1000;
+      var shown = Math.round(target - target * Math.exp(-OMEGA * t) * (1 + OMEGA * t));
+      el.textContent = fmt.format(Math.min(shown, target));
+      if (shown < target) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  document.querySelectorAll('.anum').forEach(function (el) { el.textContent = '0'; });
+
+  function whenInView(el, margin, cb) {
+    if (!('IntersectionObserver' in window)) { cb(); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { io.disconnect(); cb(); } });
+    }, { rootMargin: margin });
+    io.observe(el);
+  }
+
+  function itemIndex(item) { return parseInt(item.style.getPropertyValue('--i'), 10) || 0; }
+
+  function startGroup(group) {
+    var t0 = performance.now(), last = 0, teEnd = 0;
+    group.classList.add('mp-in');
+    group.querySelectorAll('.mp-item').forEach(function (it) { last = Math.max(last, itemIndex(it)); });
+    group.querySelectorAll('.te').forEach(function (te) {
+      var start = itemIndex(te.closest('.mp-item')) * STAGGER + TE_DELAY;
+      teEnd = Math.max(teEnd, start + Number(te.dataset.teLast || 0) * TE_STEP + TE_SEG);
+    });
+    // once everything has landed, drop the filters so the text renders crisp
+    setTimeout(function () { group.classList.add('mp-done'); }, Math.max(last * STAGGER + ENTER, teEnd) + 120);
+    // the number counts when it is itself in view (animated-number-in-view.tsx), never before its widget starts entering
+    group.querySelectorAll('.anum').forEach(function (el) {
+      var startAt = t0 + itemIndex(el.closest('.mp-item')) * STAGGER;
+      whenInView(el, '0px', function () {
+        setTimeout(function () { countUp(el); }, Math.max(0, startAt - performance.now()));
+      });
+    });
+  }
+
+  // InView with once, viewOptions { once: true, margin: '0px 0px -250px 0px' } as in in-view-images-grid.tsx
+  document.querySelectorAll('.mp-group').forEach(function (g) {
+    whenInView(g, '0px 0px -250px 0px', function () { startGroup(g); });
+  });
+})();
+</script>
+</body>
+</html>
