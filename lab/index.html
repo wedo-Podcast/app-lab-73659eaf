@@ -83,10 +83,10 @@
   async function poll() {
     for (const [slug, { el, title }] of [...pending]) {
       try {
-        const res = await fetch(`/lab/${slug}.html`, { method: "HEAD", cache: "no-store" });
+        const res = await fetch(`./${slug}.html`, { method: "HEAD", cache: "no-store" });
         if (res.ok) {
           const frame = document.createElement("iframe");
-          frame.loading = "lazy"; frame.title = title; frame.src = `/lab/${slug}.html`;
+          frame.loading = "lazy"; frame.title = title; frame.src = `./${slug}.html`;
           el.querySelector(".slot").replaceWith(frame);
           pending.delete(slug);
         }
