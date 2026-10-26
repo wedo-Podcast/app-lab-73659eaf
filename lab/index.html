@@ -12,29 +12,55 @@
   header { position: sticky; top: 0; z-index: 2; background: rgba(11,11,13,.86); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,.08); padding: 14px 24px; display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; }
   header h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
   header p { margin: 0; color: #a1a1aa; font-size: 14px; }
-  .row-title { grid-column: 1 / -1; margin: 18px 0 0; font-size: 18px; font-weight: 650; color: #d4d4d8; }
-  main { padding: 20px 24px 60px; display: grid; grid-template-columns: repeat(auto-fill, minmax(452px, 1fr)); gap: 22px; }
+  .hero { padding: 22px 24px 8px; }
+  .hero-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+  .hero-head h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+  .hero-head p { margin: 4px 0 0; color: #a1a1aa; font-size: 14px; max-width: 70ch; }
+  .open { display: inline-block; font-size: 14px; color: #0b0b0d; background: #f5f5f7; text-decoration: none; padding: 9px 14px; border-radius: 999px; font-weight: 600; }
+  .open.quiet { color: #f5f5f7; background: transparent; border: 1px solid rgba(255,255,255,.14); font-weight: 500; }
+  .mixer-frame { width: 100%; height: min(1500px, calc(100vh - 150px)); min-height: 900px; border: 1px solid rgba(255,255,255,.1); border-radius: 18px; background: #e6e6e6; display: block; }
+  details { margin: 28px 24px 60px; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; background: #101013; }
+  summary { cursor: pointer; list-style: none; padding: 16px 18px; font-size: 16px; font-weight: 650; color: #d4d4d8; display: flex; align-items: center; gap: 10px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: ""; width: 8px; height: 8px; border-inline-end: 2px solid #a1a1aa; border-bottom: 2px solid #a1a1aa; transform: rotate(-45deg); transition: transform .15s; margin-inline-start: 2px; }
+  details[open] summary::before { transform: rotate(45deg); }
+  summary span { color: #71717a; font-weight: 500; font-size: 14px; }
+  .grid { padding: 4px 18px 22px; display: grid; grid-template-columns: repeat(auto-fill, minmax(452px, 1fr)); gap: 22px; }
+  .row-title { grid-column: 1 / -1; margin: 14px 0 0; font-size: 16px; font-weight: 650; color: #d4d4d8; }
   article { background: #141417; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 14px 14px 16px; }
-  article h2 { margin: 0 0 2px; font-size: 17px; font-weight: 650; display: flex; align-items: baseline; gap: 10px; }
-  article h2 .n { color: #71717a; font-weight: 500; font-variant-numeric: tabular-nums; }
+  article h3 { margin: 0 0 2px; font-size: 17px; font-weight: 650; display: flex; align-items: baseline; gap: 10px; }
+  article h3 .n { color: #71717a; font-weight: 500; font-variant-numeric: tabular-nums; }
   article .repo { margin: 0 0 12px; font-size: 13px; color: #a1a1aa; }
   article .repo a { color: #8bb0ff; text-decoration: none; }
-  article .repo a:hover { text-decoration: underline; }
   .slot { width: 424px; height: 940px; margin-inline: auto; border-radius: 12px; border: 1px dashed rgba(255,255,255,.14); display: grid; place-items: center; color: #71717a; font-size: 15px; padding: 24px; text-align: center; }
-  iframe { width: 424px; height: 940px; border: 0; border-radius: 12px; background: #000; display: block; margin-inline: auto; }
-  .open { display: inline-block; margin-top: 10px; font-size: 14px; color: #f5f5f7; text-decoration: none; border: 1px solid rgba(255,255,255,.14); padding: 7px 12px; border-radius: 999px; }
-  .open:hover { background: rgba(255,255,255,.06); }
+  article iframe { width: 424px; height: 940px; border: 0; border-radius: 12px; background: #000; display: block; margin-inline: auto; }
+  article .open { margin-top: 10px; }
 </style>
 </head>
 <body>
 <header>
-  <h1>מעבדת-טעם: 15 כיוונים מריפואים חמים</h1>
-  <p>כל מסגרת היא מסך-הבית של «הפיצוח», אותו תוכן בדיוק, בשפה הוויזואלית של ריפו אחד. גלול בתוך המסגרת; «לפתוח» מציג גם את גרסת-המחשב. תגיד לי מספרים, גם שילובים.</p>
+  <h1>מעבדת-טעם של wedo app</h1>
+  <p>הכיוון: המיקסר. מסך-הבית של «הפיצוח» על השילוב 16+21, וכל ממד-טעם הוא מתג. מחליפים, רואים חי, מעירים על אזורים, ו«העתק בחירה» מכין טקסט לשליחה.</p>
 </header>
-<main id="grid"></main>
+
+<section class="hero">
+  <div class="hero-head">
+    <div>
+      <h2>המיקסר</h2>
+      <p>נקודות-מוצא: «16+21» (ברירת-המחדל), «14 המקורי» (כל האפקטים דולקים), «21 נקי». בלוח: מבנה, חומר, אפקטים; «הערות על אזורים» פותח הערה בלחיצה על כל אלמנט. נוח יותר לעבוד איתו בחלון מלא.</p>
+    </div>
+    <a class="open" href="./mixer.html" target="_blank" rel="noopener">לפתוח את המיקסר בחלון מלא</a>
+  </div>
+  <iframe class="mixer-frame" src="./mixer.html" title="המיקסר"></iframe>
+</section>
+
+<details id="more">
+  <summary>אופציות נוספות <span>(שש הווריאציות על 14, ואחריהן 15 הכיוונים המקוריים; נטענות רק כשפותחים)</span></summary>
+  <div class="grid" id="grid"></div>
+</details>
+
 <script>
   const variations = [
-    ["mixer", "המיקסר: 16+21 עם מתגים והערות", "sketch/lab/VARIATIONS.md", "מחליפים, רואים חי, מעתיקים בחירה"],
     ["16-v1-restrained", "V1 מאופק", "magicuidesign/magicui", "אפקט אחד: beam סביב «חסר ממך»"],
     ["17-v2-live-stage", "V2 הבמה חיה", "magicuidesign/magicui", "כל האפקטים בבמה, השאר שקט"],
     ["18-v3-soft-widgets", "V3 ווידג'טים רכים", "ibelick/motion-primitives", "טונאלי, פינות 28, מיקרו-תנועה"],
@@ -53,48 +79,32 @@
     ["08-midday", "Midday", "midday-ai/midday", "פיננסי-שקט, מספר גדול, מונו"],
     ["09-calcom", "Cal.com", "cosscom/ui", "אפור-בהיר, כרטיסים עם border, כפתור שחור"],
     ["10-material-expressive", "Material 3 Expressive", "material-components/material-web", "tonal surfaces, פינות 28px, nav pill"],
-    ["11-liquid-glass", "Liquid Glass", "gh search: liquid glass", "iOS 26: זכוכית מעל צבע"],
+    ["11-liquid-glass", "Liquid Glass", "archisvaze/liquid-glass", "iOS 26: זכוכית מעל צבע"],
     ["12-daisyui", "daisyUI", "saadeghi/daisyui", "ערכות-נושא, רכיבים משלהם"],
     ["13-once-ui", "Once UI", "once-ui-system/core", "טוקנים עשירים, גרדיאנט עדין"],
-    ["14-magic-ui", "Magic UI", "magicuidesign/magicui", "אקספרסיבי: bento, ticker, beam"],
+    ["14-magic-ui", "Magic UI (הבסיס שנבחר)", "magicuidesign/magicui", "אקספרסיבי: bento, ticker, beam"],
     ["15-twenty", "Twenty", "twentyhq/twenty", "Notion-like: לבן, 13px, רשומות"],
   ];
   const grid = document.getElementById("grid");
-  const pending = new Map();
-  const vh = document.createElement("h2");
-  vh.className = "row-title"; vh.textContent = "וריאציות על 14 (תפריט-צד, סדר של 12, קלילות של 10)";
-  grid.appendChild(vh);
-  const bh = document.createElement("h2");
-  bh.className = "row-title"; bh.textContent = "15 הכיוונים המקוריים";
-  const all = [...variations.map((v) => [...v, "v"]), ["__sep__"], ...items];
-  for (const entry of all) {
-    if (entry[0] === "__sep__") { grid.appendChild(bh); continue; }
-    const [slug, title, repo, note] = entry;
-    const n = slug.slice(0, 2);
+  let built = false;
+  function card([slug, title, repo, note]) {
     const el = document.createElement("article");
     el.innerHTML = `
-      <h2><span class="n">${n}</span>${title}</h2>
+      <h3><span class="n">${slug.slice(0, 2)}</span>${title}</h3>
       <p class="repo">${note}. <a href="https://github.com/${repo}" target="_blank" rel="noopener">${repo}</a></p>
-      <div class="slot"><div class="wait">בבנייה. הסוכן עוד משבט את הריפו ובונה; המסגרת תתמלא לבד.</div></div>
-      <a class="open" href="./${slug}.html" target="_blank" rel="noopener">לפתוח בגודל מלא (טלפון ומחשב)</a>`;
-    grid.appendChild(el);
-    pending.set(slug, { el, title });
+      <iframe loading="lazy" src="./${slug}.html" title="${title}"></iframe>
+      <a class="open quiet" href="./${slug}.html" target="_blank" rel="noopener">לפתוח בגודל מלא (טלפון ומחשב)</a>`;
+    return el;
   }
-  async function poll() {
-    for (const [slug, { el, title }] of [...pending]) {
-      try {
-        const res = await fetch(`./${slug}.html`, { method: "HEAD", cache: "no-store" });
-        if (res.ok) {
-          const frame = document.createElement("iframe");
-          frame.loading = "lazy"; frame.title = title; frame.src = `./${slug}.html`;
-          el.querySelector(".slot").replaceWith(frame);
-          pending.delete(slug);
-        }
-      } catch {}
-    }
-    if (pending.size) setTimeout(poll, 20000);
+  function build() {
+    if (built) return; built = true;
+    const t1 = document.createElement("h2"); t1.className = "row-title"; t1.textContent = "וריאציות על 14 (תפריט-צד, סדר של 12, קלילות של 10)";
+    grid.appendChild(t1); variations.forEach((v) => grid.appendChild(card(v)));
+    const t2 = document.createElement("h2"); t2.className = "row-title"; t2.textContent = "15 הכיוונים המקוריים";
+    grid.appendChild(t2); items.forEach((v) => grid.appendChild(card(v)));
   }
-  poll();
+  document.getElementById("more").addEventListener("toggle", (e) => { if (e.target.open) build(); });
+  if (location.hash === "#more") { document.getElementById("more").open = true; build(); }
 </script>
 </body>
 </html>
