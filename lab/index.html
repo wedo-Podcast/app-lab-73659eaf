@@ -12,6 +12,7 @@
   header { position: sticky; top: 0; z-index: 2; background: rgba(11,11,13,.86); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,.08); padding: 14px 24px; display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; }
   header h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
   header p { margin: 0; color: #a1a1aa; font-size: 14px; }
+  .row-title { grid-column: 1 / -1; margin: 18px 0 0; font-size: 18px; font-weight: 650; color: #d4d4d8; }
   main { padding: 20px 24px 60px; display: grid; grid-template-columns: repeat(auto-fill, minmax(452px, 1fr)); gap: 22px; }
   article { background: #141417; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 14px 14px 16px; }
   article h2 { margin: 0 0 2px; font-size: 17px; font-weight: 650; display: flex; align-items: baseline; gap: 10px; }
@@ -32,6 +33,12 @@
 </header>
 <main id="grid"></main>
 <script>
+  const variations = [
+    ["16-v1-restrained", "V1 מאופק", "magicuidesign/magicui", "אפקט אחד: beam סביב «חסר ממך»"],
+    ["17-v2-live-stage", "V2 הבמה חיה", "magicuidesign/magicui", "כל האפקטים בבמה, השאר שקט"],
+    ["18-v3-soft-widgets", "V3 ווידג'טים רכים", "ibelick/motion-primitives", "טונאלי, פינות 28, מיקרו-תנועה"],
+    ["19-v4-expressive", "V4 אקספרסיבי", "DavidHDev/react-bits", "זרקור, קו-המותג כחתימה"],
+  ];
   const items = [
     ["01-shadcn", "shadcn/ui", "shadcn-ui/ui", "הבלוקים הרשמיים, סגנון base-luma"],
     ["02-openstatus", "OpenStatus", "openstatusHQ/openstatus", "DESIGN.md: מאופק, מונו לערכים"],
@@ -51,7 +58,15 @@
   ];
   const grid = document.getElementById("grid");
   const pending = new Map();
-  for (const [slug, title, repo, note] of items) {
+  const vh = document.createElement("h2");
+  vh.className = "row-title"; vh.textContent = "וריאציות על 14 (תפריט-צד, סדר של 12, קלילות של 10)";
+  grid.appendChild(vh);
+  const bh = document.createElement("h2");
+  bh.className = "row-title"; bh.textContent = "15 הכיוונים המקוריים";
+  const all = [...variations.map((v) => [...v, "v"]), ["__sep__"], ...items];
+  for (const entry of all) {
+    if (entry[0] === "__sep__") { grid.appendChild(bh); continue; }
+    const [slug, title, repo, note] = entry;
     const n = slug.slice(0, 2);
     const el = document.createElement("article");
     el.innerHTML = `
