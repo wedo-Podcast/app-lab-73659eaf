@@ -163,13 +163,14 @@ body:has(#light:target,#lightfull:target) .rx .logo-d{display:none}
 .rx .rt-DataListValue{display:flex;align-items:center;gap:var(--space-3);min-width:0;color:var(--gray-12)}
 .rx .rt-DataList.vertical{display:flex;flex-direction:column;gap:var(--space-4)}
 .rx .rt-DataList.vertical .rt-DataListItem{display:flex;flex-direction:column;align-items:stretch;gap:var(--space-1)}
-.rx .rt-DataListValue .end{margin-inline-start:auto}
+.rx .rt-DataList.vertical .rt-DataListValue .end{margin-inline-start:auto}
+.rx .rt-DataListValue .end{margin-inline-start:var(--space-2)}
 
 /* --- Avatar (avatar.css) --- */
 .rx .rt-Avatar{position:relative;display:inline-flex;flex:none;align-items:center;justify-content:center;overflow:hidden;width:var(--avatar-size);height:var(--avatar-size);border-radius:max(var(--radius-3),var(--radius-full));background:var(--accent-a3);color:var(--accent-a11)}
 .rx .rt-Avatar.size-2{--avatar-size:var(--space-6);border-radius:max(var(--radius-2),var(--radius-full))}
 .rx .rt-Avatar.size-3{--avatar-size:var(--space-7)}
-.rx .rt-Avatar img{width:100%;height:100%;object-fit:cover;object-position:46% 30%}
+.rx .rt-Avatar img{position:absolute;width:280%;max-width:none;height:auto;left:-82%;top:-24%}
 
 /* --- Table (table.css), variant surface size 2 --- */
 .rx .rt-TableRoot{border:1px solid color-mix(in oklab,var(--gray-a5),var(--gray-6));border-radius:var(--radius-4);background-color:var(--color-panel);backdrop-filter:var(--backdrop-filter-panel);background-clip:padding-box;overflow:hidden}
@@ -264,11 +265,11 @@ body:has(#lightfull:target) .screen>.scroll{position:relative;overflow:visible}
     <nav class="lab-toggle"><a href="#">כהה</a><a href="#light">בהיר</a><a href="#full">בלי גלילה פנימית</a></nav>
   </div>
   <ol class="lab-points">
-    <li>סולמות Radix Colors של 12 מדרגות, בכהה: slate לאפור ו-indigo למבטא (הכי קרוב ל-Prod Blue מהרשימה שלהם), ערכי hex מ-<code>@radix-ui/colors</code> 3.0.0. כל משטח הוא מדרגה: רקע gray-1, פנל gray-a2, קו gray-a5, טקסט משני gray-a11. מוצג בכהה כמו ה-sink שלהם, ויש מתג לבהיר. <code>src/styles/tokens/color.css</code> <code>tokens/colors/slate.css</code></li>
-    <li>radius="medium" ו-scaling="100%": פינות 4 עד 12px, כפתורים בגובה 32, תגים ברדיוס 3px, קווי-שיער במקום צללים. צפוף ומדויק, טיפוגרפיה בסולם 12/14/16/24/35 וכותרות במשקל 700. <code>tokens/radius.css</code> <code>tokens/typography.css</code> <code>components/_internal/base-card.css</code></li>
-    <li>רכיבי-החתימה: DataList (תווית מול ערך) ל«חסר ממך», Inset שמוציא את התמונה לקצה הכרטיס, Badge רך, Progress דק, Table בגרסת surface, וכותרת בצבע orange לסימון. <code>components/data-list.css</code> <code>inset.css</code> <code>badge.css</code> <code>table.css</code></li>
+    <li>Radix Colors בכהה, כמו ה-sink שלהם: slate לאפור ו-indigo למבטא (הקרוב ביותר ל-Prod Blue ברשימה שלהם). כל משטח הוא מדרגה בסולם של 12.</li>
+    <li>radius medium ו-scaling 100%: פינות 4 עד 12px, כפתורים בגובה 32, קווי-שיער במקום צללים, כותרות במשקל 700.</li>
+    <li>רכיבי-החתימה: DataList ל«חסר ממך», Inset שמוציא את התמונה לקצה הכרטיס, Badge רך, Progress דק ו-Table בגרסת surface.</li>
   </ol>
-  <p class="lab-font">גופן: Rag Sans, ברירת-המחדל של המותג. Radix Themes מגיע עם גופן-המערכת (<code>--default-font-family</code>) ומצפה שיוחלף, כך שהגופן אינו חלק מהזהות שלו.</p>
+  <p class="lab-font">גופן: Rag Sans, ברירת-המחדל של המותג. Radix מגיע עם גופן-המערכת ומצפה שיוחלף, כך שהגופן אינו חלק מהזהות שלו.</p>
 </header>
 
 <!-- ============ טלפון 390×844 ============ -->

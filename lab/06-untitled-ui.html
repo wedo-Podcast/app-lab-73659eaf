@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מעבדה 06 Untitled UI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Heebo:wght@400..700&display=swap" rel="stylesheet">
+<style>
+/* ===== לוח-המעבדה (לא חלק מהמוקאפ) ===== */
+@font-face{font-family:"Rag Sans";src:url("./fonts/RagSans-VF.ttf");font-weight:100 900}
+*,*::before,*::after{box-sizing:border-box}
+html{background:#E6E6E9}
+body{margin:0;font-family:"Rag Sans",system-ui,sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.anchor{position:absolute;top:0;inset-inline-start:0;width:0;height:0}
+.lab-strip{max-width:1310px;margin:0 auto;padding:14px 15px 4px;font-size:12.5px;line-height:1.55;color:#4a4a50}
+.lab-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.lab-strip h1{margin:0;font-size:15px;font-weight:700;color:#1D1D1F;letter-spacing:-.01em}
+.lab-strip a{color:#0131FF;text-decoration:none}
+.lab-num{font-variant-numeric:tabular-nums}
+.lab-toggle{display:inline-flex;gap:2px;margin-inline-start:auto;background:#d8d8dd;border-radius:7px;padding:2px}
+.lab-toggle a{color:#3a3a40;padding:1px 9px;border-radius:5px}
+.lab-points{margin:6px 0 0;padding-inline-start:18px}
+.lab-points li{margin:1px 0}
+.lab-points code,.lab-font code{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#5b5b62;direction:ltr;unicode-bidi:isolate}
+.lab-font{margin:3px 0 0}
+.stage{display:flex;justify-content:safe center;padding:14px 15px 26px}
+.stage--desk{overflow-x:auto;padding-bottom:70px}
+.phone{flex:none;width:410px;height:864px;padding:10px;border-radius:58px;background:#0c0c0e;box-shadow:inset 0 0 0 1.5px #2b2b30,0 40px 80px -30px rgba(0,0,0,.45)}
+.screen{position:relative;width:390px;height:844px;border-radius:48px;overflow:hidden;isolation:isolate}
+.screen>.scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.screen>.scroll::-webkit-scrollbar{display:none}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:122px;height:35px;border-radius:20px;background:#000;z-index:40;pointer-events:none}
+.home-ind{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;z-index:40;pointer-events:none}
+.desk-frame{flex:none;width:1280px;height:800px;border-radius:12px;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.14),0 40px 80px -36px rgba(0,0,0,.4)}
+.desk{display:flex;width:100%;height:100%}
+.desk-main{flex:1;min-width:0;height:100%;overflow-y:auto;scrollbar-width:thin}
+body:has(#full:target,#darkfull:target) .phone,
+body:has(#full:target,#darkfull:target) .screen,
+body:has(#full:target,#darkfull:target) .desk-frame,
+body:has(#full:target,#darkfull:target) .desk-main{height:auto}
+body:has(#full:target,#darkfull:target) .screen>.scroll{position:relative;overflow:visible}
+/* ===== Untitled UI React: טוקנים מ-styles/theme.css (light), פלטת neutral של Tailwind 4 ===== */
+.ux{
+  --n50:oklch(98.5% 0 0);--n100:oklch(97% 0 0);--n200:oklch(92.2% 0 0);--n300:oklch(87% 0 0);--n400:oklch(70.8% 0 0);
+  --n500:oklch(55.6% 0 0);--n600:oklch(43.9% 0 0);--n700:oklch(37.1% 0 0);--n800:oklch(26.9% 0 0);--n900:oklch(20.5% 0 0);--n950:oklch(14.5% 0 0);
+  /* brand: הסגול של Untitled (rgb 127 86 217 ב-600) הוחלף בסולם סביב Prod Blue */
+  --brand-50:#EEF1FF;--brand-100:#E6EAFF;--brand-200:#CCD5FF;--brand-300:#A3B4FF;--brand-400:#6C86FF;--brand-500:#3557FF;
+  --brand-600:#0131FF;--brand-700:#0127D1;--brand-800:#001FA8;--brand-900:#001880;--brand-950:#00051A;
+  --g50:oklch(98.2% 0.018 155.826);--g200:oklch(92.5% 0.084 155.995);--g500:oklch(72.3% 0.219 149.579);--g700:oklch(52.7% 0.154 150.069);
+  /* utility-orange נבנה סביב B2C Orange #FF9500 */
+  --o50:color-mix(in oklab,#FF9500 8%,white);--o100:color-mix(in oklab,#FF9500 16%,white);--o200:color-mix(in oklab,#FF9500 34%,white);
+  --o500:#FF9500;--o600:color-mix(in oklab,#FF9500 86%,black);--o700:color-mix(in oklab,#FF9500 64%,black);
+  --bg-primary:white;--bg-primary_hover:var(--n50);--bg-secondary:var(--n50);--bg-tertiary:var(--n100);--bg-quaternary:var(--n200);
+  --border-primary:var(--n300);--border-secondary:var(--n200);
+  --text-primary:var(--n900);--text-secondary:var(--n700);--text-secondary_hover:var(--n800);--text-tertiary:var(--n600);--text-quaternary:var(--n500);
+  --fg-secondary:var(--n700);--fg-quaternary:var(--n400);--fg-quaternary_hover:var(--n500);
+  --bg-brand-solid:var(--brand-600);--bg-brand-solid_hover:var(--brand-700);--bg-brand-primary:var(--brand-50);--bg-brand-secondary:var(--brand-100);
+  --text-brand-secondary:var(--brand-700);--fg-brand-primary:var(--brand-600);
+  --u-gray-50:var(--n50);--u-gray-200:var(--n200);--u-gray-500:var(--n500);--u-gray-700:var(--n700);
+  --u-brand-50:var(--brand-50);--u-brand-200:var(--brand-200);--u-brand-500:var(--brand-500);--u-brand-700:var(--brand-700);
+  --u-green-50:var(--g50);--u-green-200:var(--g200);--u-green-500:var(--g500);--u-green-700:var(--g700);
+  --u-orange-50:var(--o50);--u-orange-200:var(--o200);--u-orange-500:var(--o500);--u-orange-700:var(--o700);
+  --fi-warning:var(--o600);
+  --shadow-xs:0px 1px 2px rgba(0,0,0,.05);
+  --shadow-skeuomorphic:0px 0px 0px 1px rgba(0,0,0,.18) inset,0px -2px 0px 0px rgba(0,0,0,.05) inset;
+  --shadow-lg:0px 12px 16px -4px rgba(0,0,0,.08),0px 4px 6px -2px rgba(0,0,0,.03),0px 2px 2px -1px rgba(0,0,0,.04);
+  --avatar-ring:white;
+  color-scheme:light;
+  font-family:"Inter","Heebo",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  font-variant-ligatures:contextual;font-kerning:normal;-webkit-font-smoothing:antialiased;
+  font-size:14px;line-height:20px;color:var(--text-primary);background:var(--bg-primary);
+}
+/* .dark-mode מתוך אותו theme.css */
+body:has(#dark:target,#darkfull:target) .ux{
+  color-scheme:dark;
+  --bg-primary:var(--n950);--bg-primary_hover:var(--n900);--bg-secondary:var(--n900);--bg-tertiary:var(--n800);--bg-quaternary:var(--n700);
+  --border-primary:var(--n700);--border-secondary:var(--n800);
+  --text-primary:var(--n50);--text-secondary:var(--n300);--text-secondary_hover:var(--n200);--text-tertiary:var(--n400);--text-quaternary:var(--n400);
+  --fg-secondary:var(--n300);--fg-quaternary:var(--n600);--fg-quaternary_hover:var(--n500);
+  --bg-brand-primary:color-mix(in oklab,var(--brand-500) 18%,var(--n950));--bg-brand-secondary:var(--brand-600);
+  --text-brand-secondary:var(--n300);--fg-brand-primary:var(--brand-500);
+  --u-gray-50:var(--n900);--u-gray-200:var(--n700);--u-gray-700:var(--n300);
+  --u-brand-50:var(--brand-950);--u-brand-200:var(--brand-800);--u-brand-700:var(--brand-300);
+  --u-green-50:oklch(26.6% 0.065 152.934);--u-green-200:oklch(44.8% 0.119 151.328);--u-green-700:oklch(87.1% 0.15 154.449);
+  --u-orange-50:color-mix(in oklab,#FF9500 14%,var(--n950));--u-orange-200:color-mix(in oklab,#FF9500 45%,var(--n950));--u-orange-700:color-mix(in oklab,#FF9500 55%,white);
+  --fi-warning:var(--o500);
+  --avatar-ring:var(--n950);
+}
+.ux .logo-d{display:none}
+body:has(#dark:target,#darkfull:target) .ux .logo-l{display:none}
+body:has(#dark:target,#darkfull:target) .ux .logo-d{display:block}
+.home-ind{background:var(--text-primary)}
+.ux p,.ux h1,.ux h2,.ux h3{margin:0}
+.ux button{font-family:inherit}
+.ux svg.ic{display:block;flex:none;width:20px;height:20px}
+.ux .tnum{font-variant-numeric:tabular-nums}
+.ux .t-xs{font-size:12px;line-height:18px}
+.ux .t-sm{font-size:14px;line-height:20px}
+.ux .t-md{font-size:16px;line-height:24px}
+.ux .t-lg{font-size:18px;line-height:28px}
+.ux .d-xs{font-size:24px;line-height:32px}
+.ux .d-sm{font-size:30px;line-height:38px}
+.ux .semibold{font-weight:600}
+.ux .medium{font-weight:500}
+.ux .c-primary{color:var(--text-primary)}
+.ux .c-secondary{color:var(--text-secondary)}
+.ux .c-tertiary{color:var(--text-tertiary)}
+.ux .c-quaternary{color:var(--text-quaternary)}
+
+/* --- card (table.tsx: rounded-xl bg-primary shadow-xs ring-1 ring-secondary) --- */
+.ux .card{border-radius:12px;background:var(--bg-primary);box-shadow:var(--shadow-xs),inset 0 0 0 1px var(--border-secondary);overflow:hidden}
+.ux .card__header{display:flex;align-items:flex-start;gap:16px;padding:20px 24px;border-bottom:1px solid var(--border-secondary)}
+.ux .card__header-text{display:flex;flex:1;flex-direction:column;gap:2px;min-width:0}
+.ux .card__title{display:flex;align-items:center;gap:8px;font-size:16px;line-height:24px;font-weight:600;color:var(--text-primary)}
+.ux .card__body{padding:20px 24px}
+.ux .card__footer{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:16px 24px;border-top:1px solid var(--border-secondary)}
+
+/* --- button.tsx --- */
+.ux .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;border:0;cursor:pointer;border-radius:8px;padding:10px 14px;font-size:14px;line-height:20px;font-weight:600;text-decoration:none;transition:background-color 100ms linear}
+.ux .btn.sm{padding:8px 12px}
+.ux .btn svg.ic{color:var(--fg-quaternary)}
+.ux .btn--primary{background:var(--bg-brand-solid);color:white;box-shadow:var(--shadow-skeuomorphic),var(--shadow-xs)}
+.ux .btn--primary::before{content:"";position:absolute;inset:1px;border-radius:7px;border:1px solid rgba(255,255,255,.12);-webkit-mask-image:linear-gradient(to bottom,#000,transparent);mask-image:linear-gradient(to bottom,#000,transparent);pointer-events:none}
+.ux .btn--primary:hover{background:var(--bg-brand-solid_hover)}
+.ux .btn--primary svg.ic{color:rgba(255,255,255,.6)}
+.ux .btn--secondary{background:var(--bg-primary);color:var(--text-secondary);box-shadow:inset 0 0 0 1px var(--border-primary),var(--shadow-skeuomorphic),var(--shadow-xs)}
+.ux .btn--secondary:hover{background:var(--bg-primary_hover);color:var(--text-secondary_hover)}
+.ux .btn--tertiary{background:transparent;color:var(--text-tertiary)}
+.ux .btn--tertiary:hover{background:var(--bg-primary_hover)}
+.ux .btn--link{background:transparent;padding:0;border-radius:4px;color:var(--text-brand-secondary)}
+.ux .btn--full{width:100%}
+.ux .btn-utility{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;border:0;border-radius:8px;cursor:pointer;background:var(--bg-primary);color:var(--fg-quaternary);box-shadow:inset 0 0 0 1px var(--border-primary),var(--shadow-skeuomorphic),var(--shadow-xs)}
+
+/* --- badges.tsx --- */
+.ux .badge{display:inline-flex;flex:none;align-items:center;width:max-content;white-space:nowrap;gap:4px;padding:2px 8px;border-radius:9999px;font-size:12px;line-height:18px;font-weight:500;background:var(--u-gray-50);color:var(--u-gray-700);box-shadow:inset 0 0 0 1px var(--u-gray-200)}
+.ux .badge.md{gap:6px;padding:2px 10px;font-size:14px;line-height:20px}
+.ux .badge .dot{flex:none;width:8px;height:8px;color:var(--u-gray-500)}
+.ux .badge svg.ic{width:12px;height:12px;color:var(--u-gray-500)}
+.ux .badge--brand{background:var(--u-brand-50);color:var(--u-brand-700);box-shadow:inset 0 0 0 1px var(--u-brand-200)}
+.ux .badge--brand .dot{color:var(--u-brand-500)}
+.ux .badge--orange{background:var(--u-orange-50);color:var(--u-orange-700);box-shadow:inset 0 0 0 1px var(--u-orange-200)}
+.ux .badge--orange .dot{color:var(--u-orange-500)}
+.ux .badge--green{background:var(--u-green-50);color:var(--u-green-700);box-shadow:inset 0 0 0 1px var(--u-green-200)}
+.ux .badge--green .dot{color:var(--u-green-500)}
+.ux .badge--modern{border-radius:6px;padding:2px 6px;background:var(--bg-primary);color:var(--text-secondary);box-shadow:inset 0 0 0 1px var(--border-primary),var(--shadow-xs)}
+
+/* --- featured-icon.tsx --- */
+.ux .fi{position:relative;display:flex;flex:none;align-items:center;justify-content:center}
+.ux .fi--light{width:40px;height:40px;border-radius:9999px}
+.ux .fi--light.fi--gray{background:var(--bg-tertiary);color:var(--n500)}
+.ux .fi--light.fi--brand{background:var(--bg-brand-secondary);color:var(--fg-brand-primary)}
+.ux .fi--outline{width:20px;height:20px;margin:10px;color:var(--fi-warning)}
+.ux .fi--outline::before,.ux .fi--outline::after{content:"";position:absolute;border-radius:9999px;border:2px solid currentColor;left:50%;top:50%;transform:translate(-50%,-50%)}
+.ux .fi--outline::before{width:28px;height:28px;opacity:.3}
+.ux .fi--outline::after{width:38px;height:38px;opacity:.1}
+.ux .fi--modern{width:40px;height:40px;border-radius:8px;background:var(--bg-primary);color:var(--fg-secondary);box-shadow:inset 0 0 0 1px var(--border-primary),var(--shadow-skeuomorphic),var(--shadow-xs)}
+
+/* --- progress-indicators.tsx --- */
+.ux .progress{display:flex;align-items:center;gap:12px}
+.ux .progress__track{position:relative;flex:1;height:8px;overflow:hidden;border-radius:6px;background:var(--bg-quaternary)}
+.ux .progress__fill{position:absolute;inset-block:0;inset-inline-start:0;border-radius:6px;background:var(--fg-brand-primary)}
+.ux .progress__value{flex:none;font-size:14px;line-height:20px;font-weight:500;color:var(--text-secondary);font-variant-numeric:tabular-nums}
+
+/* --- avatar.tsx --- */
+.ux .avatar{position:relative;display:inline-flex;flex:none;overflow:hidden;border-radius:9999px;background:var(--bg-tertiary);outline:.5px solid rgba(0,0,0,.16);outline-offset:-.5px}
+.ux .avatar img{position:absolute;width:280%;max-width:none;height:auto;left:-82%;top:-24%}
+.ux .avatar.s40{width:40px;height:40px}
+.ux .avatar.s32{width:32px;height:32px}
+
+/* --- רשימת «חסר ממך» --- */
+.ux .req-list{display:flex;flex-direction:column}
+.ux .req{display:flex;align-items:center;gap:16px;padding:16px 24px;border-top:1px solid var(--border-secondary)}
+.ux .req__text{display:flex;flex:1;flex-direction:column;min-width:0}
+.ux .req__title{font-size:14px;line-height:20px;font-weight:600;color:var(--text-primary)}
+.ux .req__desc{font-size:14px;line-height:20px;color:var(--text-tertiary)}
+.ux .req--locked .req__title{color:var(--text-tertiary)}
+.ux .req-head{display:flex;align-items:center;gap:8px;padding:12px 24px;background:var(--bg-secondary);border-top:1px solid var(--border-secondary);font-size:14px;line-height:20px;font-weight:600;color:var(--text-primary)}
+.ux .req-head .dot{width:8px;height:8px;color:var(--u-orange-500)}
+
+/* --- פרטים, תמונה, מספר --- */
+.ux .facts{display:flex;flex-direction:column;gap:12px}
+.ux .fact{display:flex;align-items:center;gap:8px;font-size:14px;line-height:20px;color:var(--text-tertiary)}
+.ux .fact svg.ic{width:16px;height:16px;color:var(--fg-quaternary)}
+.ux .thumb{position:relative;display:block;overflow:hidden;border-radius:8px;aspect-ratio:16/9;background:var(--bg-tertiary)}
+.ux .thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.ux .thumb::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
+.ux .play{position:absolute;inset:0;margin:auto;width:48px;height:48px;border-radius:9999px;background:rgba(255,255,255,.32);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.24)}
+.ux .play svg{width:20px;height:20px;margin-inline-end:-2px;color:white}
+.ux .metric-head{padding:12px 24px;background:var(--bg-secondary);border-bottom:1px solid var(--border-secondary);font-size:14px;line-height:20px;font-weight:600;color:var(--text-primary)}
+
+/* --- page header עם באנר ואווטאר --- */
+.ux .ph__banner{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 70%}
+.ux .ph__avatar{position:relative;display:block;overflow:hidden;border-radius:9999px;background:var(--bg-tertiary);box-shadow:0 0 0 4px var(--avatar-ring),var(--shadow-lg)}
+.ux .ph__avatar img{position:absolute;width:280%;max-width:none;height:auto;left:-82%;top:-24%}
+
+/* ===== טלפון ===== */
+.ux.screen>.scroll{padding:47px 0 110px}
+.ux .m-top{display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 16px;border-bottom:1px solid var(--border-secondary)}
+.ux .m-top img{height:28px;width:auto}
+.ux .m-ph__banner{height:112px}
+.ux .m-ph__row{display:flex;align-items:flex-end;gap:16px;padding:0 16px;margin-top:-36px}
+.ux .m-ph__row .ph__avatar{width:80px;height:80px}
+.ux .m-ph__text{padding:12px 16px 0}
+.ux .m-body{display:flex;flex-direction:column;gap:16px;padding:20px 16px 0}
+.ux .m-body .card__header,.ux .m-body .card__body,.ux .m-body .card__footer{padding-inline:16px}
+.ux .m-body .req,.ux .m-body .req-head,.ux .m-body .metric-head{padding-inline:16px}
+.ux .m-body .req{flex-wrap:wrap}
+.ux .m-body .req .btn{width:100%;margin-inline-start:56px;width:calc(100% - 56px)}
+.ux .qa-list .qa{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--border-secondary);text-decoration:none;color:var(--text-secondary);font-weight:600}
+.ux .qa-list .qa:first-child{border-top:0}
+.ux .m-tabbar{position:absolute;inset-inline:0;bottom:0;z-index:20;display:flex;gap:4px;padding:8px 8px 28px;background:var(--bg-primary);border-top:1px solid var(--border-secondary)}
+.ux .m-tab{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;border-radius:8px;color:var(--text-quaternary);font-size:12px;line-height:18px;font-weight:600;text-decoration:none}
+.ux .m-tab svg.ic{width:24px;height:24px;color:var(--fg-quaternary)}
+.ux .m-tab[aria-current=page]{background:var(--bg-brand-primary);color:var(--text-brand-secondary)}
+.ux .m-tab[aria-current=page] svg.ic{color:var(--fg-brand-primary)}
+.ux .m-tab .pin{position:absolute;top:5px;inset-inline-end:calc(50% - 17px);width:10px;height:10px;border-radius:50%;background:var(--u-orange-500);box-shadow:0 0 0 2px var(--bg-primary)}
+
+/* ===== מחשב ===== */
+.ux .sb{flex:none;display:flex;flex-direction:column;justify-content:space-between;width:280px;height:100%;padding-top:20px;background:var(--bg-primary);border-inline-end:1px solid var(--border-secondary)}
+.ux .sb__logo{padding:0 20px}
+.ux .sb__logo img{height:30px;width:auto}
+.ux .nav{display:flex;flex-direction:column;gap:2px;padding:20px 16px 0}
+.ux .nav-item{display:flex;align-items:center;gap:8px;max-height:36px;padding:8px;border-radius:6px;font-size:14px;line-height:20px;font-weight:600;color:var(--text-secondary);text-decoration:none}
+.ux .nav-item svg.ic{color:var(--fg-quaternary)}
+.ux .nav-item:hover{background:var(--bg-primary_hover)}
+.ux .nav-item[aria-current=page]{background:var(--bg-secondary);color:var(--text-secondary_hover)}
+.ux .nav-item[aria-current=page] svg.ic{color:var(--fg-quaternary_hover)}
+.ux .nav-item .badge{margin-inline-start:auto}
+.ux .badge .dot.or{color:var(--u-orange-500)}
+.ux .sb__foot{display:flex;flex-direction:column;gap:12px;padding:20px 16px}
+.ux .acct{position:relative;display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--border-secondary)}
+.ux .acct__sel{position:absolute;top:8px;inset-inline-end:8px;display:flex;padding:6px;border-radius:6px;color:var(--fg-quaternary)}
+.ux .acct__sel svg.ic{width:16px;height:16px}
+.ux .ph{padding:24px 32px 0}
+.ux .d-ph__banner{height:144px;border-radius:12px;overflow:hidden}
+.ux .d-ph__row{display:flex;align-items:flex-end;gap:20px;padding:0 24px;margin-top:-40px}
+.ux .d-ph__row .ph__avatar{width:112px;height:112px}
+.ux .d-ph__text{padding-bottom:4px}
+.ux .d-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start;padding:28px 32px 40px}
+.ux .col{display:flex;flex-direction:column;gap:24px;min-width:0}
+.ux .table{width:100%;border-collapse:collapse}
+.ux .table th{position:relative;height:44px;padding:8px 24px;background:var(--bg-secondary);text-align:start;font-size:12px;line-height:18px;font-weight:600;color:var(--text-quaternary);border-bottom:1px solid var(--border-secondary);white-space:nowrap}
+.ux .table td{height:72px;padding:16px 24px;font-size:14px;line-height:20px;color:var(--text-tertiary);border-bottom:1px solid var(--border-secondary)}
+.ux .table tr:last-child td{border-bottom:0}
+.ux .cell-guest{display:flex;align-items:center;gap:12px}
+.ux .cell-guest img,.ux .cell-guest .noimg{flex:none;width:72px;height:40px;border-radius:6px;object-fit:cover;background:var(--bg-tertiary);outline:.5px solid rgba(0,0,0,.16);outline-offset:-.5px}
+.ux .cell-guest b{font-weight:500;color:var(--text-primary)}
+.ux .noimg{display:flex;align-items:center;justify-content:center;color:var(--fg-quaternary)}
+.ux .noimg svg.ic{width:16px;height:16px}
+</style>
+</head>
+<body>
+<i id="dark" class="anchor"></i><i id="full" class="anchor"></i><i id="darkfull" class="anchor"></i>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-homeline" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 17h8M11.018 2.764 4.235 8.039c-.453.353-.68.53-.843.75a2 2 0 0 0-.318.65C3 9.704 3 9.991 3 10.565V17.8c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874C4.52 21 5.08 21 6.2 21h11.6c1.12 0 1.68 0 2.108-.218a2 2 0 0 0 .874-.874C21 19.48 21 18.92 21 17.8v-7.235c0-.574 0-.861-.074-1.126a2.002 2.002 0 0 0-.318-.65c-.163-.22-.39-.397-.843-.75l-6.783-5.275c-.351-.273-.527-.41-.72-.462a1 1 0 0 0-.523 0c-.194.052-.37.189-.721.462Z"/></g></symbol>
+<symbol id="i-compass03" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10Z"/><path d="M14.722 8.266c.489-.163.733-.244.895-.186a.5.5 0 0 1 .303.303c.058.162-.023.406-.186.895l-1.488 4.463c-.046.139-.07.208-.109.266a.5.5 0 0 1-.13.13c-.058.04-.127.063-.266.11l-4.463 1.487c-.489.163-.733.244-.895.186a.5.5 0 0 1-.303-.303c-.058-.162.023-.406.186-.895l1.488-4.463c.046-.139.07-.208.109-.266a.5.5 0 0 1 .13-.13c.058-.04.127-.063.266-.11l4.463-1.487Z"/></g></symbol>
+<symbol id="i-microphone02" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v1a8 8 0 1 1-16 0v-1m8 5a4 4 0 0 1-4-4V7a4 4 0 1 1 8 0v6a4 4 0 0 1-4 4Z"/></g></symbol>
+<symbol id="i-announcement02" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 14 1.575 6.299c.044.177.066.265.092.343a2 2 0 0 0 1.733 1.35c.08.007.172.007.355.007.228 0 .343 0 .44-.01a2 2 0 0 0 1.797-1.797c.009-.096.009-.21.009-.44V5.5m8.5 8a3.5 3.5 0 1 0 0-7m-8.25-1H6.5a4.5 4.5 0 0 0 0 9h3.75c1.766 0 3.927.947 5.594 1.856.973.53 1.46.795 1.778.756a.946.946 0 0 0 .691-.411c.187-.26.187-.783.187-1.827V5.126c0-1.044 0-1.566-.187-1.827a.946.946 0 0 0-.691-.411c-.319-.039-.805.226-1.778.756-1.667.909-3.828 1.856-5.594 1.856Z"/></g></symbol>
+<symbol id="i-settings01" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M18.727 14.727a1.5 1.5 0 0 0 .3 1.655l.055.054a1.816 1.816 0 0 1 0 2.573 1.818 1.818 0 0 1-2.573 0l-.055-.055a1.5 1.5 0 0 0-1.654-.3 1.5 1.5 0 0 0-.91 1.373v.155a1.818 1.818 0 1 1-3.636 0V20.1a1.5 1.5 0 0 0-.981-1.373 1.5 1.5 0 0 0-1.655.3l-.054.055a1.818 1.818 0 0 1-3.106-1.287 1.818 1.818 0 0 1 .533-1.286l.054-.055a1.5 1.5 0 0 0 .3-1.654 1.5 1.5 0 0 0-1.372-.91h-.155a1.818 1.818 0 1 1 0-3.636H3.9a1.5 1.5 0 0 0 1.373-.981 1.5 1.5 0 0 0-.3-1.655l-.055-.054A1.818 1.818 0 1 1 7.491 4.99l.054.054a1.5 1.5 0 0 0 1.655.3h.073a1.5 1.5 0 0 0 .909-1.372v-.155a1.818 1.818 0 0 1 3.636 0V3.9a1.499 1.499 0 0 0 .91 1.373 1.5 1.5 0 0 0 1.654-.3l.054-.055a1.817 1.817 0 0 1 2.573 0 1.819 1.819 0 0 1 0 2.573l-.055.054a1.5 1.5 0 0 0-.3 1.655v.073a1.5 1.5 0 0 0 1.373.909h.155a1.818 1.818 0 0 1 0 3.636H20.1a1.499 1.499 0 0 0-1.373.91Z"/></g></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10H3m13-8v4M8 2v4m-.2 16h8.4c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.311-1.311C21 19.72 21 18.88 21 17.2V8.8c0-1.68 0-2.52-.327-3.162a3 3 0 0 0-1.311-1.311C18.72 4 17.88 4 16.2 4H7.8c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.311 1.311C3 6.28 3 7.12 3 8.8v8.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311C5.28 22 6.12 22 7.8 22Z"/></g></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6l4 2m6-2c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10Z"/></g></symbol>
+<symbol id="i-markerpin01" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M12 22c4-4 8-7.582 8-12a8 8 0 1 0-16 0c0 4.418 4 8 8 12Z"/></g></symbol>
+<symbol id="i-users01" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 21v-2a4.002 4.002 0 0 0-3-3.874M15.5 3.291a4.001 4.001 0 0 1 0 7.418M17 21c0-1.864 0-2.796-.305-3.53a4 4 0 0 0-2.164-2.165C13.796 15 12.864 15 11 15H8c-1.864 0-2.796 0-3.53.305a4 4 0 0 0-2.166 2.164C2 18.204 2 19.136 2 21M13.5 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/></g></symbol>
+<symbol id="i-user01" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21c0-1.396 0-2.093-.172-2.661a4 4 0 0 0-2.667-2.667c-.568-.172-1.265-.172-2.661-.172h-5c-1.396 0-2.093 0-2.661.172a4 4 0 0 0-2.667 2.667C4 18.907 4 19.604 4 21M16.5 7.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></g></symbol>
+<symbol id="i-pencil02" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4M2 22l1.276-4.68c.084-.305.125-.458.19-.6.056-.127.126-.247.207-.36.092-.125.204-.237.428-.46L14.434 5.565c.198-.198.297-.297.412-.334a.5.5 0 0 1 .309 0c.114.037.213.136.41.334l2.87 2.868c.197.198.296.297.333.411.033.1.033.21 0 .31-.037.114-.136.213-.334.41L8.101 19.9c-.224.224-.336.336-.462.428a2.003 2.003 0 0 1-.358.208c-.143.064-.296.105-.6.189L2 22Z"/></g></symbol>
+<symbol id="i-imageup" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 5 3-3m0 0 3 3m-3-3v6m-6.5-5H7.8c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.311 1.311C3 5.28 3 6.12 3 7.8v8.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311C5.28 21 6.12 21 7.8 21H17c.93 0 1.395 0 1.776-.102a3 3 0 0 0 2.122-2.122C21 18.395 21 17.93 21 17M10.5 8.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4.49 3.418-8.459 7.69c-.476.433-.714.649-.735.836a.5.5 0 0 0 .167.431C6.105 21 6.426 21 7.07 21h9.387c1.44 0 2.159 0 2.724-.242a3 3 0 0 0 1.578-1.578c.242-.565.242-1.285.242-2.724 0-.484 0-.726-.053-.952a2.001 2.001 0 0 0-.374-.778c-.143-.182-.332-.333-.71-.636l-2.797-2.237c-.379-.303-.568-.454-.776-.508a1 1 0 0 0-.557.018c-.205.066-.384.23-.743.555Z"/></g></symbol>
+<symbol id="i-image01" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.2 21H6.931c-.605 0-.908 0-1.049-.12a.5.5 0 0 1-.173-.42c.014-.183.228-.397.657-.826l8.503-8.503c.396-.396.594-.594.822-.668a1 1 0 0 1 .618 0c.228.074.426.272.822.668L21 15v1.2M16.2 21c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.311-1.311C21 18.72 21 17.88 21 16.2M16.2 21H7.8c-1.68 0-2.52 0-3.162-.327a3 3 0 0 1-1.311-1.311C3 18.72 3 17.88 3 16.2V7.8c0-1.68 0-2.52.327-3.162a3 3 0 0 1 1.311-1.311C5.28 3 6.12 3 7.8 3h8.4c1.68 0 2.52 0 3.162.327a3 3 0 0 1 1.311 1.311C21 5.28 21 6.12 21 7.8v8.4M10.5 8.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/></g></symbol>
+<symbol id="i-share07" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8.59 13.51 6.83 3.98m-.01-10.98-6.82 3.98M21 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM9 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm12 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></g></symbol>
+<symbol id="i-lock01" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 10V8A5 5 0 0 0 7 8v2m5 4.5v2M8.8 21h6.4c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.311-1.311C20 18.72 20 17.88 20 16.2v-1.4c0-1.68 0-2.52-.327-3.162a3 3 0 0 0-1.311-1.311C17.72 10 16.88 10 15.2 10H8.8c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.311 1.311C4 12.28 4 13.12 4 14.8v1.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311C6.28 21 7.12 21 8.8 21Z"/></g></symbol>
+<symbol id="i-chevronselectorvertical" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></g></symbol>
+<symbol id="i-alertcircle" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4m0 4h.01M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10Z"/></g></symbol>
+<symbol id="i-calendarplus01" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8H3m13-6v3M8 2v3m4 13v-6m-3 3h6m-7.2 7h8.4c1.68 0 2.52 0 3.162-.327a3 3 0 0 0 1.311-1.311C21 19.72 21 18.88 21 17.2V8.8c0-1.68 0-2.52-.327-3.162a3 3 0 0 0-1.311-1.311C18.72 4 17.88 4 16.2 4H7.8c-1.68 0-2.52 0-3.162.327a3 3 0 0 0-1.311 1.311C3 6.28 3 7.12 3 8.8v8.4c0 1.68 0 2.52.327 3.162a3 3 0 0 0 1.311 1.311C5.28 22 6.12 22 7.8 22Z"/></g></symbol>
+<symbol id="i-play-u" viewBox="0 0 16 16"><path d="M2.19995 2.86327C2.19995 1.61155 3.57248 0.844595 4.63851 1.50061L12.9856 6.63731C14.0009 7.26209 14.0009 8.73784 12.9856 9.36262L4.63851 14.4993C3.57247 15.1553 2.19995 14.3884 2.19995 13.1367V2.86327Z" fill="currentColor"/></symbol><symbol id="i-dot" viewBox="0 0 8 8"><circle cx="4" cy="4" r="2.5" fill="currentColor" stroke="currentColor"/></symbol>
+</svg>
+
+<header class="lab-strip">
+  <div class="lab-row">
+    <h1>06 Untitled UI React</h1>
+    <a href="https://github.com/untitleduico/react">github.com/untitleduico/react</a>
+    <span class="lab-num">1,980 כוכבים</span>
+    <span>push אחרון 09.10.2026</span>
+    <nav class="lab-toggle"><a href="#">בהיר</a><a href="#dark">כהה</a><a href="#full">בלי גלילה פנימית</a></nav>
+  </div>
+  <ol class="lab-points">
+    <li>לבן וקווי-שיער: כרטיסים rounded-xl עם ring ב-neutral-200 ו-shadow-xs, כותרת-כרטיס מעל קו, שורות-טבלה של 72px.</li>
+    <li>כפתורים rounded-lg במשקל 600 עם צל סקאומורפי ומסגרת-פנים לבנה שדוהה למטה. ה-brand הסגול הוחלף בסולם סביב Prod Blue.</li>
+    <li>featured icons (טבעות ל«חסר ממך», ריבוע לפעולות), תגים עם נקודה, page header עם באנר ואווטאר חופף (הבאנר הוא האור של wedo), וכרטיס-חשבון בתחתית התפריט.</li>
+  </ol>
+  <p class="lab-font">גופן: Inter, הגופן של Untitled, לספרות ולאותיות הלטיניות. ל-Inter אין עברית (גם לא ב-Google Fonts), ולכן העברית ב-Heebo, הגרוטסק העברי הקרוב אליו.</p>
+</header>
+
+<!-- ============ טלפון 390×844 ============ -->
+<section class="stage">
+  <div class="phone">
+    <div class="screen ux">
+      <div class="scroll">
+        <header class="m-top">
+          <img class="logo-l" src="../brand/wedo-logotype-black.svg" alt="wedo">
+          <img class="logo-d" src="../brand/wedo-logotype-white.svg" alt="wedo">
+          <button class="btn-utility" aria-label="הגדרות"><svg class="ic"><use href="#i-settings01"/></svg></button>
+        </header>
+        <div class="m-ph__banner"><img class="ph__banner" src="../brand/aurora-glow.jpg" alt=""></div>
+        <div class="m-ph__row"><span class="ph__avatar"><img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt=""></span></div>
+        <div class="m-ph__text">
+          <h1 class="d-xs semibold c-primary">הפיצוח</h1>
+          <p class="t-md c-tertiary">גיל לי-רן</p>
+        </div>
+
+        <div class="m-body">
+          <!-- 1 -->
+          <section class="card">
+            <div class="card__header">
+              <div class="card__header-text">
+                <p class="card__title">הפרק הבא שעולה</p>
+                <p class="t-sm c-tertiary">עולה ביום רביעי 28.10</p>
+              </div>
+              <span class="badge badge--brand"><svg class="dot"><use href="#i-dot"/></svg>בעוד יומיים</span>
+            </div>
+            <div class="card__body" style="display:flex;flex-direction:column;gap:16px">
+              <div>
+                <p class="d-xs semibold c-primary">פרק 19</p>
+                <p class="t-md c-tertiary">עם אורלי אורן</p>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <p class="t-sm medium c-secondary">עכשיו: עריכה, ממתין לעורך</p>
+                <div class="progress"><div class="progress__track"><div class="progress__fill" style="width:42.857%"></div></div><span class="progress__value">3 מתוך 7</span></div>
+              </div>
+            </div>
+            <div class="req-head"><svg class="dot"><use href="#i-dot"/></svg>חסר ממך</div>
+            <div class="req-list">
+              <div class="req" style="border-top:0">
+                <span class="fi fi--outline"><svg class="ic"><use href="#i-pencil02"/></svg></span>
+                <div class="req__text"><p class="req__title">שם לפרק</p><p class="req__desc">לפני העריכה</p></div>
+                <span class="badge badge--orange"><svg class="dot"><use href="#i-dot"/></svg>פתוח</span>
+                <button class="btn btn--primary">לבחור שם</button>
+              </div>
+              <div class="req">
+                <span class="fi fi--light fi--gray"><svg class="ic"><use href="#i-image01"/></svg></span>
+                <div class="req__text"><p class="req__title">תמונת-מרואיין</p><p class="req__desc">התקבלה ב-25.10</p></div>
+                <span class="badge badge--brand"><svg class="dot"><use href="#i-dot"/></svg>ממתינה לאישור</span>
+              </div>
+              <div class="req req--locked">
+                <span class="fi fi--light fi--gray"><svg class="ic"><use href="#i-lock01"/></svg></span>
+                <div class="req__text"><p class="req__title">בחירת-טיזרים</p><p class="req__desc">אחרי העריכה</p></div>
+                <span class="badge"><svg class="ic"><use href="#i-lock01"/></svg>נעול</span>
+              </div>
+              <div class="req req--locked">
+                <span class="fi fi--light fi--gray"><svg class="ic"><use href="#i-lock01"/></svg></span>
+                <div class="req__text"><p class="req__title">אישור-לפרסום</p><p class="req__desc">בהמשך</p></div>
+                <span class="badge"><svg class="ic"><use href="#i-lock01"/></svg>נעול</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 2 -->
+          <section class="card">
+            <div class="card__header">
+              <div class="card__header-text">
+                <p class="card__title">ההקלטה הבאה</p>
+                <p class="t-lg semibold c-primary" style="margin-top:4px">חמישי 29.10, 11:00</p>
+              </div>
+            </div>
+            <div class="card__body facts">
+              <p class="fact"><svg class="ic"><use href="#i-clock"/></svg><span class="tnum">11:00 עד 13:00</span></p>
+              <p class="fact"><svg class="ic"><use href="#i-markerpin01"/></svg>אולפן רימקס</p>
+              <p class="fact"><svg class="ic"><use href="#i-users01"/></svg>עם נועה בוקרה ורלי זדרב</p>
+              <p class="fact"><svg class="ic"><use href="#i-user01"/></svg>מפיק: יהלי</p>
+            </div>
+            <div class="card__footer">
+              <button class="btn btn--secondary sm">לשנות מועד</button>
+              <button class="btn btn--secondary sm">להוסיף פרטי-אורח</button>
+              <button class="btn btn--link">לתאם הקלטה נוספת</button>
+            </div>
+          </section>
+
+          <!-- 3 -->
+          <section class="card">
+            <div class="card__header"><div class="card__header-text"><p class="card__title">עלה לאחרונה</p></div></div>
+            <div class="card__body" style="display:flex;flex-direction:column;gap:16px">
+              <div class="thumb"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""><span class="play"><svg><use href="#i-play-u"/></svg></span></div>
+              <div>
+                <p class="t-sm c-tertiary">פרק 18 עם אלכס קפ</p>
+                <p class="t-lg semibold c-primary">איך מקפיצים עסק בתיווך עם AI</p>
+              </div>
+            </div>
+            <div class="card__footer" style="justify-content:space-between">
+              <span class="badge badge--green"><svg class="dot"><use href="#i-dot"/></svg>עלה ב-14.10</span>
+              <button class="btn btn--secondary sm"><svg class="ic"><use href="#i-share07"/></svg>לשתף</button>
+            </div>
+          </section>
+
+          <!-- 4 -->
+          <section class="card">
+            <p class="metric-head">איך התוכנית עושה</p>
+            <div class="card__body" style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:baseline;gap:8px"><span class="d-sm semibold c-primary tnum">5,941</span><span class="t-sm medium c-tertiary">צפיות ביוטיוב</span></div>
+              <p class="t-sm c-tertiary">כל פרק נצפה בממוצע 21% מאורכו</p>
+              <p class="t-xs c-quaternary">נכון ל-25.10.2026, 18 פרקים</p>
+            </div>
+          </section>
+
+          <!-- 5 -->
+          <section class="card qa-list">
+            <p class="metric-head">פעולות מהירות</p>
+            <a class="qa" href="#"><span class="fi fi--modern"><svg class="ic"><use href="#i-calendarplus01"/></svg></span>לתאם הקלטה</a>
+            <a class="qa" href="#" style="border-top:1px solid var(--border-secondary)"><span class="fi fi--modern"><svg class="ic"><use href="#i-imageup"/></svg></span>להעלות תמונה</a>
+            <a class="qa" href="#"><span class="fi fi--modern"><svg class="ic"><use href="#i-pencil02"/></svg></span>לבחור שם</a>
+            <a class="qa" href="#"><span class="fi fi--modern"><svg class="ic"><use href="#i-share07"/></svg></span>לשתף פרק</a>
+          </section>
+        </div>
+      </div>
+
+      <nav class="m-tabbar" aria-label="ניווט">
+        <a class="m-tab" aria-current="page" href="#"><svg class="ic"><use href="#i-homeline"/></svg>בית</a>
+        <a class="m-tab" href="#"><svg class="ic"><use href="#i-compass03"/></svg>אסטרטגיה</a>
+        <a class="m-tab" href="#"><svg class="ic"><use href="#i-microphone02"/></svg>הפקה<span class="pin"></span></a>
+        <a class="m-tab" href="#"><svg class="ic"><use href="#i-announcement02"/></svg>הפצה</a>
+      </nav>
+      <span class="island"></span><span class="home-ind"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ מחשב 1280×800 ============ -->
+<section class="stage stage--desk">
+  <div class="desk-frame">
+    <div class="desk ux">
+      <aside class="sb">
+        <div>
+          <div class="sb__logo">
+            <img class="logo-l" src="../brand/wedo-logotype-black.svg" alt="wedo">
+            <img class="logo-d" src="../brand/wedo-logotype-white.svg" alt="wedo">
+          </div>
+          <nav class="nav" aria-label="ניווט">
+            <a class="nav-item" aria-current="page" href="#"><svg class="ic"><use href="#i-homeline"/></svg>בית</a>
+            <a class="nav-item" href="#"><svg class="ic"><use href="#i-compass03"/></svg>אסטרטגיה</a>
+            <a class="nav-item" href="#"><svg class="ic"><use href="#i-microphone02"/></svg>הפקה<span class="badge badge--modern"><svg class="dot or"><use href="#i-dot"/></svg>חסר ממך</span></a>
+            <a class="nav-item" href="#"><svg class="ic"><use href="#i-announcement02"/></svg>הפצה</a>
+          </nav>
+        </div>
+        <div class="sb__foot">
+          <a class="nav-item" href="#"><svg class="ic"><use href="#i-settings01"/></svg>הגדרות</a>
+          <div class="acct">
+            <span class="avatar s40"><img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt=""></span>
+            <div><p class="t-sm semibold c-primary">הפיצוח</p><p class="t-sm c-tertiary">גיל לי-רן</p></div>
+            <span class="acct__sel"><svg class="ic"><use href="#i-chevronselectorvertical"/></svg></span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="desk-main">
+        <div class="ph">
+          <div class="d-ph__banner"><img class="ph__banner" src="../brand/aurora-glow.jpg" alt=""></div>
+          <div class="d-ph__row">
+            <span class="ph__avatar"><img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt=""></span>
+            <div class="d-ph__text">
+              <h1 class="d-xs semibold c-primary">הפיצוח</h1>
+              <p class="t-md c-tertiary">גיל לי-רן</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-grid">
+          <div class="col">
+            <!-- 1 -->
+            <section class="card">
+              <div class="card__header">
+                <div class="card__header-text">
+                  <p class="card__title">הפרק הבא שעולה <span class="badge badge--brand"><svg class="dot"><use href="#i-dot"/></svg>בעוד יומיים</span></p>
+                  <p class="t-sm c-tertiary">עולה ביום רביעי 28.10</p>
+                </div>
+              </div>
+              <div class="card__body" style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:40px;align-items:end">
+                <div>
+                  <p class="d-sm semibold c-primary">פרק 19</p>
+                  <p class="t-md c-tertiary">עם אורלי אורן</p>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <p class="t-sm medium c-secondary">עכשיו: עריכה, ממתין לעורך</p>
+                  <div class="progress"><div class="progress__track"><div class="progress__fill" style="width:42.857%"></div></div><span class="progress__value">3 מתוך 7</span></div>
+                </div>
+              </div>
+              <div class="req-head"><svg class="dot"><use href="#i-dot"/></svg>חסר ממך</div>
+              <div class="req-list">
+                <div class="req" style="border-top:0">
+                  <span class="fi fi--outline"><svg class="ic"><use href="#i-pencil02"/></svg></span>
+                  <div class="req__text"><p class="req__title">שם לפרק</p><p class="req__desc">לפני העריכה</p></div>
+                  <span class="badge badge--orange"><svg class="dot"><use href="#i-dot"/></svg>פתוח</span>
+                  <button class="btn btn--primary sm">לבחור שם</button>
+                </div>
+                <div class="req">
+                  <span class="fi fi--light fi--gray"><svg class="ic"><use href="#i-image01"/></svg></span>
+                  <div class="req__text"><p class="req__title">תמונת-מרואיין</p><p class="req__desc">התקבלה ב-25.10</p></div>
+                  <span class="badge badge--brand"><svg class="dot"><use href="#i-dot"/></svg>ממתינה לאישור</span>
+                </div>
+                <div class="req req--locked">
+                  <span class="fi fi--light fi--gray"><svg class="ic"><use href="#i-lock01"/></svg></span>
+                  <div class="req__text"><p class="req__title">בחירת-טיזרים</p><p class="req__desc">אחרי העריכה</p></div>
+                  <span class="badge"><svg class="ic"><use href="#i-lock01"/></svg>נעול</span>
+                </div>
+                <div class="req req--locked">
+                  <span class="fi fi--light fi--gray"><svg class="ic"><use href="#i-lock01"/></svg></span>
+                  <div class="req__text"><p class="req__title">אישור-לפרסום</p><p class="req__desc">בהמשך</p></div>
+                  <span class="badge"><svg class="ic"><use href="#i-lock01"/></svg>נעול</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- רשימת-פרקים -->
+            <section class="card">
+              <div class="card__header"><div class="card__header-text"><p class="card__title">הפרקים</p></div></div>
+              <table class="table">
+                <thead><tr><th style="width:70px">פרק</th><th>אורח</th><th>כותרת</th><th style="width:140px">מצב</th></tr></thead>
+                <tbody>
+                  <tr><td class="tnum c-primary medium">19</td><td><div class="cell-guest"><span class="noimg"><svg class="ic"><use href="#i-microphone02"/></svg></span><b>אורלי אורן</b></div></td><td class="c-quaternary">עוד אין שם</td><td><span class="badge badge--brand"><svg class="dot"><use href="#i-dot"/></svg>בעריכה</span></td></tr>
+                  <tr><td class="tnum c-primary medium">18</td><td><div class="cell-guest"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""><b>אלכס קפ</b></div></td><td>איך מקפיצים עסק בתיווך עם AI</td><td><span class="badge badge--green"><svg class="dot"><use href="#i-dot"/></svg>עלה ב-14.10</span></td></tr>
+                  <tr><td class="tnum c-primary medium">17</td><td><div class="cell-guest"><img src="https://i.ytimg.com/vi/P463I2IV9Xo/mqdefault.jpg" alt=""><b>אהרון וחביבה איציקזון</b></div></td><td>איך ממשיכים מכאן?</td><td><span class="badge badge--green"><svg class="dot"><use href="#i-dot"/></svg>עלה ב-7.10</span></td></tr>
+                  <tr><td class="tnum c-primary medium">16</td><td><div class="cell-guest"><img src="https://i.ytimg.com/vi/epNQhrsKjxI/mqdefault.jpg" alt=""><b>ונסה סיימן</b></div></td><td>חמשת הכללים למשא ומתן</td><td><span class="badge badge--green"><svg class="dot"><use href="#i-dot"/></svg>עלה ב-30.9</span></td></tr>
+                  <tr><td class="tnum c-primary medium">15</td><td><div class="cell-guest"><img src="https://i.ytimg.com/vi/fCG8ceGVDRo/mqdefault.jpg" alt=""><b>דקלה ביבי</b></div></td><td>איך לעשות שינוי קריירה בגיל 40</td><td><span class="badge badge--green"><svg class="dot"><use href="#i-dot"/></svg>עלה ב-23.9</span></td></tr>
+                  <tr><td class="tnum c-primary medium">14</td><td><div class="cell-guest"><img src="https://i.ytimg.com/vi/pp-nzLON8vY/mqdefault.jpg" alt=""><b>אריק זאבי</b></div></td><td>מי נשאר ומי נשבר</td><td><span class="badge badge--green"><svg class="dot"><use href="#i-dot"/></svg>עלה ב-16.9</span></td></tr>
+                  <tr><td class="tnum c-primary medium">13</td><td><div class="cell-guest"><img src="https://i.ytimg.com/vi/Sh0J8sIBfHs/mqdefault.jpg" alt=""><b>איתי דוד</b></div></td><td>הסוד הכי שמור ברי/מקס</td><td><span class="badge badge--green"><svg class="dot"><use href="#i-dot"/></svg>עלה ב-9.9</span></td></tr>
+                </tbody>
+              </table>
+            </section>
+          </div>
+
+          <div class="col">
+            <!-- 2 -->
+            <section class="card">
+              <div class="card__header">
+                <div class="card__header-text">
+                  <p class="card__title">ההקלטה הבאה</p>
+                  <p class="t-lg semibold c-primary" style="margin-top:4px">חמישי 29.10, 11:00</p>
+                </div>
+              </div>
+              <div class="card__body facts">
+                <p class="fact"><svg class="ic"><use href="#i-clock"/></svg><span class="tnum">11:00 עד 13:00</span></p>
+                <p class="fact"><svg class="ic"><use href="#i-markerpin01"/></svg>אולפן רימקס</p>
+                <p class="fact"><svg class="ic"><use href="#i-users01"/></svg>עם נועה בוקרה ורלי זדרב</p>
+                <p class="fact"><svg class="ic"><use href="#i-user01"/></svg>מפיק: יהלי</p>
+              </div>
+              <div class="card__footer">
+                <button class="btn btn--secondary sm">לשנות מועד</button>
+                <button class="btn btn--secondary sm">להוסיף פרטי-אורח</button>
+                <button class="btn btn--link">לתאם הקלטה נוספת</button>
+              </div>
+            </section>
+            <!-- 3 -->
+            <section class="card">
+              <div class="card__header"><div class="card__header-text"><p class="card__title">עלה לאחרונה</p></div></div>
+              <div class="card__body" style="display:flex;flex-direction:column;gap:12px">
+                <div class="thumb"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""><span class="play"><svg><use href="#i-play-u"/></svg></span></div>
+                <div>
+                  <p class="t-sm c-tertiary">פרק 18 עם אלכס קפ</p>
+                  <p class="t-md semibold c-primary">איך מקפיצים עסק בתיווך עם AI</p>
+                </div>
+              </div>
+              <div class="card__footer" style="justify-content:space-between">
+                <span class="badge badge--green"><svg class="dot"><use href="#i-dot"/></svg>עלה ב-14.10</span>
+                <button class="btn btn--secondary sm"><svg class="ic"><use href="#i-share07"/></svg>לשתף</button>
+              </div>
+            </section>
+            <!-- 4 -->
+            <section class="card">
+              <p class="metric-head">איך התוכנית עושה</p>
+              <div class="card__body" style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:baseline;gap:8px"><span class="d-sm semibold c-primary tnum">5,941</span><span class="t-sm medium c-tertiary">צפיות ביוטיוב</span></div>
+                <p class="t-sm c-tertiary">כל פרק נצפה בממוצע 21% מאורכו</p>
+                <p class="t-xs c-quaternary">נכון ל-25.10.2026, 18 פרקים</p>
+              </div>
+            </section>
+            <!-- 5 -->
+            <section class="card qa-list">
+              <p class="metric-head">פעולות מהירות</p>
+              <a class="qa" href="#"><span class="fi fi--modern"><svg class="ic"><use href="#i-calendarplus01"/></svg></span>לתאם הקלטה</a>
+              <a class="qa" href="#" style="border-top:1px solid var(--border-secondary)"><span class="fi fi--modern"><svg class="ic"><use href="#i-imageup"/></svg></span>להעלות תמונה</a>
+              <a class="qa" href="#"><span class="fi fi--modern"><svg class="ic"><use href="#i-pencil02"/></svg></span>לבחור שם</a>
+              <a class="qa" href="#"><span class="fi fi--modern"><svg class="ic"><use href="#i-share07"/></svg></span>לשתף פרק</a>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+</body>
+</html>

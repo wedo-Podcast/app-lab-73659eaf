@@ -150,7 +150,7 @@ body:has(#dark:target,#darkfull:target) .hx .logo-d{display:block}
 
 /* --- avatar.css --- */
 .hx .avatar{position:relative;display:flex;flex:none;align-items:center;justify-content:center;width:40px;height:40px;overflow:hidden;border-radius:var(--radius-3xl);background:var(--default)}
-.hx .avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:46% 30%}
+.hx .avatar img{position:absolute;width:280%;max-width:none;height:auto;left:-82%;top:-24%}
 .hx .avatar--sm{width:32px;height:32px;border-radius:var(--radius-2xl)}
 .hx .avatar__fallback{display:flex;width:100%;height:100%;align-items:center;justify-content:center;color:var(--default-foreground)}
 .hx .avatar--soft.avatar--warning .avatar__fallback{background:var(--warning-soft);color:var(--warning-soft-foreground)}
@@ -224,8 +224,7 @@ body:has(#dark:target,#darkfull:target) .hx .logo-d{display:block}
 .hx .mn-top h2{font-size:20px;line-height:28px;font-weight:600;letter-spacing:-.01em}
 .hx .mn-body{display:flex;flex-direction:column;gap:16px;padding:4px 24px 32px}
 .hx .next{display:grid;grid-template-columns:330px minmax(0,1fr);gap:24px;padding:20px}
-.hx .next__info{display:flex;flex-direction:column;gap:12px}
-.hx .next__info .progress-bar{margin-top:auto}
+.hx .next__info{display:flex;flex-direction:column;justify-content:space-between;gap:12px}
 .hx .next .req{grid-template-columns:auto 1fr auto auto}
 .hx .next .req__action{grid-column:auto;margin:0}
 .hx .row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
@@ -285,11 +284,11 @@ body:has(#dark:target,#darkfull:target) .hx .logo-d{display:block}
     <nav class="lab-toggle"><a href="#">בהיר</a><a href="#dark">כהה</a><a href="#full">בלי גלילה פנימית</a></nav>
   </div>
   <ol class="lab-points">
-    <li>משטח אפור בהיר (oklch 0.97) וכרטיסים לבנים צפים: רדיוס 24px וצל רך בשלוש שכבות, בלי קווי מסגרת. בכהה הצל נעלם והמשטח בהיר מהרקע. <code>packages/styles/themes/default/variables.css</code> <code>components/card.css</code></li>
-    <li>הכול גלולה: כפתורים rounded-3xl בגובה 40 בטלפון ו-36 במחשב, פריטי-ניווט rounded-2xl על אפור, וסרגל-הטאבים הוא מקטע צף. <code>components/button.css</code> <code>tabs.css</code> <code>list-box-item.css</code></li>
-    <li>צבעים סמנטיים רכים (15% שקיפות) לצ'יפים, לאווטרים ולמטר, והטבלה היא גוף לבן בתוך מגש אפור. accent הוחלף ב-Prod Blue ו-warning בכתום B2C; ה-success הירוק נשאר של HeroUI. <code>components/chip.css</code> <code>table.css</code> <code>progress-bar.css</code></li>
+    <li>משטח אפור בהיר וכרטיסים לבנים צפים: רדיוס 24px וצל רך בשלוש שכבות, בלי קווי מסגרת. בכהה הצל נעלם והכרטיס בהיר מהרקע.</li>
+    <li>הכול גלולה: כפתורים rounded-3xl, פריטי-ניווט על אפור, וסרגל-טאבים שצף כמקטע.</li>
+    <li>צבעים סמנטיים רכים (15%) לצ'יפים, לאווטרים ולמטר, והטבלה היא גוף לבן בתוך מגש אפור. accent הוחלף ב-Prod Blue ו-warning בכתום B2C; ה-success הירוק נשאר של HeroUI.</li>
   </ol>
-  <p class="lab-font">גופן: Google Sans. ברירת-המחדל של HeroUI היא Inter, ואין לו עברית; מתוך רשימת-הגופנים של בונה-הערכות שלהם (<code>apps/docs/src/app/[lang]/themes/constants.ts</code>) Google Sans הוא היחיד עם עברית ומשקלים 400 עד 700, והגאומטריה הרכה שלו תואמת לגלולות.</p>
+  <p class="lab-font">גופן: Google Sans. ל-Inter, ברירת-המחדל של HeroUI, אין עברית; Google Sans הוא היחיד ברשימת-הגופנים של בונה-הערכות שלהם עם עברית ומשקלים 400 עד 700, והגאומטריה הרכה שלו תואמת לגלולות.</p>
 </header>
 
 <!-- ============ טלפון 390×844 ============ -->
