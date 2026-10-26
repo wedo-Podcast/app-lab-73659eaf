@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מעבדת-טעם | wedo app</title>
+<style>
+  @font-face { font-family: "Rag Sans"; src: url("./fonts/RagSans-VF.ttf") format("truetype"); font-weight: 100 900; font-display: swap; }
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #0b0b0d; color: #f5f5f7; font-family: "Rag Sans", system-ui, sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; background: rgba(11,11,13,.86); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,.08); padding: 14px 24px; display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; }
+  header h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+  header p { margin: 0; color: #a1a1aa; font-size: 14px; }
+  main { padding: 20px 24px 60px; display: grid; grid-template-columns: repeat(auto-fill, minmax(452px, 1fr)); gap: 22px; }
+  article { background: #141417; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 14px 14px 16px; }
+  article h2 { margin: 0 0 2px; font-size: 17px; font-weight: 650; display: flex; align-items: baseline; gap: 10px; }
+  article h2 .n { color: #71717a; font-weight: 500; font-variant-numeric: tabular-nums; }
+  article .repo { margin: 0 0 12px; font-size: 13px; color: #a1a1aa; }
+  article .repo a { color: #8bb0ff; text-decoration: none; }
+  article .repo a:hover { text-decoration: underline; }
+  .slot { width: 424px; height: 940px; margin-inline: auto; border-radius: 12px; border: 1px dashed rgba(255,255,255,.14); display: grid; place-items: center; color: #71717a; font-size: 15px; padding: 24px; text-align: center; }
+  iframe { width: 424px; height: 940px; border: 0; border-radius: 12px; background: #000; display: block; margin-inline: auto; }
+  .open { display: inline-block; margin-top: 10px; font-size: 14px; color: #f5f5f7; text-decoration: none; border: 1px solid rgba(255,255,255,.14); padding: 7px 12px; border-radius: 999px; }
+  .open:hover { background: rgba(255,255,255,.06); }
+</style>
+</head>
+<body>
+<header>
+  <h1>מעבדת-טעם: 15 כיוונים מריפואים חמים</h1>
+  <p>כל מסגרת היא מסך-הבית של «הפיצוח», אותו תוכן בדיוק, בשפה הוויזואלית של ריפו אחד. גלול בתוך המסגרת; «לפתוח» מציג גם את גרסת-המחשב. תגיד לי מספרים, גם שילובים.</p>
+</header>
+<main id="grid"></main>
+<script>
+  const items = [
+    ["01-shadcn", "shadcn/ui", "shadcn-ui/ui", "הבלוקים הרשמיים, סגנון base-luma"],
+    ["02-openstatus", "OpenStatus", "openstatusHQ/openstatus", "DESIGN.md: מאופק, מונו לערכים"],
+    ["03-admin-starter", "תבנית-אדמין", "Kiranism/next-shadcn-dashboard-starter", "KPI, presets, tabular-nums"],
+    ["04-heroui", "HeroUI", "heroui-inc/heroui", "רך-מעוגל, צללים, pill"],
+    ["05-radix-themes", "Radix Themes", "radix-ui/themes", "סולמות-צבע, scaling, radius"],
+    ["06-untitled-ui", "Untitled UI", "untitleduico/react", "Inter, featured icons, page header"],
+    ["07-linear-like", "Linear-like", "ln-dev7/circle", "כהה, צפוף, שורות, קווי-שיער"],
+    ["08-midday", "Midday", "midday-ai/midday", "פיננסי-שקט, מספר גדול, מונו"],
+    ["09-calcom", "Cal.com", "cosscom/ui", "אפור-בהיר, כרטיסים עם border, כפתור שחור"],
+    ["10-material-expressive", "Material 3 Expressive", "material-components/material-web", "tonal surfaces, פינות 28px, nav pill"],
+    ["11-liquid-glass", "Liquid Glass", "gh search: liquid glass", "iOS 26: זכוכית מעל צבע"],
+    ["12-daisyui", "daisyUI", "saadeghi/daisyui", "ערכות-נושא, רכיבים משלהם"],
+    ["13-once-ui", "Once UI", "once-ui-system/core", "טוקנים עשירים, גרדיאנט עדין"],
+    ["14-magic-ui", "Magic UI", "magicuidesign/magicui", "אקספרסיבי: bento, ticker, beam"],
+    ["15-twenty", "Twenty", "twentyhq/twenty", "Notion-like: לבן, 13px, רשומות"],
+  ];
+  const grid = document.getElementById("grid");
+  const pending = new Map();
+  for (const [slug, title, repo, note] of items) {
+    const n = slug.slice(0, 2);
+    const el = document.createElement("article");
+    el.innerHTML = `
+      <h2><span class="n">${n}</span>${title}</h2>
+      <p class="repo">${note}. <a href="https://github.com/${repo}" target="_blank" rel="noopener">${repo}</a></p>
+      <div class="slot"><div class="wait">בבנייה. הסוכן עוד משבט את הריפו ובונה; המסגרת תתמלא לבד.</div></div>
+      <a class="open" href="./${slug}.html" target="_blank" rel="noopener">לפתוח בגודל מלא (טלפון ומחשב)</a>`;
+    grid.appendChild(el);
+    pending.set(slug, { el, title });
+  }
+  async function poll() {
+    for (const [slug, { el, title }] of [...pending]) {
+      try {
+        const res = await fetch(`/lab/${slug}.html`, { method: "HEAD", cache: "no-store" });
+        if (res.ok) {
+          const frame = document.createElement("iframe");
+          frame.loading = "lazy"; frame.title = title; frame.src = `/lab/${slug}.html`;
+          el.querySelector(".slot").replaceWith(frame);
+          pending.delete(slug);
+        }
+      } catch {}
+    }
+    if (pending.size) setTimeout(poll, 20000);
+  }
+  poll();
+</script>
+</body>
+</html>
