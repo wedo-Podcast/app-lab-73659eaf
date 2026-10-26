@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>07 Linear-like</title>
+<style>
+@font-face { font-family: "Rag Sans"; src: url("./fonts/RagSans-VF.ttf"); font-weight: 100 900; }
+
+/* Tokens: ln-dev7/circle app/globals.css (.dark), Circle defaults to dark (app/layout.tsx defaultTheme="dark") */
+:root {
+  --bg: #09090b;          /* --background  oklch(0.141 0.005 285.823) */
+  --container: #101011;   /* --container (dark) */
+  --sidebar: #18181b;     /* --sidebar     oklch(0.21 0.006 285.885)  */
+  --accent: #27272a;      /* --accent      oklch(0.274 0.006 286.033) */
+  --border: #27272a;      /* --border      oklch(0.274 0.006 286.033) */
+  --fg: #fafafa;          /* --foreground  oklch(0.985 0 0)           */
+  --muted: #a1a1aa;       /* --muted-foreground oklch(0.705 0.015 286.067) */
+  --ring: #52525b;
+  --prod: #0131FF;        /* wedo Prod Blue, where Circle uses #5e6ad2 */
+  --orange: #FF9500;      /* wedo B2C Orange, where Circle uses orange for due/triage */
+  --yellow: #facc15;      /* Circle "In Progress" */
+  --r-sm: 6px; --r-md: 8px; --r-lg: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #050506; }
+body {
+  color: var(--fg);
+  font-family: "Rag Sans", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  padding: 20px 16px 64px;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+img { display: block; }
+.i { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+/* ---------- lab caption ---------- */
+.lab {
+  max-width: 1280px; margin: 0 auto 20px; padding: 10px 14px;
+  border: 1px solid #1c1c20; border-radius: 10px; background: #0b0b0d;
+  font-size: 12px; line-height: 1.55; color: #a1a1aa;
+  display: grid; gap: 4px;
+}
+.lab-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.lab-name { color: #fafafa; font-weight: 600; font-size: 13px; }
+.lab a { color: #d4d4d8; border-bottom: 1px solid #3f3f46; }
+.lab ul { list-style: none; display: grid; gap: 2px; }
+.lab li { padding-inline-start: 12px; position: relative; }
+.lab li::before { content: ""; position: absolute; inset-inline-start: 0; top: 8px; width: 5px; height: 1px; background: #52525b; }
+
+/* ---------- stages ---------- */
+.stage { display: flex; justify-content: safe center; overflow-x: auto; margin: 0 auto 28px; padding: 10px 0; }
+.phone {
+  position: relative; width: 390px; height: 844px; flex: none;
+  border-radius: 54px; overflow: hidden; background: var(--bg);
+  box-shadow: 0 0 0 1px #2a2a2f, 0 0 0 7px #121214, 0 0 0 8px #2a2a2f;
+  margin: 8px 0;
+}
+.desk {
+  width: 1280px; height: 800px; flex: none; overflow: hidden;
+  border-radius: 12px; background: var(--bg);
+  box-shadow: 0 0 0 1px #2a2a2f, 0 30px 80px rgba(0,0,0,.5);
+}
+#full:target ~ .stage .phone, #full:target ~ .stage .desk { height: auto; }
+#full:target ~ .stage .scroll { height: auto !important; overflow: visible !important; }
+#full:target ~ .stage .tabbar { position: static; }
+
+/* ---------- shared Linear-like parts ---------- */
+.kbd {
+  min-width: 20px; height: 20px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); border-radius: 4px; background: rgba(39,39,42,.5);
+  font-size: 11px; color: var(--muted); font-family: inherit;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 8px;
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  font-size: 12px; color: var(--muted); white-space: nowrap;
+}
+.chip.strong { color: var(--fg); }
+.chip.due { color: var(--orange); }
+.tag {   /* Circle cycle tag: text-xs text-muted-foreground border rounded-md px-1.5 py-0.5 */
+  display: inline-flex; align-items: center; height: 20px; padding: 0 6px;
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  font-size: 12px; color: var(--muted); white-space: nowrap;
+}
+.label {  /* Circle LabelBadge: outline, rounded-full, dot */
+  display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px;
+  border: 1px solid var(--border); border-radius: 999px; background: var(--bg);
+  font-size: 12px; color: var(--muted); white-space: nowrap;
+}
+.label .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
+.btn {    /* Circle Button size xs */
+  display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px;
+  border-radius: var(--r-md); font-size: 13px; font-weight: 500; white-space: nowrap;
+}
+.btn-primary { background: var(--fg); color: #18181b; }
+.btn-ghost { color: var(--fg); }
+.btn-ghost:hover { background: var(--accent); }
+.btn-outline { border: 1px solid var(--border); background: var(--bg); color: var(--fg); }
+.btn .i { width: 15px; height: 15px; }
+
+.group-h { /* Circle GroupIssues header: sticky h-10, tinted ${color}08 */
+  position: sticky; top: 0; z-index: 2; background: var(--container);
+}
+.group-h > div { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 24px; }
+.group-h .name { font-size: 14px; font-weight: 500; }
+.group-h .count { font-size: 14px; color: var(--muted); }
+.t-orange > div { background: rgba(255,149,0,.06); }
+.t-blue > div { background: rgba(1,49,255,.07); }
+.t-yellow > div { background: rgba(250,204,21,.05); }
+.t-gray > div { background: rgba(161,161,170,.05); }
+
+.row { /* Circle IssueLine: h-11 px-6 hover:bg-sidebar/50 */
+  display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 24px;
+}
+.row:hover { background: rgba(24,24,27,.5); }
+.row .id { font-size: 13px; color: var(--muted); font-weight: 500; width: 54px; flex: none; }
+.row .title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .sub { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.row .end { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; }
+.row.locked .title { font-weight: 500; color: var(--muted); }
+.thumb { width: 40px; height: 22.5px; border-radius: 4px; object-fit: cover; flex: none; background: var(--accent); }
+.sec-title { font-size: 12px; font-weight: 500; color: var(--muted); }
+
+/* ---------- desktop ---------- */
+.d-app { display: flex; height: 100%; }
+.d-side { width: 244px; flex: none; display: flex; flex-direction: column; padding: 8px 8px 10px; background: var(--bg); }
+.org { display: flex; align-items: center; gap: 4px; padding-top: 8px; }
+.org-btn { flex: 1; display: flex; align-items: center; gap: 8px; height: 32px; padding: 4px; border-radius: var(--r-md); }
+.org-btn:hover { background: var(--accent); }
+.org-btn img { width: 24px; height: 24px; border-radius: 4px; object-fit: cover; }
+.org-btn span { font-size: 14px; font-weight: 600; }
+.org-btn .i { width: 16px; height: 16px; color: var(--muted); margin-inline-start: auto; }
+.icon-btn { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--r-md); background: var(--accent); color: var(--fg); }
+.search { position: relative; margin: 12px 0 8px; }
+.search .box {
+  height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 10px;
+  border: 1px solid var(--border); border-radius: var(--r-md); background: rgba(24,24,27,.6);
+  font-size: 12px; color: var(--muted);
+}
+.search .box .i { width: 14px; height: 14px; }
+.search .kbd { margin-inline-start: auto; }
+.nav { display: grid; gap: 1px; padding: 8px 0; }
+.nav-item {  /* sidebarMenuButtonVariants: h-8 rounded-md p-2 text-sm */
+  position: relative; height: 32px; display: flex; align-items: center; gap: 8px; padding: 8px;
+  border-radius: var(--r-md); font-size: 14px; color: var(--fg);
+}
+.nav-item:hover { background: var(--accent); }
+.nav-item.active { background: var(--accent); font-weight: 500; }
+.nav-item .badge { position: absolute; inset-inline-end: 4px; top: 6px; height: 20px; min-width: 20px; display: flex; align-items: center; justify-content: center; }
+.nav-item .badge i { width: 6px; height: 6px; border-radius: 50%; background: var(--orange); display: block; }
+.side-foot { margin-top: auto; display: grid; gap: 10px; }
+.side-foot .brand { display: flex; align-items: center; justify-content: space-between; padding: 0 8px; }
+.side-foot .brand img { height: 15px; width: auto; opacity: .55; }
+
+.d-shell { flex: 1; min-width: 0; padding: 8px; padding-inline-start: 0; }
+.d-panel { height: 100%; display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--container); overflow: hidden; }
+.d-head { height: 40px; flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 24px 0 16px; border-bottom: 1px solid var(--border); }
+.d-head .crumb { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+.d-head .crumb .i { color: var(--muted); }
+.d-head .acts { display: flex; align-items: center; gap: 4px; color: var(--muted); }
+.d-head .acts .btn { color: var(--muted); }
+.d-body { flex: 1; min-height: 0; display: flex; }
+.d-main { flex: 1; min-width: 0; overflow: auto; }
+.d-props { width: 288px; flex: none; border-inline-start: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; gap: 28px; overflow: auto; }
+
+.hero { padding: 22px 24px 18px; border-bottom: 1px solid var(--border); }
+.hero .kicker { display: flex; align-items: center; gap: 8px; }
+.hero h1 { font-size: 22px; font-weight: 600; letter-spacing: -.01em; margin: 8px 0 14px; }
+.hero .props { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.list-bar { height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-top: 24px; }
+.list-bar .name { font-size: 14px; font-weight: 500; }
+.pills { display: flex; gap: 4px; }
+.pill { height: 28px; padding: 0 10px; display: inline-flex; align-items: center; border-radius: 999px; border: 1px solid transparent; font-size: 12px; font-weight: 500; color: var(--muted); }
+.pill.on { background: var(--accent); border-color: var(--border); color: var(--fg); }
+.rec-actions { display: flex; gap: 4px; padding: 0 24px 10px; padding-inline-start: 46px; }
+
+.stat .num { font-size: 26px; font-weight: 600; letter-spacing: -.01em; line-height: 1.1; }
+.stat .what { font-size: 14px; margin-top: 2px; }
+.stat .line { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; }
+.stat .asof { font-size: 12px; color: var(--muted); margin-top: 10px; }
+.cmd { display: grid; gap: 1px; margin-top: 6px; }
+.cmd-row { height: 32px; display: flex; align-items: center; gap: 10px; padding: 0 8px; border-radius: var(--r-md); font-size: 14px; }
+.cmd-row:hover { background: var(--accent); }
+.cmd-row .i { color: var(--muted); }
+.cmd-row .kbd { margin-inline-start: auto; }
+.cmd-row.first { background: var(--accent); }
+
+/* ---------- phone ---------- */
+.island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 124px; height: 36px; border-radius: 20px; background: #000; z-index: 5; }
+.p-scroll { height: 100%; overflow: auto; padding-top: 50px; padding-bottom: 96px; background: var(--container); }
+.p-top { height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 16px; border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 4; }
+.p-top img { width: 26px; height: 26px; border-radius: 6px; object-fit: cover; }
+.p-top .nm { font-size: 16px; font-weight: 600; }
+.p-top .chev { width: 15px; height: 15px; color: var(--muted); }
+.p-top .sp { margin-inline-start: auto; display: flex; gap: 2px; color: var(--muted); }
+.p-top .sp span { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--r-md); }
+.p-top .sp .i { width: 18px; height: 18px; }
+.phone .hero { padding: 18px 16px 16px; }
+.phone .hero h1 { font-size: 20px; margin: 6px 0 12px; }
+.phone .group-h > div { padding: 0 16px; height: 36px; }
+.phone .group-h { top: 48px; }
+.p-row { display: flex; gap: 10px; padding: 11px 16px; align-items: flex-start; }
+.p-row .st { margin-top: 3px; }
+.p-row .txt { flex: 1; min-width: 0; display: grid; gap: 3px; }
+.p-row .title { font-size: 15px; font-weight: 600; }
+.p-row .sub { font-size: 13px; color: var(--muted); }
+.p-row .end { flex: none; align-self: center; }
+.p-row.locked .title { color: var(--muted); font-weight: 500; }
+.p-row + .p-row { border-top: 1px solid rgba(39,39,42,.6); }
+.p-labels { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.p-acts { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 14px; padding-inline-start: 40px; }
+.p-thumb { width: 72px; height: 40.5px; border-radius: 6px; object-fit: cover; flex: none; }
+.p-stat { padding: 14px 16px 16px; }
+.p-stat .num { font-size: 28px; font-weight: 600; line-height: 1.1; }
+.p-stat .what { font-size: 14px; margin-top: 2px; }
+.p-stat .line { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 13px; }
+.p-stat .asof { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.p-cmd { padding: 6px 8px 12px; display: grid; gap: 1px; }
+.p-cmd .cmd-row { height: 44px; font-size: 15px; padding: 0 8px; }
+.tabbar {
+  position: absolute; inset-inline: 0; bottom: 0; height: 84px; z-index: 6;
+  background: rgba(9,9,11,.94); border-top: 1px solid var(--border);
+  display: grid; grid-template-columns: repeat(4, 1fr); padding: 7px 8px 0;
+}
+.tab { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #71717a; font-size: 11px; font-weight: 500; }
+.tab .i { width: 22px; height: 22px; stroke-width: 1.8; }
+.tab.on { color: var(--fg); }
+.tab .dot { position: absolute; top: 0; left: calc(50% - 16px); width: 7px; height: 7px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 2px var(--bg); }
+.home-ind { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: #fafafa; z-index: 7; }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+<symbol id="i-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+<symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></symbol>
+<symbol id="i-calendar-days" viewBox="0 0 24 24"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M8 13h.01"/><path d="M12 13h.01"/><path d="M16 13h.01"/><path d="M8 17h.01"/><path d="M12 17h.01"/><path d="M16 17h.01"/></symbol>
+<symbol id="i-calendar-plus" viewBox="0 0 24 24"><path d="M16 18h6"/><path d="M16 2v3"/><path d="M19 15v6"/><path d="M21 11.5V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h8.3"/><path d="M3 9h18"/><path d="M8 2v3"/></symbol>
+<symbol id="i-calendar-clock" viewBox="0 0 24 24"><path d="M16 14v2.2l1.6 1"/><path d="M16 2v3"/><path d="M21 7.338V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h2.338"/><path d="M3 9h5.859"/><path d="M8 2v3"/><circle cx="16" cy="16" r="6"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+<symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+<symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol>
+<symbol id="i-image-up" viewBox="0 0 24 24"><path d="M10.3 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10l-3.1-3.1a2 2 0 0 0-2.814.014L6 21"/><path d="m14 19.5 3-3 3 3"/><path d="M17 22v-5.5"/><circle cx="9" cy="9" r="2"/></symbol>
+<symbol id="i-image-plus" viewBox="0 0 24 24"><path d="M16 5h6"/><path d="M19 2v6"/><path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/></symbol>
+<symbol id="i-share-2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol>
+<symbol id="i-pen-line" viewBox="0 0 24 24"><path d="M13 21h8"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></symbol>
+<symbol id="i-circle-dashed" viewBox="0 0 24 24"><path d="M10.1 2.182a10 10 0 0 1 3.8 0"/><path d="M13.9 21.818a10 10 0 0 1-3.8 0"/><path d="M17.609 3.721a10 10 0 0 1 2.69 2.7"/><path d="M2.182 13.9a10 10 0 0 1 0-3.8"/><path d="M20.279 17.609a10 10 0 0 1-2.7 2.69"/><path d="M21.818 10.1a10 10 0 0 1 0 3.8"/><path d="M3.721 6.391a10 10 0 0 1 2.7-2.69"/><path d="M6.391 20.279a10 10 0 0 1-2.69-2.7"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+<symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-chevrons-up-down" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></symbol>
+<symbol id="i-ellipsis" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-link-2" viewBox="0 0 24 24"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></symbol>
+<symbol id="i-video" viewBox="0 0 24 24"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></symbol>
+<symbol id="i-megaphone" viewBox="0 0 24 24"><path d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/><path d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14"/><path d="M8 6v8"/></symbol>
+<symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></symbol>
+<symbol id="i-type" viewBox="0 0 24 24"><path d="M12 4v16"/><path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2"/><path d="M9 20h6"/></symbol>
+<symbol id="i-inbox" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></symbol>
+<symbol id="i-command" viewBox="0 0 24 24"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></symbol>
+<symbol id="i-grip-vertical" viewBox="0 0 24 24"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+<symbol id="i-text-cursor-input" viewBox="0 0 24 24"><path d="M12 20h-1a2 2 0 0 1-2-2 2 2 0 0 1-2 2H6"/><path d="M13 8h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-7"/><path d="M5 16H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"/><path d="M6 4h1a2 2 0 0 1 2 2 2 2 0 0 1 2-2h1"/><path d="M9 6v12"/></symbol>
+<symbol id="i-square-pen" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></symbol>
+<symbol id="i-trending-up" viewBox="0 0 24 24"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M3 5h.01"/><path d="M3 12h.01"/><path d="M3 19h.01"/><path d="M8 5h13"/><path d="M8 12h13"/><path d="M8 19h13"/></symbol>
+<symbol id="i-panel-left" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></symbol>
+<symbol id="i-panel-right" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></symbol>
+<symbol id="i-chart-no-axes-column" viewBox="0 0 24 24"><path d="M5 21v-6"/><path d="M12 21V3"/><path d="M19 21V9"/></symbol>
+<symbol id="i-chart-column" viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
+<symbol id="i-sliders-horizontal" viewBox="0 0 24 24"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></symbol>
+<symbol id="i-list-filter" viewBox="0 0 24 24"><path d="M2 5h20"/><path d="M6 12h12"/><path d="M9 19h6"/></symbol>
+<symbol id="i-circle-user" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></symbol>
+<symbol id="i-square-play" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z"/></symbol>
+<symbol id="i-film" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></symbol>
+<symbol id="i-clapperboard" viewBox="0 0 24 24"><path d="m12.296 3.464 3.02 3.956"/><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z"/><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="m6.18 5.276 3.1 3.899"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+<symbol id="i-signature" viewBox="0 0 24 24"><path d="m21 17-2.156-1.868A.5.5 0 0 0 18 15.5v.5a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1c0-2.545-3.991-3.97-8.5-4a1 1 0 0 0 0 5c4.153 0 4.745-11.295 5.708-13.5a2.5 2.5 0 1 1 3.31 3.284"/><path d="M3 21h18"/></symbol>
+<symbol id="i-badge-check" viewBox="0 0 24 24"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m16 9-5.5 5.5L8 12"/></symbol>
+</svg>
+<div id="full"></div>
+
+<header class="lab">
+  <div class="lab-top">
+    <span class="lab-name">07 Linear-like</span>
+    <span><a href="https://github.com/ln-dev7/circle">ln-dev7/circle</a> 4,570 כוכבים, push אחרון 04.09.2026</span>
+    <span><a href="https://github.com/zerostaticthemes/square-ui">zerostaticthemes/square-ui</a> 6,160 כוכבים, push אחרון 15.09.2026</span>
+  </div>
+  <ul>
+    <li>שורות ולא כרטיסים: קבוצות עם כותרת דביקה בגוון-צבע של 3–7%, שורה של 44 פיקסלים, סמלי-הסטטוס של Linear (עוגה, וי, משולש) מ-mock-data/status.tsx.</li>
+    <li>כהה כברירת-מחדל: רקע zinc-950, משטח-תוכן #101011 עם קו-שיער ורדיוס 8 בתוך ריפוד 8, סרגל-צד של 244 בלי גבול, פאנל-מאפיינים בצד.</li>
+    <li>קיצורי-מקלדת ברמז (חיפוש עם /, שורות-פקודה עם אות); כחול רק בטבעת-ההתקדמות ובסימני «עלה», כתום רק ל«חסר ממך», הכפתור הראשי לבן כמו ב-Circle.</li>
+  </ul>
+  <div>גופן: Rag Sans. Circle ו-Square UI כתובים ב-Geist ו-Linear עצמו ב-Inter, ולשניהם אין עברית ב-Google Fonts (נבדק); Rag Sans בגודל 13–14, משקל 600 לכותרת-שורה.</div>
+</header>
+
+<!-- ================= PHONE ================= -->
+<section class="stage">
+  <div class="phone">
+    <div class="island"></div>
+    <div class="p-scroll scroll">
+      <div class="p-top">
+        <img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="">
+        <span class="nm">הפיצוח</span>
+        <svg class="i chev"><use href="#i-chevrons-up-down"/></svg>
+        <div class="sp">
+          <span><svg class="i"><use href="#i-search"/></svg></span>
+        </div>
+      </div>
+
+      <div class="hero">
+        <div class="kicker">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="6" stroke="#facc15" stroke-width="1.5"/><path fill="#facc15" d="M 3.5,3.5 L3.5,0 A3.5,3.5 0 0,1 7,3.5 z" transform="translate(3.5,3.5)"/></svg>
+          <span class="sec-title">הפרק הבא שעולה</span>
+        </div>
+        <h1>פרק 19 עם אורלי אורן</h1>
+        <div class="props">
+          <span class="chip due"><svg class="i" style="width:14px;height:14px"><use href="#i-calendar"/></svg>עולה ביום רביעי 28.10</span>
+          <span class="chip">בעוד יומיים</span>
+          <span class="chip strong">
+            <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#27272a" stroke-width="2" fill="none"/><circle cx="8" cy="8" r="6" stroke="#0131FF" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="37.699" stroke-dashoffset="21.54" transform="rotate(-90 8 8)"/></svg>
+            3 מתוך 7
+          </span>
+          <span class="chip">עכשיו: עריכה, ממתין לעורך</span>
+        </div>
+      </div>
+
+      <div class="group-h t-orange"><div>
+        <svg width="14" height="14" viewBox="0 0 14 14"><path fill="#FF9500" d="M7 14C10.866 14 14 10.866 14 7C14 3.13403 10.866 0 7 0C3.134 0 0 3.13403 0 7C0 10.866 3.134 14 7 14ZM8.0126 9.50781V7.98224H5.9874V9.50787C5.9874 9.92908 5.4767 10.1549 5.14897 9.8786L2.17419 7.37073C1.94194 7.17493 1.94194 6.82513 2.17419 6.62933L5.14897 4.12146C5.4767 3.84515 5.9874 4.07098 5.9874 4.49219V6.01764H8.0126V4.49213C8.0126 4.07092 8.5233 3.84509 8.85103 4.1214L11.8258 6.62927C12.0581 6.82507 12.0581 7.17487 11.8258 7.37067L8.85103 9.87854C8.5233 10.1548 8.0126 9.92902 8.0126 9.50781Z"/></svg>
+        <span class="name">חסר ממך</span>
+      </div></div>
+      <div class="p-row">
+        <svg class="st" width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="6" stroke="#FF9500" stroke-width="1.5"/></svg>
+        <div class="txt"><span class="title">שם לפרק</span><span class="sub">פתוח, לפני העריכה</span></div>
+        <div class="end"><a class="btn btn-primary" href="#">לבחור שם</a></div>
+      </div>
+      <div class="p-row">
+        <svg class="st" width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="6" stroke="#a1a1aa" stroke-width="1.5"/><path fill="#a1a1aa" d="M 3.5,3.5 L3.5,0 A3.5,3.5 0 0,1 3.5,7 z" transform="translate(3.5,3.5)"/></svg>
+        <div class="txt"><span class="title">תמונת-מרואיין</span><span class="sub">התקבלה ב-25.10, ממתינה לאישור</span></div>
+      </div>
+      <div class="p-row locked">
+        <svg class="i st" style="width:14px;height:14px;color:#71717a"><use href="#i-lock"/></svg>
+        <div class="txt"><span class="title">בחירת-טיזרים</span><span class="sub">נעול, אחרי העריכה</span></div>
+      </div>
+      <div class="p-row locked">
+        <svg class="i st" style="width:14px;height:14px;color:#71717a"><use href="#i-lock"/></svg>
+        <div class="txt"><span class="title">אישור-לפרסום</span><span class="sub">נעול, בהמשך</span></div>
+      </div>
+
+      <div class="group-h t-gray"><div>
+        <svg class="i" style="width:14px;height:14px;color:#a1a1aa"><use href="#i-calendar-clock"/></svg>
+        <span class="name">ההקלטה הבאה</span>
+      </div></div>
+      <div class="p-row">
+        <svg class="i st" style="width:14px;height:14px;color:#a1a1aa"><use href="#i-mic"/></svg>
+        <div class="txt">
+          <span class="title">חמישי 29.10, 11:00</span>
+          <span class="sub">11:00 עד 13:00</span>
+          <div class="p-labels">
+            <span class="label"><span class="dot"></span>אולפן רימקס</span>
+            <span class="label">עם נועה בוקרה ורלי זדרב</span>
+            <span class="label">מפיק: יהלי</span>
+          </div>
+        </div>
+      </div>
+      <div class="p-acts">
+        <a class="btn btn-outline" href="#">לשנות מועד</a>
+        <a class="btn btn-outline" href="#">להוסיף פרטי-אורח</a>
+        <a class="btn btn-ghost" href="#"><svg class="i"><use href="#i-plus"/></svg>לתאם הקלטה נוספת</a>
+      </div>
+
+      <div class="group-h t-blue"><div>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="#0131FF"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 0C3.13401 0 0 3.13401 0 7C0 10.866 3.13401 14 7 14C10.866 14 14 10.866 14 7C14 3.13401 10.866 0 7 0ZM11.101 5.10104C11.433 4.76909 11.433 4.23091 11.101 3.89896C10.7691 3.56701 10.2309 3.56701 9.89896 3.89896L5.5 8.29792L4.10104 6.89896C3.7691 6.56701 3.2309 6.56701 2.89896 6.89896C2.56701 7.2309 2.56701 7.7691 2.89896 8.10104L4.89896 10.101C5.2309 10.433 5.7691 10.433 6.10104 10.101L11.101 5.10104Z"/></svg>
+        <span class="name">עלה לאחרונה</span>
+      </div></div>
+      <div class="p-row">
+        <img class="p-thumb" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="">
+        <div class="txt">
+          <span class="title" style="font-size:14px">איך מקפיצים עסק בתיווך עם AI</span>
+          <span class="sub">פרק 18 עם אלכס קפ, עלה ב-14.10</span>
+        </div>
+        <div class="end"><a class="btn btn-ghost" href="#" style="padding:0 6px"><svg class="i"><use href="#i-share-2"/></svg>לשתף</a></div>
+      </div>
+
+      <div class="group-h t-gray"><div>
+        <svg class="i" style="width:14px;height:14px;color:#a1a1aa"><use href="#i-chart-no-axes-column"/></svg>
+        <span class="name">איך התוכנית עושה</span>
+      </div></div>
+      <div class="p-stat">
+        <div class="num">5,941</div>
+        <div class="what">צפיות ביוטיוב</div>
+        <div class="line">
+          <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#27272a" stroke-width="2" fill="none"/><circle cx="8" cy="8" r="6" stroke="#0131FF" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="37.699" stroke-dashoffset="29.78" transform="rotate(-90 8 8)"/></svg>
+          כל פרק נצפה בממוצע 21% מאורכו
+        </div>
+        <div class="asof">נכון ל-25.10.2026, 18 פרקים</div>
+      </div>
+
+      <div class="group-h t-gray"><div>
+        <svg class="i" style="width:14px;height:14px;color:#a1a1aa"><use href="#i-command"/></svg>
+        <span class="name">פעולות מהירות</span>
+      </div></div>
+      <div class="p-cmd">
+        <a class="cmd-row" href="#"><svg class="i"><use href="#i-calendar-plus"/></svg>לתאם הקלטה</a>
+        <a class="cmd-row" href="#"><svg class="i"><use href="#i-image-up"/></svg>להעלות תמונה</a>
+        <a class="cmd-row" href="#"><svg class="i"><use href="#i-pen-line"/></svg>לבחור שם</a>
+        <a class="cmd-row" href="#"><svg class="i"><use href="#i-share-2"/></svg>לשתף פרק</a>
+      </div>
+    </div>
+
+    <nav class="tabbar">
+      <a class="tab on" href="#"><svg class="i"><use href="#i-house"/></svg>בית</a>
+      <a class="tab" href="#"><svg class="i"><use href="#i-compass"/></svg>אסטרטגיה</a>
+      <a class="tab" href="#"><span class="dot"></span><svg class="i"><use href="#i-mic"/></svg>הפקה</a>
+      <a class="tab" href="#"><svg class="i"><use href="#i-send"/></svg>הפצה</a>
+    </nav>
+    <div class="home-ind"></div>
+  </div>
+</section>
+
+<!-- ================= DESKTOP ================= -->
+<section class="stage">
+  <div class="desk">
+    <div class="d-app">
+      <aside class="d-side">
+        <div class="org">
+          <a class="org-btn" href="#">
+            <img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="">
+            <span>הפיצוח</span>
+            <svg class="i"><use href="#i-chevrons-up-down"/></svg>
+          </a>
+        </div>
+        <div class="search">
+          <div class="box"><svg class="i"><use href="#i-search"/></svg>חיפוש<span class="kbd">/</span></div>
+        </div>
+        <nav class="nav">
+          <a class="nav-item active" href="#"><svg class="i"><use href="#i-house"/></svg><span>בית</span></a>
+          <a class="nav-item" href="#"><svg class="i"><use href="#i-compass"/></svg><span>אסטרטגיה</span></a>
+          <a class="nav-item" href="#"><svg class="i"><use href="#i-mic"/></svg><span>הפקה</span><span class="badge"><i></i></span></a>
+          <a class="nav-item" href="#"><svg class="i"><use href="#i-send"/></svg><span>הפצה</span></a>
+        </nav>
+        <div class="side-foot">
+          <a class="nav-item" href="#"><svg class="i"><use href="#i-settings"/></svg><span>הגדרות</span></a>
+          <div class="brand"><img src="../brand/wedo-logotype-white.svg" alt="wedo"></div>
+        </div>
+      </aside>
+
+      <div class="d-shell">
+        <div class="d-panel">
+          <div class="d-head">
+            <div class="crumb"><svg class="i"><use href="#i-panel-right"/></svg><span>בית</span></div>
+            <div class="acts">
+              <span class="btn btn-ghost"><svg class="i"><use href="#i-search"/></svg><span class="kbd">⌘K</span></span>
+            </div>
+          </div>
+
+          <div class="d-body">
+            <main class="d-main scroll">
+              <section class="hero">
+                <div class="kicker">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="6" stroke="#facc15" stroke-width="1.5"/><path fill="#facc15" d="M 3.5,3.5 L3.5,0 A3.5,3.5 0 0,1 7,3.5 z" transform="translate(3.5,3.5)"/></svg>
+                  <span class="sec-title">הפרק הבא שעולה</span>
+                </div>
+                <h1>פרק 19 עם אורלי אורן</h1>
+                <div class="props">
+                  <span class="chip due"><svg class="i" style="width:14px;height:14px"><use href="#i-calendar"/></svg>עולה ביום רביעי 28.10</span>
+                  <span class="chip">בעוד יומיים</span>
+                  <span class="chip strong">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#27272a" stroke-width="2" fill="none"/><circle cx="8" cy="8" r="6" stroke="#0131FF" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="37.699" stroke-dashoffset="21.54" transform="rotate(-90 8 8)"/></svg>
+                    3 מתוך 7
+                  </span>
+                  <span class="chip">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="6" stroke="#facc15" stroke-width="1.5"/><path fill="#facc15" d="M 3.5,3.5 L3.5,0 A3.5,3.5 0 0,1 7,3.5 z" transform="translate(3.5,3.5)"/></svg>
+                    עכשיו: עריכה, ממתין לעורך
+                  </span>
+                </div>
+              </section>
+
+              <div class="group-h t-orange"><div>
+                <svg width="14" height="14" viewBox="0 0 14 14"><path fill="#FF9500" d="M7 14C10.866 14 14 10.866 14 7C14 3.13403 10.866 0 7 0C3.134 0 0 3.13403 0 7C0 10.866 3.134 14 7 14ZM8.0126 9.50781V7.98224H5.9874V9.50787C5.9874 9.92908 5.4767 10.1549 5.14897 9.8786L2.17419 7.37073C1.94194 7.17493 1.94194 6.82513 2.17419 6.62933L5.14897 4.12146C5.4767 3.84515 5.9874 4.07098 5.9874 4.49219V6.01764H8.0126V4.49213C8.0126 4.07092 8.5233 3.84509 8.85103 4.1214L11.8258 6.62927C12.0581 6.82507 12.0581 7.17487 11.8258 7.37067L8.85103 9.87854C8.5233 10.1548 8.0126 9.92902 8.0126 9.50781Z"/></svg>
+                <span class="name">חסר ממך</span>
+              </div></div>
+              <div class="row">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="6" stroke="#FF9500" stroke-width="1.5"/></svg>
+                <span class="title">שם לפרק</span>
+                <span class="sub">לפני העריכה</span>
+                <div class="end"><span class="tag">פתוח</span><a class="btn btn-primary" href="#">לבחור שם</a></div>
+              </div>
+              <div class="row">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="6" stroke="#a1a1aa" stroke-width="1.5"/><path fill="#a1a1aa" d="M 3.5,3.5 L3.5,0 A3.5,3.5 0 0,1 3.5,7 z" transform="translate(3.5,3.5)"/></svg>
+                <span class="title">תמונת-מרואיין</span>
+                <span class="sub">התקבלה ב-25.10</span>
+                <div class="end"><span class="tag">ממתינה לאישור</span></div>
+              </div>
+              <div class="row locked">
+                <svg class="i" style="width:14px;height:14px;color:#71717a"><use href="#i-lock"/></svg>
+                <span class="title">בחירת-טיזרים</span>
+                <span class="sub">אחרי העריכה</span>
+                <div class="end"><span class="tag">נעול</span></div>
+              </div>
+              <div class="row locked">
+                <svg class="i" style="width:14px;height:14px;color:#71717a"><use href="#i-lock"/></svg>
+                <span class="title">אישור-לפרסום</span>
+                <span class="sub">בהמשך</span>
+                <div class="end"><span class="tag">נעול</span></div>
+              </div>
+
+              <div class="group-h t-gray"><div>
+                <svg class="i" style="width:14px;height:14px;color:#a1a1aa"><use href="#i-calendar-clock"/></svg>
+                <span class="name">ההקלטה הבאה</span>
+              </div></div>
+              <div class="row">
+                <svg class="i" style="width:14px;height:14px;color:#a1a1aa"><use href="#i-mic"/></svg>
+                <span class="title">חמישי 29.10, 11:00</span>
+                <span class="sub">11:00 עד 13:00</span>
+                <div class="end">
+                  <span class="label"><span class="dot"></span>אולפן רימקס</span>
+                  <span class="label">עם נועה בוקרה ורלי זדרב</span>
+                  <span class="label">מפיק: יהלי</span>
+                </div>
+              </div>
+              <div class="rec-actions">
+                <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-calendar"/></svg>לשנות מועד</a>
+                <a class="btn btn-outline" href="#"><svg class="i"><use href="#i-user"/></svg>להוסיף פרטי-אורח</a>
+                <a class="btn btn-ghost" href="#"><svg class="i"><use href="#i-plus"/></svg>לתאם הקלטה נוספת</a>
+              </div>
+
+              <div class="group-h t-blue"><div>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="#0131FF"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 0C3.13401 0 0 3.13401 0 7C0 10.866 3.13401 14 7 14C10.866 14 14 10.866 14 7C14 3.13401 10.866 0 7 0ZM11.101 5.10104C11.433 4.76909 11.433 4.23091 11.101 3.89896C10.7691 3.56701 10.2309 3.56701 9.89896 3.89896L5.5 8.29792L4.10104 6.89896C3.7691 6.56701 3.2309 6.56701 2.89896 6.89896C2.56701 7.2309 2.56701 7.7691 2.89896 8.10104L4.89896 10.101C5.2309 10.433 5.7691 10.433 6.10104 10.101L11.101 5.10104Z"/></svg>
+                <span class="name">עלה לאחרונה</span>
+              </div></div>
+              <div class="row">
+                <img class="thumb" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="">
+                <span class="id">פרק 18</span>
+                <span class="title">איך מקפיצים עסק בתיווך עם AI</span>
+                <span class="sub">עם אלכס קפ</span>
+                <div class="end"><span class="sub" style="font-size:12px">עלה ב-14.10</span><a class="btn btn-ghost" href="#"><svg class="i"><use href="#i-share-2"/></svg>לשתף</a></div>
+              </div>
+
+              <div class="list-bar">
+                <span class="name">הפרקים</span>
+                              </div>
+              <div class="group-h t-yellow"><div>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="6" stroke="#facc15" stroke-width="1.5"/><path fill="#facc15" d="M 3.5,3.5 L3.5,0 A3.5,3.5 0 0,1 7,3.5 z" transform="translate(3.5,3.5)"/></svg>
+                <span class="name">בעריכה</span>
+              </div></div>
+              <div class="row">
+                <span class="thumb"></span>
+                <span class="id">פרק 19</span>
+                <span class="title" style="color:var(--muted);font-weight:500">(עוד אין שם)</span>
+                <span class="sub">אורלי אורן</span>
+                <div class="end"><span class="tag">בעריכה</span></div>
+              </div>
+              <div class="group-h t-blue"><div>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="#0131FF"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 0C3.13401 0 0 3.13401 0 7C0 10.866 3.13401 14 7 14C10.866 14 14 10.866 14 7C14 3.13401 10.866 0 7 0ZM11.101 5.10104C11.433 4.76909 11.433 4.23091 11.101 3.89896C10.7691 3.56701 10.2309 3.56701 9.89896 3.89896L5.5 8.29792L4.10104 6.89896C3.7691 6.56701 3.2309 6.56701 2.89896 6.89896C2.56701 7.2309 2.56701 7.7691 2.89896 8.10104L4.89896 10.101C5.2309 10.433 5.7691 10.433 6.10104 10.101L11.101 5.10104Z"/></svg>
+                <span class="name">עלו</span>
+              </div></div>
+              <div class="row"><img class="thumb" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""><span class="id">פרק 18</span><span class="title">איך מקפיצים עסק בתיווך עם AI</span><span class="sub">אלכס קפ</span><div class="end"><span class="sub" style="font-size:12px">עלה ב-14.10</span></div></div>
+              <div class="row"><img class="thumb" src="https://i.ytimg.com/vi/P463I2IV9Xo/mqdefault.jpg" alt=""><span class="id">פרק 17</span><span class="title">איך ממשיכים מכאן?</span><span class="sub">אהרון וחביבה איציקזון</span><div class="end"><span class="sub" style="font-size:12px">עלה ב-7.10</span></div></div>
+              <div class="row"><img class="thumb" src="https://i.ytimg.com/vi/epNQhrsKjxI/mqdefault.jpg" alt=""><span class="id">פרק 16</span><span class="title">חמשת הכללים למשא ומתן</span><span class="sub">ונסה סיימן</span><div class="end"><span class="sub" style="font-size:12px">עלה ב-30.9</span></div></div>
+              <div class="row"><img class="thumb" src="https://i.ytimg.com/vi/fCG8ceGVDRo/mqdefault.jpg" alt=""><span class="id">פרק 15</span><span class="title">איך לעשות שינוי קריירה בגיל 40</span><span class="sub">דקלה ביבי</span><div class="end"><span class="sub" style="font-size:12px">עלה ב-23.9</span></div></div>
+              <div class="row"><img class="thumb" src="https://i.ytimg.com/vi/pp-nzLON8vY/mqdefault.jpg" alt=""><span class="id">פרק 14</span><span class="title">מי נשאר ומי נשבר</span><span class="sub">אריק זאבי</span><div class="end"><span class="sub" style="font-size:12px">עלה ב-16.9</span></div></div>
+              <div class="row" style="margin-bottom:16px"><img class="thumb" src="https://i.ytimg.com/vi/Sh0J8sIBfHs/mqdefault.jpg" alt=""><span class="id">פרק 13</span><span class="title">הסוד הכי שמור ברי/מקס</span><span class="sub">איתי דוד</span><div class="end"><span class="sub" style="font-size:12px">עלה ב-9.9</span></div></div>
+            </main>
+
+            <aside class="d-props">
+              <section class="stat">
+                <h3 class="sec-title" style="margin-bottom:10px">איך התוכנית עושה</h3>
+                <div class="num">5,941</div>
+                <div class="what">צפיות ביוטיוב</div>
+                <div class="line">
+                  <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#27272a" stroke-width="2" fill="none"/><circle cx="8" cy="8" r="6" stroke="#0131FF" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="37.699" stroke-dashoffset="29.78" transform="rotate(-90 8 8)"/></svg>
+                  כל פרק נצפה בממוצע 21% מאורכו
+                </div>
+                <div class="asof">נכון ל-25.10.2026, 18 פרקים</div>
+              </section>
+              <section>
+                <h3 class="sec-title">פעולות מהירות</h3>
+                <div class="cmd">
+                  <a class="cmd-row" href="#"><svg class="i"><use href="#i-calendar-plus"/></svg>לתאם הקלטה<span class="kbd">R</span></a>
+                  <a class="cmd-row" href="#"><svg class="i"><use href="#i-image-up"/></svg>להעלות תמונה<span class="kbd">U</span></a>
+                  <a class="cmd-row" href="#"><svg class="i"><use href="#i-pen-line"/></svg>לבחור שם<span class="kbd">N</span></a>
+                  <a class="cmd-row" href="#"><svg class="i"><use href="#i-share-2"/></svg>לשתף פרק<span class="kbd">S</span></a>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+</html>
