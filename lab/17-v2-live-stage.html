@@ -86,37 +86,38 @@ html.full .d-app, html.full .d-main { height: auto; }
 /* ===== הבמה: האובייקט היחיד שזז ===== */
 /* bento-grid.tsx: כרטיס לבן עם הצל המשולש; isolate כדי שה-multiply של האור יישאר בתוך הבמה */
 .stage { position: relative; overflow: hidden; isolation: isolate; border-radius: var(--radius-card); background: var(--background); box-shadow: var(--shadow-bento); }
-/* dot-pattern.tsx: width 16, height 16, cx 1, cy 1, cr 1, text-neutral-400/80; מסכה רדיאלית כמו ב-dot-pattern-demo.tsx */
+/* dot-pattern.tsx: width 16, height 16, cx 1, cy 1, cr 1, text-neutral-400/80; מסכה רדיאלית כמו ב-dot-pattern-demo.tsx,
+   מעוגנת לראש הבמה: נקודה ליד אות עברית קטנה נקראת כניקוד, אז הרשת דועכת לפני השורות הקטנות */
 .stage__dots { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; color: rgb(163 163 163 / .8);
-  -webkit-mask-image: radial-gradient(var(--dots-r, 240px) circle at 50% 30%, #fff, transparent); mask-image: radial-gradient(var(--dots-r, 240px) circle at 50% 30%, #fff, transparent); }
+  -webkit-mask-image: radial-gradient(ellipse 78% var(--dots-ry, 46%) at 50% 0%, #fff 20%, transparent); mask-image: radial-gradient(ellipse 78% var(--dots-ry, 46%) at 50% 0%, #fff 20%, transparent); }
 /* האור של המותג: /brand/aurora-glow.jpg; השחור שלו נעלם במסנן #aurora-unscreen, והוא מוכפל על הלבן ועל הנקודות */
 .stage__light { position: absolute; z-index: 1; inset-inline: -14%; bottom: var(--light-bottom, -16%); height: var(--light-h, 66%); pointer-events: none;
   background: url("../brand/aurora-glow.jpg") center bottom / 100% 100% no-repeat;
-  filter: url(#aurora-unscreen); mix-blend-mode: multiply; opacity: .4;
+  filter: url(#aurora-unscreen); mix-blend-mode: multiply; opacity: .45;
   transform-origin: 50% 100%; animation: stage-light 36s ease-in-out infinite alternate; }
 /* המבנה של @keyframes aurora (globals.css: חמש תחנות, ease-in-out, alternate), מואט ל-36 שניות ובמשרעת קטנה */
 @keyframes stage-light {
-  0%   { transform: translate3d(-5%, 0, 0) scale(1); }
-  25%  { transform: translate3d(2%, -5%, 0) scale(1.06); }
-  50%  { transform: translate3d(6%, -1%, 0) scale(1.02); }
-  75%  { transform: translate3d(0, -6%, 0) scale(1.07); }
-  100% { transform: translate3d(-4%, -2%, 0) scale(1); }
+  0%   { transform: translate3d(-8%, 0, 0) scale(1); }
+  25%  { transform: translate3d(2%, -8%, 0) scale(1.08); }
+  50%  { transform: translate3d(9%, -2%, 0) scale(1.03); }
+  75%  { transform: translate3d(1%, -10%, 0) scale(1.1); }
+  100% { transform: translate3d(-6%, -3%, 0) scale(1.02); }
 }
 .stage__body { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; }
 
-/* animated-shiny-text.tsx בתוך הגלולה (animated-shiny-text-demo.tsx); shimmerWidth 100 */
+/* animated-shiny-text.tsx בתוך הגלולה (animated-shiny-text-demo.tsx); shimmerWidth 100; הקיפריים shiny-text במראה (RTL) */
 .pill { display: inline-flex; border-radius: 999px; border: 1px solid rgb(0 0 0 / .05); background: var(--neutral-100); }
 .shiny { --shiny-width: 100px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 16px; color: rgb(82 82 82 / .7);
   background-image: linear-gradient(to right, transparent, rgb(0 0 0 / .8) 50%, transparent); background-size: var(--shiny-width) 100%;
   background-repeat: no-repeat; background-position: 0 0; -webkit-background-clip: text; background-clip: text; animation: shiny-text 8s infinite; }
 .shiny svg.i { color: var(--neutral-500); }
-@keyframes shiny-text { 0%, 90%, 100% { background-position: calc(-100% - var(--shiny-width)) 0; } 30%, 60% { background-position: calc(100% + var(--shiny-width)) 0; } }
+@keyframes shiny-text { 0%, 90%, 100% { background-position: calc(100% + var(--shiny-width)) 0; } 30%, 60% { background-position: calc(-100% - var(--shiny-width)) 0; } }
 
-/* animated-gradient-text.tsx: speed 1 = bg-size 300%, from > via > to = Prod Blue > SaaS Blue > Prod Blue, gradient 8s linear */
+/* animated-gradient-text.tsx: speed 1 = bg-size 300%, from > via > to = Prod Blue > SaaS Blue > Prod Blue, gradient 8s linear; הקיפריים במראה (RTL) */
 .stage__num { font-size: 60px; line-height: 1; font-weight: 600; letter-spacing: -0.03em; padding: 14px 0 8px; }
 .grad-text { --bg-size: 300%; display: inline; background-image: linear-gradient(to right, var(--color-from), var(--color-to), var(--color-from));
   background-size: var(--bg-size) 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: gradient 8s linear infinite; }
-@keyframes gradient { to { background-position: var(--bg-size, 300%) 0; } }
+@keyframes gradient { to { background-position: calc(-1 * var(--bg-size, 300%)) 0; } }
 .stage__guest { font-size: 24px; line-height: 32px; font-weight: 600; letter-spacing: -0.03em; color: var(--neutral-700); }
 .stage__date { font-size: 16px; line-height: 24px; color: var(--muted-foreground); }
 
@@ -133,7 +134,7 @@ html.full .d-app, html.full .d-main { height: auto; }
 .axis .is-now b { color: var(--foreground); box-shadow: inset 0 0 0 1.5px var(--color-from); }
 .axis-meta { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; line-height: 20px; }
 
-/* border-beam.tsx: גבול שקוף, מסכת padding-box/border-box ב-intersect, ריבוע שנוסע על offset-path rect() בגרדיאנט to-l; reverse כי ב-RTL הקרן נעה בכיוון הקריאה */
+/* border-beam.tsx: גבול שקוף, מסכת padding-box/border-box ב-intersect, ריבוע שנוסע על offset-path rect() בגרדיאנט to-l; reverse (RTL) */
 .beam { position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit; border: var(--beam-w, 1.5px) solid transparent;
   mask: linear-gradient(transparent, transparent) padding-box, linear-gradient(#000, #000) border-box; mask-composite: intersect; }
 .beam > i { position: absolute; top: 0; left: 0; display: block; width: var(--beam-size, 160px); aspect-ratio: 1;
@@ -208,7 +209,7 @@ html.full .d-app, html.full .d-main { height: auto; }
 .icon-btn { width: 36px; height: 36px; border-radius: calc(var(--radius) - 2px); display: grid; place-items: center; color: var(--neutral-600); transition: background .15s; }
 .icon-btn:hover { background: var(--accent); }
 .icon-btn svg.i { width: 20px; height: 20px; stroke-width: 1.75; }
-.is-phone .stage { --dots-r: 210px; --light-h: 62%; --light-bottom: -14%; padding: 26px 20px 22px; }
+.is-phone .stage { --dots-ry: 46%; --light-h: 62%; --light-bottom: -14%; padding: 26px 20px 22px; }
 .is-phone .stage .beam { --beam-size: 150px; }
 .p-tabs { position: absolute; inset-inline: 0; bottom: 0; z-index: 20; display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px 10px 26px;
   background: rgb(255 255 255 / .86); -webkit-backdrop-filter: blur(12px) saturate(1.4); backdrop-filter: blur(12px) saturate(1.4); border-top: 1px solid var(--border); }
@@ -242,7 +243,7 @@ html.full .d-app, html.full .d-main { height: auto; }
 .span-2 { grid-column: span 2; } .span-3 { grid-column: 1 / -1; }
 .is-desktop .tile__expl { margin-top: auto; }
 .is-desktop .quick__grid { grid-template-columns: repeat(4, 1fr); }
-.is-desktop .stage { --beam-rest: 7%; --dots-r: 330px; --light-h: 70%; --light-bottom: -18%; --beam-size: 230px; padding: 28px 40px 26px; display: flex; flex-direction: column; justify-content: center; }
+.is-desktop .stage { --beam-rest: 7%; --dots-ry: 52%; --light-h: 70%; --light-bottom: -18%; --beam-size: 230px; padding: 28px 40px 26px; display: flex; flex-direction: column; justify-content: center; }
 .is-desktop .stage__num { font-size: 96px; letter-spacing: -0.035em; padding: 18px 0 10px; }
 .is-desktop .stage__guest { font-size: 30px; line-height: 36px; }
 .is-desktop .stage__date { font-size: 18px; line-height: 28px; margin-top: 2px; }
@@ -250,6 +251,8 @@ html.full .d-app, html.full .d-main { height: auto; }
 .is-desktop .axis { --step: 32px; }
 .is-desktop .axis b { font-size: 13px; }
 .is-desktop .stat__num { font-size: 48px; }
+.is-desktop .gauge { width: 96px; height: 96px; }
+.is-desktop .gauge__label { font-size: 19px; }
 .eps { padding: 20px 0 12px; overflow: hidden; }
 .eps .label { padding: 0 20px 4px; }
 
@@ -272,11 +275,11 @@ html.full .d-app, html.full .d-main { height: auto; }
   </div>
   <div class="lab-cap__budget">
     <b>תקציב-האפקטים</b>
-    <p><b>הבמה, כל הזמן:</b> הגרדיאנט זורם על «פרק 19» בסבב של 8 שניות, קרן אחת מקיפה את מסגרת-הבמה ב-8 שניות, ברק עובר על «בעוד יומיים» פעם ב-8 שניות, ואור-המותג נע מאחור לאט מאוד (36 שניות לכל כיוון, אטימות 40%). רשת-הנקודות עומדת.</p>
+    <p><b>הבמה, כל הזמן:</b> הגרדיאנט זורם על «פרק 19» בסבב של 8 שניות, קרן אחת מקיפה את מסגרת-הבמה ב-8 שניות, ברק עובר על «בעוד יומיים» הלוך וחזור בכל 8 שניות, ואור-המותג נע מאחור לאט מאוד (36 שניות לכל כיוון, אטימות 45%). רשת-הנקודות עומדת. כל תנועה שיש לה כיוון הפוכה למקור, כי הממשק RTL.</p>
     <p><b>במחשב בלבד:</b> רשימת-הפרקים נגללת לאט (80 שניות לסבב) ונעצרת כשהעכבר עליה. זה האלמנט הזז השני והיחיד.</p>
     <p><b>כל השאר עומד:</b> «חסר ממך», ההקלטה, עלה לאחרונה, המספר והפעולות בלי שום תנועה, גם לא במעבר-עכבר מלבד מצבי-כפתור. ב-prefers-reduced-motion הכול נעצר במצב הסופי.</p>
   </div>
-  <p class="lab-cap__src">מקורות בריפו: <bdi dir="ltr">apps/www/registry/magicui/animated-gradient-text.tsx, dot-pattern.tsx, border-beam.tsx, animated-shiny-text.tsx, marquee.tsx</bdi>; הקיפריימים <bdi dir="ltr">gradient, shiny-text, marquee</bdi> מ-<bdi dir="ltr">apps/www/styles/globals.css</bdi>, ותנועת-האור בנויה על המבנה של <bdi dir="ltr">@keyframes aurora</bdi> שם. האור הוא <bdi dir="ltr">/brand/aurora-glow.jpg</bdi>: מסנן SVG הופך את השחור שלו לשקיפות, והוא מוכפל (multiply) על הלבן, כך שגם הנקודות נצבעות כשהוא עובר. תפריט-הצד לפי <bdi dir="ltr">apps/www/components/ui/sidebar.tsx</bdi>; השלד של 12, המשטחים הטונאליים והפינות של 10.</p>
+  <p class="lab-cap__src">מקורות בריפו: <bdi dir="ltr">apps/www/registry/magicui/animated-gradient-text.tsx, dot-pattern.tsx, border-beam.tsx, animated-shiny-text.tsx, marquee.tsx</bdi>; הקיפריימים <bdi dir="ltr">gradient, shiny-text, marquee</bdi> מ-<bdi dir="ltr">apps/www/styles/globals.css</bdi>, ותנועת-האור בנויה על המבנה של <bdi dir="ltr">@keyframes aurora</bdi> שם. האור הוא <bdi dir="ltr">/brand/aurora-glow.jpg</bdi> עצמו: מסנן SVG מעביר אותו משחור ללבן (השחור נעלם, הצבעים נשארים), והוא מוכפל (multiply) על תחתית הבמה; הנקודות למעלה, האור למטה. תפריט-הצד לפי <bdi dir="ltr">apps/www/components/ui/sidebar.tsx</bdi>; השלד של 12, המשטחים הטונאליים והפינות של 10.</p>
 </header>
 
 <section class="lab-stage">

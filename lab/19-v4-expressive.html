@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>מעבדת-טעם 14: Magic UI</title>
+<title>מעבדת-טעם 19: אקספרסיבי</title>
 <style>
 @font-face { font-family: "Rag Sans"; src: url("./fonts/RagSans-VF.ttf"); font-weight: 100 900; font-display: block; }
 
-/* ===== מעטפת-המעבדה (לא חלק מהמוקאפ) ===== */
+/* ===== מעטפת-המעבדה (לא חלק מהמוקאפ), כמו ב-14 ===== */
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body { background: #e7e7ea; color: #1d1d1f; font-family: "Rag Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
@@ -16,9 +16,12 @@ body { background: #e7e7ea; color: #1d1d1f; font-family: "Rag Sans", system-ui, 
 .lab-cap__title { font-size: 15px; font-weight: 700; }
 .lab-cap a { color: #0131ff; text-decoration: none; }
 .lab-cap__meta { color: #6e6e73; font-variant-numeric: tabular-nums; }
-.lab-cap__points { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 4px 20px; max-width: 1320px; margin: 6px auto 0; color: #3a3a3c; }
-.lab-cap__points p { margin: 0; }
-.lab-cap__points b { color: #1d1d1f; font-weight: 600; }
+.lab-cap__points, .lab-notes { color: #3a3a3c; }
+.lab-cap__points { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 4px 20px; max-width: 1320px; margin: 6px auto 0; }
+.lab-cap__points p, .lab-notes p { margin: 0; }
+.lab-cap__points b, .lab-notes b { color: #1d1d1f; font-weight: 600; }
+.lab-notes { display: none; max-width: 412px; margin: 0 auto; padding: 2px 6px 20px; font-size: 12px; line-height: 18px; }
+.lab-notes p + p { margin-top: 6px; }
 .lab-stage { padding: 28px 20px 8px; display: flex; flex-direction: column; align-items: safe center; gap: 10px; max-width: 100%; overflow-x: auto; }
 .lab-label { font-size: 12px; color: #6e6e73; font-variant-numeric: tabular-nums; }
 .device-phone { padding: 11px; border-radius: 66px; background: #0d0d0f; box-shadow: 0 0 0 1px #2b2b2e, 0 30px 60px -20px rgba(0,0,0,.45); }
@@ -28,23 +31,35 @@ body { background: #e7e7ea; color: #1d1d1f; font-family: "Rag Sans", system-ui, 
 .device-desktop__bar { height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 14px; direction: ltr; }
 .device-desktop__bar i { width: 12px; height: 12px; border-radius: 50%; background: #d4d4d8; display: block; }
 .device-desktop .screen { width: 1280px; height: 800px; margin: 0 1px 1px; overflow: hidden; position: relative; isolation: isolate; }
+@media (max-width: 700px) {
+  .lab-cap { padding: 8px 12px 10px; }
+  .lab-cap__points { display: none; }
+  .lab-stage { padding: 14px 6px 8px; }
+  .lab-notes { display: block; }
+}
 html.full .device-phone .screen, html.full .device-desktop .screen { height: auto; }
 html.full .scroll { height: auto !important; overflow: visible !important; }
-html.full .d-main { height: auto; }
+html.full .d-shell, html.full .d-main { height: auto; }
 
-/* ===== Magic UI: טוקנים של apps/www/styles/globals.css (shadcn new-york, neutral, ברירת-מחדל בהירה) ===== */
+/* ===== הטוקנים של 14: Magic UI apps/www/styles/globals.css (shadcn new-york, neutral, בהיר) ===== */
 .mu {
   --radius: 0.625rem;
   --background: oklch(1 0 0); --foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0); --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0); --muted: oklch(0.97 0 0); --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0); --border: oklch(0.922 0 0); --ring: oklch(0.708 0 0);
-  /* Tailwind neutral, כמו ב-bento-grid.tsx */
+  --sidebar: oklch(0.985 0 0); --sidebar-accent: oklch(0.97 0 0); --sidebar-border: oklch(0.922 0 0);
   --neutral-100: oklch(0.97 0 0); --neutral-200: oklch(0.922 0 0); --neutral-300: oklch(0.87 0 0); --neutral-400: oklch(0.708 0 0);
   --neutral-500: oklch(0.556 0 0); --neutral-600: oklch(0.439 0 0); --neutral-700: oklch(0.371 0 0);
-  /* colorFrom / colorTo של האפקטים = גרדיאנט-המותג */
-  --color-from: #0131ff; --color-to: #01b0ff;
+  /* קו-המותג: Prod Blue אל SaaS Blue, בכיוון הקריאה (מימין לשמאל) */
+  --brand-from: #0131ff; --brand-to: #01b0ff;
+  --brand-line: linear-gradient(to left, var(--brand-from), var(--brand-to));
+  --c1: color-mix(in oklab, var(--brand-from) 83.33%, var(--brand-to));
+  --c2: color-mix(in oklab, var(--brand-from) 66.67%, var(--brand-to));
+  --c3: color-mix(in oklab, var(--brand-from) 50%, var(--brand-to));
   --orange: #ff9500; --orange-ink: #b45f00;
+  /* הקלילות של 10: פינות גדולות, משטח טונאלי לווידג'טים המשניים */
+  --card-radius: 24px; --tonal: oklch(0.97 0 0);
   background: var(--background); color: var(--foreground);
   font-family: "Rag Sans", sans-serif; font-size: 16px; line-height: 1.5;
 }
@@ -53,12 +68,12 @@ html.full .d-main { height: auto; }
 .mu svg.i { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 .tnum { font-variant-numeric: tabular-nums; }
 .text-xs { font-size: 12px; line-height: 16px; } .text-sm { font-size: 14px; line-height: 20px; } .text-base { font-size: 16px; line-height: 24px; }
-.text-lg { font-size: 18px; line-height: 28px; } .text-xl { font-size: 20px; line-height: 28px; } .text-2xl { font-size: 24px; line-height: 32px; }
+.text-lg { font-size: 18px; line-height: 28px; }
 .font-medium { font-weight: 500; } .font-semibold { font-weight: 600; }
-.muted { color: var(--muted-foreground); } .n400 { color: var(--neutral-400); } .n700 { color: var(--neutral-700); }
+.muted { color: var(--muted-foreground); } .n500 { color: var(--neutral-500); } .n600 { color: var(--neutral-600); } .n700 { color: var(--neutral-700); }
 .tracking-tighter { letter-spacing: -0.03em; }
 
-/* shadcn Button (new-york) */
+/* shadcn Button + Badge (new-york), כמו ב-14 */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; border-radius: calc(var(--radius) - 2px);
   font: inherit; font-size: 14px; line-height: 20px; font-weight: 500; height: 36px; padding: 8px 16px; border: 1px solid transparent; cursor: pointer; transition: all .15s; }
 .btn:has(> svg) { padding-inline: 12px; }
@@ -71,81 +86,75 @@ html.full .d-main { height: auto; }
 .btn--link:hover { text-decoration: underline; text-underline-offset: 4px; }
 .badge { display: inline-flex; align-items: center; gap: 4px; border-radius: calc(var(--radius) - 2px); border: 1px solid transparent; padding: 2px 8px; font-size: 12px; line-height: 16px; font-weight: 500; white-space: nowrap; }
 .badge--orange { background: rgb(255 149 0 / .12); color: var(--orange-ink); }
-.badge--secondary { background: var(--secondary); color: var(--neutral-700); }
+.badge--live { background: rgb(1 176 255 / .12); color: #00639a; }
 
-/* bento-grid.tsx */
-.bento { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 22rem; gap: 16px; width: 100%; }
-.bento-card { position: relative; grid-column: span 3; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; border-radius: calc(var(--radius) + 4px);
-  background: var(--background); box-shadow: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.05); transform: translateZ(0); }
-.bento-card__bg { position: absolute; inset: 0; pointer-events: none; }
-.bento-card__body { position: relative; z-index: 2; padding: 16px; margin-top: auto; display: flex; flex-direction: column; gap: 4px; transition: transform .3s; }
-.bento-card__icon { width: 48px !important; height: 48px !important; color: var(--neutral-700); stroke-width: 1.5 !important; margin-bottom: 4px; transform-origin: right; transition: transform .3s ease-in-out; }
-.bento-card__name { font-size: 20px; line-height: 28px; font-weight: 600; color: var(--neutral-700); }
-.bento-card::after { content: ""; position: absolute; inset: 0; pointer-events: none; transition: background .3s; }
-.bento-card:hover::after { background: rgb(0 0 0 / .03); }
-.bento-card:hover .bento-card__icon { transform: scale(.75); }
-.row-2 { grid-row: span 2; }
+/* ===== כרטיס = SpotlightCard (react-bits src/content/Components/SpotlightCard/SpotlightCard.css) על המשטח של 14 ===== */
+.w { position: relative; isolation: isolate; overflow: hidden; border-radius: var(--card-radius); background: var(--w-surface, var(--background)); --spot-border: transparent; }
+.w--raised { box-shadow: 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.05); --spot-border: rgba(24, 24, 27, .08); }
+.w--tonal { --w-surface: var(--tonal); }
+.spot__light, .spot__border, .spot__edge { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
+.spot__light { z-index: -1; opacity: 0; }
+.spot__border, .spot__edge { z-index: 3; padding: 1px;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
+.spot__border { background: var(--spot-border); }
+.spot__edge { opacity: 0; }
 
-/* dot-pattern.tsx */
-.dots { position: absolute; inset: 0; pointer-events: none; color: rgb(163 163 163 / .8);
-  background-image: radial-gradient(circle at 1px 1px, currentColor 1px, transparent 1.2px); background-size: 20px 20px;
-  -webkit-mask-image: linear-gradient(to bottom left, #fff, transparent, transparent); mask-image: linear-gradient(to bottom left, #fff, transparent, transparent); }
+/* ===== קו-המותג: קו עליון לכל ווידג'ט, קו מתחת ל«פרק 19», פס-ההתקדמות ===== */
+.bline { position: absolute; top: 0; inset-inline: 0; height: 2px; background: var(--brand-line); z-index: 4; pointer-events: none; }
+.bline--orange { background: var(--orange); }
+.flash__band, .flash__glow { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
+.flash__glow { filter: blur(3px); opacity: .9; }
+.mark { position: relative; display: block; width: 88px; height: 3px; border-radius: 3px; background: var(--brand-line); margin: 2px auto 18px; }
 
-/* border-beam.tsx: מסלול offset-path סביב הכרטיס, colorFrom עד colorTo */
-.beam { position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none; z-index: 3;
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
-.beam::before { content: ""; position: absolute; width: var(--beam-size, 220px); aspect-ratio: 1;
-  background: linear-gradient(to left, var(--color-from), var(--color-to), transparent);
-  offset-path: rect(0 auto auto 0 round var(--beam-size, 220px)); offset-distance: 0%; animation: mu-beam 8s linear infinite; }
-@keyframes mu-beam { to { offset-distance: 100%; } }
+/* ===== הבמה ===== */
+.stage { padding: 24px 20px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 14px; border-radius: 999px; border: 1px solid rgb(0 0 0 / .05); background: var(--neutral-100); color: var(--neutral-600); font-size: 14px; line-height: 20px; }
+.pill svg.i { color: var(--neutral-500); }
+.ep-title { font-size: 60px; line-height: 1; font-weight: 600; letter-spacing: -0.03em; margin-top: 16px; }
+/* ShinyText (react-bits src/content/TextAnimations/ShinyText/ShinyText.css): הטקסט צבוע ברקע */
+.shiny { display: inline-block; padding: 0.04em 0.02em 0.14em; color: var(--brand-from); background-image: linear-gradient(var(--brand-from), var(--brand-from));
+  background-repeat: no-repeat; background-size: 100% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.ep-guest { font-size: 24px; line-height: 32px; font-weight: 600; letter-spacing: -0.03em; color: var(--neutral-700); }
+.ep-date { font-size: 16px; line-height: 24px; color: var(--muted-foreground); margin-top: 2px; }
+.axis-wrap { width: 100%; margin-top: 22px; }
+/* ציר-הפרק 1 עד 7 (הסדר של 12); החלק המלא הוא קו-המותג, והצבע מתקדם לאורכו */
+.axis { --d: 28px; list-style: none; margin: 0; padding: 0; position: relative; display: flex; justify-content: space-between; }
+.axis::before, .axis::after { content: ""; position: absolute; top: calc(var(--d) / 2 - 1px); height: 2px; border-radius: 2px; }
+.axis::before { inset-inline: calc(var(--d) / 2); background: var(--neutral-200); }
+.axis::after { inset-inline-start: calc(var(--d) / 2); width: calc((100% - var(--d)) / 3); background: linear-gradient(to left, var(--brand-from), var(--c2)); }
+.axis__step { position: relative; z-index: 1; width: var(--d); height: var(--d); border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 600;
+  font-variant-numeric: tabular-nums; background: var(--background); color: var(--neutral-400); box-shadow: inset 0 0 0 1.5px var(--neutral-200); }
+.axis__step.is-done { color: #fff; box-shadow: none; }
+.axis__step.s1 { background: var(--brand-from); } .axis__step.s2 { background: var(--c1); } .axis__step.s3 { background: var(--c2); }
+.axis__step.is-now { color: var(--c3); box-shadow: inset 0 0 0 2px var(--c3); }
+.axis-meta { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; font-size: 14px; line-height: 20px; }
 
-/* animated-gradient-text.tsx */
-.grad-text { background-image: linear-gradient(to right, var(--color-from), var(--color-to), var(--color-from)); background-size: 300% 100%;
-  -webkit-background-clip: text; background-clip: text; color: transparent; animation: mu-gradient 8s linear infinite; }
-@keyframes mu-gradient { to { background-position: 300% 0; } }
+/* ===== «חסר ממך» (שורות של 14) ===== */
+.todo-card { padding: 18px 16px 4px; }
+.todo-card__head { display: flex; align-items: center; gap: 8px; padding-bottom: 10px; }
+.todo { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); }
+.todo__ic { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; background: var(--neutral-100); color: var(--neutral-600); flex-shrink: 0; }
+.todo__ic--orange { background: rgb(255 149 0 / .12); color: var(--orange-ink); }
+.todo__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.todo.is-locked .todo__title { color: var(--neutral-400); }
+.todo.is-locked .todo__ic { background: transparent; border: 1px dashed var(--neutral-300); color: var(--neutral-400); }
+.dot-orange { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); display: inline-block; flex-shrink: 0; }
 
-/* animated-shiny-text.tsx בתוך הגלולה של דף-הבית של magicui.design */
-.pill { display: inline-flex; border-radius: 999px; border: 1px solid rgb(0 0 0 / .05); background: var(--neutral-100); transition: background .2s ease-in; }
-.pill:hover { background: var(--neutral-200); }
-.shiny { --shiny-width: 100px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 16px; color: rgb(82 82 82 / .7);
-  background-image: linear-gradient(to right, transparent, rgb(0 0 0 / .8) 50%, transparent); background-size: var(--shiny-width) 100%;
-  background-repeat: no-repeat; background-position: 0 0; -webkit-background-clip: text; background-clip: text; animation: mu-shiny 8s infinite; }
-.shiny svg.i { color: var(--neutral-500); }
-@keyframes mu-shiny { 0%, 90%, 100% { background-position: calc(-100% - var(--shiny-width)) 0; } 30%, 60% { background-position: calc(100% + var(--shiny-width)) 0; } }
-
-/* blur-fade.tsx (רק על הבמה) */
-@keyframes mu-blurfade { from { opacity: 0; filter: blur(6px); transform: translateY(-6px); } to { opacity: 1; filter: blur(0); transform: none; } }
-.blur-fade { animation: mu-blurfade .4s ease-out both; }
-.bf1 { animation-delay: .04s; } .bf2 { animation-delay: .12s; } .bf3 { animation-delay: .2s; } .bf4 { animation-delay: .28s; } .bf5 { animation-delay: .36s; }
-
-/* marquee.tsx (ב-RTL המסלול זז ימינה) */
-.marquee { --duration: 40s; --gap: 16px; display: flex; gap: var(--gap); overflow: hidden; padding: 8px; }
-.marquee__track { display: flex; flex-shrink: 0; gap: var(--gap); justify-content: space-around; animation: mu-marquee var(--duration) linear infinite; }
-.marquee:hover .marquee__track { animation-play-state: paused; }
-@keyframes mu-marquee { from { transform: translateX(0); } to { transform: translateX(calc(100% + var(--gap))); } }
-.ep { width: 220px; flex-shrink: 0; border-radius: 12px; border: 1px solid rgb(3 7 18 / .1); background: rgb(3 7 18 / .01); padding: 10px; display: flex; flex-direction: column; gap: 8px; transition: background .3s; }
-.ep:hover { background: rgb(3 7 18 / .05); }
-.ep img, .ep .ep__ph { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; display: block; }
-.ep .ep__ph { border: 1px dashed var(--neutral-300); background: var(--neutral-100); }
-.ep__title { font-size: 14px; line-height: 20px; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 40px; }
-.edge-fade { position: absolute; inset-block: 0; width: 22%; pointer-events: none; z-index: 1; }
-.edge-fade--start { inset-inline-start: 0; background: linear-gradient(to left, var(--background), transparent); }
-.edge-fade--end { inset-inline-end: 0; background: linear-gradient(to right, var(--background), transparent); }
-
-/* animated-circular-progress-bar.tsx */
-.gauge { position: relative; width: 120px; height: 120px; }
-.gauge svg { width: 100%; height: 100%; transform: rotate(-90deg) scaleY(-1); }
-.gauge circle { fill: none; stroke-width: 10; stroke-linecap: round; }
-.gauge__track { stroke: var(--neutral-200); }
-.gauge__value { stroke: var(--color-from); stroke-dasharray: 251.33; stroke-dashoffset: 251.33; animation: mu-gauge 1s ease-out .3s forwards; }
-@keyframes mu-gauge { to { stroke-dashoffset: 198.55; } }
-.gauge__label { position: absolute; inset: 0; display: grid; place-items: center; font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
-
-/* mini calendar (shadcn Calendar כרקע, כמו ב-bento-demo.tsx) */
+/* ===== הווידג'טים המשניים (bento-card של 14, על משטח טונאלי) ===== */
+.w--col { display: flex; flex-direction: column; justify-content: flex-end; }
+.w__bg { position: absolute; inset: 0; pointer-events: none; }
+.w__body { position: relative; z-index: 2; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 4px; }
+.w__name { font-size: 20px; line-height: 28px; font-weight: 600; color: var(--neutral-700); }
+.w__links { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-size: 14px; }
+.rec { height: 330px; }
+.latest { height: 310px; }
+.latest__img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 45%); mask-image: linear-gradient(to top, transparent 0%, #000 45%); }
+/* mini calendar (shadcn Calendar כרקע, כמו ב-bento-demo.tsx), כמו ב-14 */
 .cal { position: absolute; top: -46px; inset-inline-start: 50%; transform: translateX(50%) scale(.8); transform-origin: top center; border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px);
   padding: 12px; background: var(--background); -webkit-mask-image: linear-gradient(to bottom, transparent 22%, #000 58%); mask-image: linear-gradient(to bottom, transparent 22%, #000 58%);
   transition: transform .3s ease-out; }
-.bento-card:hover .cal { transform: translateX(50%) scale(.88); }
+.rec:hover .cal { transform: translateX(50%) scale(.88); }
 .cal__cap { text-align: center; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
 .cal__grid { display: grid; grid-template-columns: repeat(7, 36px); }
 .cal__grid span { height: 36px; display: grid; place-items: center; font-size: 14px; border-radius: calc(var(--radius) - 2px); font-variant-numeric: tabular-nums; }
@@ -153,99 +162,107 @@ html.full .d-main { height: auto; }
 .cal__grid .sel { background: var(--primary); color: var(--primary-foreground); }
 .cal__grid .out { color: transparent; }
 
-/* missing-from-you rows */
-.todo { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); }
-.todo__ic { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; background: var(--neutral-100); color: var(--neutral-600); flex-shrink: 0; }
-.todo__ic--orange { background: rgb(255 149 0 / .12); color: var(--orange-ink); }
-.todo__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.todo.is-locked .todo__title { color: var(--neutral-400); }
-.todo.is-locked .todo__ic { background: transparent; border: 1px dashed var(--neutral-300); color: var(--neutral-400); }
-.dot-orange { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); display: inline-block; }
-.segments { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-.segments i { height: 6px; border-radius: 999px; background: var(--neutral-200); display: block; }
-.segments i.on { background: var(--primary); }
+.stat { padding: 18px 20px 20px; }
+.stat__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.stat__num { font-size: 60px; line-height: 1.2; font-weight: 500; letter-spacing: 0.02em; color: #000; margin-top: -10px; }
+/* animated-circular-progress-bar.tsx (Magic UI), כמו ב-14; מתמלא כשנכנס לתצוגה */
+.gauge { position: relative; width: 96px; height: 96px; flex-shrink: 0; }
+.gauge svg { width: 100%; height: 100%; transform: rotate(-90deg) scaleY(-1); display: block; }
+.gauge circle { fill: none; stroke-width: 10; stroke-linecap: round; }
+.gauge__track { stroke: var(--neutral-200); }
+.gauge__value { stroke: var(--brand-from); stroke-dasharray: 251.33; stroke-dashoffset: 251.33; }
+.gauge.is-on .gauge__value { animation: mu-gauge 1s ease-out .2s forwards; }
+@keyframes mu-gauge { to { stroke-dashoffset: 198.55; } }
+.gauge__label { position: absolute; inset: 0; display: grid; place-items: center; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+/* CountUp mode="roll" (react-bits src/content/TextAnimations/CountUp/CountUp.jsx): עמודת-ספרות לכל מקום */
+.roll { display: inline-flex; direction: ltr; unicode-bidi: isolate; white-space: pre; vertical-align: top; user-select: none; }
+.roll__slot { display: inline-block; height: 1.2em; line-height: 1.2em; overflow: hidden; text-align: center; }
+.roll__strip { display: flex; flex-direction: column; transform: translateY(-1.2em); }
+.roll__strip > span { height: 1.2em; }
 
-/* dock.tsx */
-.dock { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 16px; border: 1px solid var(--border);
-  background: rgb(255 255 255 / .1); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
-.dock__item { position: relative; width: 40px; height: 40px; border-radius: 999px; display: grid; place-items: center; color: var(--neutral-500);
-  transition: width .25s cubic-bezier(.34,1.56,.64,1), height .25s cubic-bezier(.34,1.56,.64,1), background .2s; }
-.dock__item:hover { background: var(--accent); color: var(--foreground); }
-.dock__item svg.i { width: 20px; height: 20px; }
-.dock__item.is-active { background: var(--accent); color: var(--foreground); }
-.dock__item .badge-dot { position: absolute; top: 5px; inset-inline-end: 5px; width: 8px; height: 8px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 2px var(--background); }
-.dock__sep { background: var(--border); flex-shrink: 0; }
-.dock__tip { position: absolute; white-space: nowrap; font-size: 12px; line-height: 16px; padding: 6px 12px; border-radius: 6px; background: var(--primary); color: var(--primary-foreground);
-  opacity: 0; pointer-events: none; transition: opacity .15s; }
-.dock__item:hover .dock__tip, .dock__item:focus-visible .dock__tip { opacity: 1; }
-.dock__avatar { width: 40px; height: 40px; border-radius: 999px; object-fit: cover; }
-
-/* הבמה: מרכוז כמו בראש magicui.design; ה-BorderBeam עוטף את «חסר ממך» */
-.hero__stage.hero__stage--center { align-items: center; text-align: center; flex: 1; justify-content: center; }
-.hero__progress { width: min(440px, 100%); margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
-.dots--center { -webkit-mask-image: radial-gradient(ellipse 65% 75% at 50% 25%, #fff, transparent); mask-image: radial-gradient(ellipse 65% 75% at 50% 25%, #fff, transparent); }
-.todo-panel { position: relative; z-index: 2; border-radius: 12px; border: 1px solid var(--border); background: rgb(255 255 255 / .92); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); --beam-size: 140px; }
-.todo-panel__head { display: flex; align-items: center; gap: 8px; }
-.todo-panel--stack { padding: 14px 16px 2px; }
-.todo-panel--stack .todo-panel__head { padding-bottom: 10px; }
-.todo-panel--row { padding: 16px 20px 20px; }
-.todo-panel--row .todo-panel__head { padding-bottom: 14px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
-.todo-row { display: grid; grid-template-columns: 1.35fr 1fr 1fr 1fr; }
-.todo-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 0 18px; border-inline-start: 1px solid var(--border); }
-.todo-cell:first-child { padding-inline-start: 0; border-inline-start: 0; }
-.todo-cell.is-locked .todo__title { color: var(--neutral-400); }
-.todo-cell.is-locked .todo__ic { background: transparent; border: 1px dashed var(--neutral-300); color: var(--neutral-400); }
+.quick { padding: 18px 16px 16px; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.tile { display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 12px; border-radius: 14px; background: var(--background); border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .04); font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap; transition: background .15s, transform .15s; }
+.tile svg.i { color: var(--neutral-600); }
+.tile:hover { background: var(--neutral-100); }
+.tile:active { transform: scale(.98); }
 
 /* ===== טלפון ===== */
 .is-phone .scroll { height: 844px; overflow-y: auto; scrollbar-width: none; }
 .is-phone .scroll::-webkit-scrollbar { display: none; }
-.p-wrap { padding: 62px 16px 112px; display: flex; flex-direction: column; gap: 16px; }
+.p-wrap { padding: 58px 16px 104px; display: flex; flex-direction: column; gap: 12px; }
 .p-head { display: flex; align-items: center; gap: 12px; padding: 0 4px 4px; }
 .p-head img.av { width: 40px; height: 40px; border-radius: 999px; object-fit: cover; }
 .p-head__logo { height: 14px; margin-inline-start: auto; }
-.hero { padding: 20px; justify-content: flex-start; }
-.hero__stage { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
-.hero__num { font-size: 60px; line-height: 1; font-weight: 600; letter-spacing: -0.03em; padding: 6px 0 4px; }
-.p-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.p-actions .btn { justify-content: flex-start; }
-.p-dock { position: absolute; inset-inline: 0; bottom: 22px; display: flex; justify-content: center; z-index: 20; }
-.p-dock .dock { height: 58px; }
-.p-dock .dock__sep { width: 1px; height: 100%; }
+.tabbar { position: absolute; inset-inline: 0; bottom: 0; height: 84px; padding: 7px 6px 0; display: grid; grid-template-columns: repeat(5, 1fr); align-items: start; z-index: 20;
+  background: rgb(255 255 255 / .88); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border-top: 1px solid var(--border); }
+.tab { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; padding-top: 4px; font-size: 11px; line-height: 14px; font-weight: 500; color: var(--neutral-500); }
+.tab svg.i { width: 22px; height: 22px; stroke-width: 1.75; }
+.tab.is-active { color: var(--brand-from); }
+.tab__ic { position: relative; display: inline-grid; }
+.tab__dot { position: absolute; top: -1px; inset-inline-end: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 2px #fff; }
 
-/* ===== מחשב ===== */
-.d-main { height: 800px; position: relative; }
+/* ===== מחשב: תפריט-צד (shadcn Sidebar של apps/www/components/ui/sidebar.tsx) ===== */
+.d-shell { display: grid; grid-template-columns: 256px minmax(0, 1fr); height: 800px; }
+.side { background: var(--sidebar); border-inline-end: 1px solid var(--sidebar-border); display: flex; flex-direction: column; gap: 2px; padding: 18px 12px 14px; }
+.side__logo { height: 18px; width: auto; align-self: flex-start; margin: 4px 8px 18px; }
+.side__show { display: flex; align-items: center; gap: 10px; padding: 0 8px 16px; }
+.side__show img { width: 36px; height: 36px; border-radius: 999px; object-fit: cover; }
+.side__item { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; border-radius: calc(var(--radius) - 2px); font-size: 14px; line-height: 20px; color: var(--foreground); transition: background .15s; }
+.side__item svg.i { color: var(--neutral-600); }
+.side__item:hover { background: var(--sidebar-accent); }
+.side__item.is-active { background: var(--sidebar-accent); font-weight: 500; }
+.side__item.is-active svg.i { color: var(--brand-from); }
+.side__item .dot-orange { margin-inline-start: auto; }
+.side__foot { margin-top: auto; }
+.d-main { height: 800px; position: relative; min-width: 0; }
 .d-main .scroll { height: 800px; overflow-y: auto; scrollbar-width: thin; }
-.d-wrap { padding: 32px 112px 48px 40px; display: flex; flex-direction: column; gap: 24px; }
-.d-head { display: flex; align-items: center; gap: 14px; }
-.d-head img.av { width: 44px; height: 44px; border-radius: 999px; object-fit: cover; }
+.d-wrap { padding: 26px 32px 40px; display: flex; flex-direction: column; gap: 18px; }
 .d-head h1 { font-size: 30px; line-height: 36px; font-weight: 600; letter-spacing: -0.03em; }
-.d-head__end { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; }
-.d-dock { position: absolute; inset-inline-start: 24px; top: 50%; transform: translateY(-50%); z-index: 20; }
-.d-dock .dock { flex-direction: column; width: 58px; }
-.d-dock .dock__sep { height: 1px; width: 100%; }
-.d-dock .dock:hover .dock__item:hover { width: 54px; height: 54px; }
-.d-dock .dock:hover .dock__item:has(+ .dock__item:hover), .d-dock .dock:hover .dock__item:hover + .dock__item { width: 46px; height: 46px; }
-.d-dock .dock__tip { inset-inline-end: calc(100% + 14px); top: 50%; transform: translateY(-50%); }
-.d-bento .c-hero { grid-column: span 2; grid-row: span 2; }
-.d-bento .c-1 { grid-column: span 1; }
-.d-bento .c-2 { grid-column: span 2; }
-@media (prefers-reduced-motion: reduce) { .beam::before, .grad-text, .shiny, .blur-fade, .marquee__track, .gauge__value { animation: none; } .gauge__value { stroke-dashoffset: 198.55; } }
+.d-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.span-2 { grid-column: span 2; } .span-3 { grid-column: 1 / -1; }
+.d-stack { display: flex; flex-direction: column; gap: 16px; }
+.is-desktop .stage { padding: 30px 32px 26px; justify-content: center; }
+.is-desktop .ep-title { font-size: 84px; margin-top: 18px; }
+.is-desktop .mark { width: 124px; margin: 4px auto 20px; }
+.is-desktop .ep-guest { font-size: 30px; line-height: 36px; }
+.is-desktop .ep-date { font-size: 18px; line-height: 28px; }
+.is-desktop .axis-wrap { width: 460px; margin-top: 26px; }
+.is-desktop .axis { --d: 30px; }
+.is-desktop .rec, .is-desktop .latest { height: auto; min-height: 340px; }
+.is-desktop .gauge { width: 80px; height: 80px; }
+.is-desktop .gauge__label { font-size: 17px; }
+.is-desktop .stat__num { font-size: 56px; }
+.is-desktop .tile { padding: 0 10px; gap: 7px; }
+.eps { padding: 20px 24px 10px; }
+.eps__grid { margin-top: 8px; }
+.eps__row { display: grid; grid-template-columns: 56px 190px minmax(0, 1fr) 130px 72px; align-items: center; gap: 16px; min-height: 52px; padding: 8px 0; border-top: 1px solid var(--border); font-size: 14px; line-height: 20px; }
+.eps__row--head { min-height: 36px; border-top: 0; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+.eps__th { width: 64px; height: 36px; border-radius: 6px; overflow: hidden; background: var(--background); display: grid; place-items: center; color: var(--neutral-400); }
+.eps__th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.eps__th--empty { border: 1px dashed var(--neutral-300); background: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gauge__value, .gauge.is-on .gauge__value { animation: none; stroke-dashoffset: 198.55; }
+  .cal, .tile, .btn, .side__item { transition: none; }
+}
 </style>
 </head>
 <body>
 
 <header class="lab-cap">
   <div class="lab-cap__row">
-    <span class="lab-cap__title">14. Magic UI</span>
-    <a href="https://github.com/magicuidesign/magicui">github.com/magicuidesign/magicui</a>
-    <span class="lab-cap__meta">22,870 כוכבים, push אחרון 17.10.2026</span>
-    <span class="lab-cap__meta">הציר הנגדי: אקספרסיבי, אבל האפקט החזק רק בבמה של הפרק הבא</span>
+    <span class="lab-cap__title">19. אקספרסיבי</span>
+    <a href="https://github.com/DavidHDev/react-bits">github.com/DavidHDev/react-bits</a>
+    <span class="lab-cap__meta">50,269 כוכבים, push אחרון 19.10.2026</span>
+    <span class="lab-cap__meta">על 14 (Magic UI): אותו bento ואותם טוקנים, תפריט-צד והסדר של 12</span>
   </div>
   <div class="lab-cap__points">
-    <p><b>Bento.</b> BentoGrid של 3 עמודות בשורות של 22rem, כרטיס rounded-xl עם הצל המשולש (טבעת 3%, 5%, 5%), רקע חי בחלק העליון וטקסט בתחתית. הבמה תופסת 2×2.</p>
-    <p><b>אפקט אחד חזק.</b> BorderBeam סביב הבמה ו-AnimatedGradientText על «פרק 19», שניהם בגרדיאנט-המותג Prod Blue ל-SaaS Blue; DotPattern ממוסך מאחור, וגלולה עם AnimatedShinyText כמו בראש magicui.design.</p>
-    <p><b>תנועה שקטה בשאר.</b> NumberTicker (קפיץ damping 60, stiffness 100) רץ פעם אחת, Marquee איטי של הפרקים שנעצר במעבר-עכבר, Dock לניווט: אופקי בטלפון, אנכי בצד במחשב. בהיר, כמו defaultTheme באתר שלהם.</p>
-    <p><b>גופן: Rag Sans.</b> האתר שלהם ב-Geist, שאין בו עברית; לקחתי את הטיפול שלהם: כבדות 600 וריווח שלילי לכותרות, tabular-nums לספרות.</p>
+    <p><b>קו-המותג, תמיד.</b> 2px של <bdi>Prod Blue</bdi> אל <bdi>SaaS Blue</bdi> בראש כל ווידג'ט (כתום ב«חסר ממך»); אותו קו הוא פס-ההתקדמות בין העיגולים והקו מתחת ל«פרק 19». כל 4.2 שניות אור חולף על קו אחד בלבד (1.6 שניות), ובתור של הבמה הוא עובר גם על «פרק 19».</p>
+    <p><b>זרקור, רק כשמצביעים.</b> במחשב הוא עוקב אחרי העכבר על הבמה ועל כל ווידג'ט: רדיוס 240px, השהיה 0.3, שולי כרטיס שכן נדלקים ממרחק 80px, לחיצה מגבירה. בטלפון, בלי עכבר: הבהוב אחד לכל כרטיס כשהוא נכנס לתצוגה.</p>
+    <p><b>פעם אחת.</b> 5,941 מתגלגל כמונה (<bdi>CountUp</bdi> במצב <bdi>roll</bdi>, 2.2 שניות, <bdi>easeOut</bdi> בלי קפיצה) והטבעת של 21% מתמלאת בשנייה, כשהם נכנסים לתצוגה. ב-<bdi>reduced-motion</bdi> הכול סטטי וסופי; הזרקור נשאר תגובה ישירה לעכבר.</p>
+    <p><b>מקור.</b> <bdi dir="ltr">src/content/Components/SpotlightCard/SpotlightCard.jsx</bdi>, <bdi dir="ltr">src/content/TextAnimations/ShinyText/ShinyText.jsx</bdi>, <bdi dir="ltr">src/content/TextAnimations/CountUp/CountUp.jsx</bdi>, משוחזרים ב-JS בלי React, באותם מספרים ועקומות. מ-14: bento, לוח-השנה והטבעת של Magic UI. גופן: Rag Sans.</p>
   </div>
 </header>
 
@@ -256,278 +273,255 @@ html.full .d-main { height: auto; }
       <div class="island"></div>
       <div class="scroll">
         <div class="p-wrap">
-          <div class="p-head">
+          <header class="p-head">
             <img class="av" src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="">
             <div>
               <div class="text-lg font-semibold tracking-tighter" style="line-height:22px">הפיצוח</div>
               <div class="text-sm muted">גיל לי-רן</div>
             </div>
             <img class="p-head__logo" src="../brand/wedo-logotype-black.svg" alt="wedo">
-          </div>
+          </header>
 
-          <div class="bento">
-            <div class="bento-card row-2 hero">
-              <div class="dots dots--center"></div>
-              <div class="hero__stage hero__stage--center">
-                <span class="pill blur-fade bf1"><span class="shiny text-sm"><svg class="i"><use href="#lu-calendar-days"/></svg>בעוד יומיים</span></span>
-                <h2 class="hero__num grad-text blur-fade bf2">פרק 19</h2>
-                <p class="text-2xl font-semibold n700 tracking-tighter blur-fade bf3">עם אורלי אורן</p>
-                <p class="text-base muted blur-fade bf3">עולה ביום רביעי 28.10</p>
-                <div class="hero__progress blur-fade bf4">
-                  <div class="segments" aria-label="3 מתוך 7"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
-                  <div style="display:flex; justify-content:space-between" class="text-sm"><span class="font-medium tnum">3 מתוך 7</span><span class="muted">עכשיו: עריכה, ממתין לעורך</span></div>
-                </div>
-              </div>
-              <div class="todo-panel todo-panel--stack blur-fade bf5" style="margin-top:22px">
-                <div class="beam"></div>
-                <div class="todo-panel__head"><span class="dot-orange"></span><h3 class="text-lg font-semibold">חסר ממך</h3></div>
-                <div class="todo" style="flex-wrap:wrap">
-                  <span class="todo__ic todo__ic--orange"><svg class="i"><use href="#lu-pencil"/></svg></span>
-                  <div class="todo__main"><div style="display:flex; align-items:center; gap:8px"><span class="text-sm font-medium">שם לפרק</span><span class="badge badge--orange">פתוח</span></div><span class="text-xs muted">לפני העריכה</span></div>
-                  <a class="btn btn--default" href="#" style="width:100%; margin-top:4px"><svg class="i"><use href="#lu-pencil"/></svg>לבחור שם</a>
-                </div>
-                <div class="todo">
-                  <span class="todo__ic"><svg class="i"><use href="#lu-image"/></svg></span>
-                  <div class="todo__main"><span class="text-sm font-medium">תמונת-מרואיין</span><span class="text-xs muted">התקבלה ב-25.10, ממתינה לאישור</span></div>
-                </div>
-                <div class="todo is-locked">
-                  <span class="todo__ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span>
-                  <div class="todo__main"><span class="text-sm font-medium todo__title">בחירת-טיזרים</span><span class="text-xs muted">אחרי העריכה</span></div>
-                </div>
-                <div class="todo is-locked">
-                  <span class="todo__ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span>
-                  <div class="todo__main"><span class="text-sm font-medium todo__title">אישור-לפרסום</span><span class="text-xs muted">בהמשך</span></div>
-                </div>
-              </div>
+          <section class="w w--raised stage" data-spot="entry" data-flash>
+            <span class="pill"><svg class="i"><use href="#lu-calendar-days"/></svg>בעוד יומיים</span>
+            <h2 class="ep-title"><span class="shiny">פרק 19</span></h2>
+            <span class="mark" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
+            <p class="ep-guest">עם אורלי אורן</p>
+            <p class="ep-date">עולה ביום רביעי 28.10</p>
+            <div class="axis-wrap">
+              <ol class="axis" aria-label="3 מתוך 7">
+                <li class="axis__step is-done s1">1</li><li class="axis__step is-done s2">2</li><li class="axis__step is-done s3">3</li><li class="axis__step is-now">4</li><li class="axis__step">5</li><li class="axis__step">6</li><li class="axis__step">7</li>
+              </ol>
+              <div class="axis-meta"><span class="font-medium tnum">3 מתוך 7</span><span class="muted">עכשיו: עריכה, ממתין לעורך</span></div>
             </div>
+          </section>
 
-            <div class="bento-card">
-              <div class="bento-card__bg"><div class="cal" aria-hidden="true">
-                <div class="cal__cap">אוקטובר 2026</div>
-                <div class="cal__grid"><span class="wd">א׳</span><span class="wd">ב׳</span><span class="wd">ג׳</span><span class="wd">ד׳</span><span class="wd">ה׳</span><span class="wd">ו׳</span><span class="wd">ש׳</span><span class="out">.</span><span class="out">.</span><span class="out">.</span><span class="out">.</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span class="sel">29</span><span>30</span><span>31</span></div>
-              </div></div>
-              <div class="bento-card__body">
-                <h3 class="bento-card__name">ההקלטה הבאה</h3>
-                <p class="text-base font-medium" style="color:var(--foreground)">חמישי 29.10, 11:00</p>
-                <p class="text-sm n400">11:00 עד 13:00, אולפן רימקס</p>
-                <p class="text-sm n400">עם נועה בוקרה ורלי זדרב</p>
-                <p class="text-sm n400">מפיק: יהלי</p>
-                <div style="display:flex; flex-wrap:wrap; gap:4px 16px; margin-top:8px" class="text-sm">
-                  <a class="btn btn--link" href="#">לשנות מועד</a><a class="btn btn--link" href="#">להוסיף פרטי-אורח</a><a class="btn btn--link" href="#">לתאם הקלטה נוספת</a>
-                </div>
-              </div>
+          <section class="w w--raised todo-card" data-spot="entry" data-flash>
+            <span class="bline bline--orange" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
+            <div class="todo-card__head"><span class="dot-orange"></span><h3 class="text-lg font-semibold">חסר ממך</h3></div>
+            <div class="todo" style="flex-wrap:wrap">
+              <span class="todo__ic todo__ic--orange"><svg class="i"><use href="#lu-pencil"/></svg></span>
+              <div class="todo__main"><div style="display:flex; align-items:center; gap:8px"><span class="text-sm font-medium">שם לפרק</span><span class="badge badge--orange">פתוח</span></div><span class="text-xs muted">לפני העריכה</span></div>
+              <a class="btn btn--default" href="#" style="width:100%; margin-top:4px"><svg class="i"><use href="#lu-pencil"/></svg>לבחור שם</a>
             </div>
+            <div class="todo">
+              <span class="todo__ic"><svg class="i"><use href="#lu-image"/></svg></span>
+              <div class="todo__main"><span class="text-sm font-medium">תמונת-מרואיין</span><span class="text-xs muted">התקבלה ב-25.10, ממתינה לאישור</span></div>
+            </div>
+            <div class="todo is-locked">
+              <span class="todo__ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span>
+              <div class="todo__main"><span class="text-sm font-medium todo__title">בחירת-טיזרים</span><span class="text-xs muted">אחרי העריכה</span></div>
+            </div>
+            <div class="todo is-locked">
+              <span class="todo__ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span>
+              <div class="todo__main"><span class="text-sm font-medium todo__title">אישור-לפרסום</span><span class="text-xs muted">בהמשך</span></div>
+            </div>
+          </section>
 
-            <div class="bento-card">
-              <div class="bento-card__bg" style="display:flex; justify-content:flex-end; padding:20px">
-                <div class="gauge" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="gauge__track" cx="50" cy="50" r="40"/><circle class="gauge__value" cx="50" cy="50" r="40"/></svg><span class="gauge__label">21%</span></div>
-              </div>
-              <div class="bento-card__body">
-                <p class="tnum" style="font-size:60px; line-height:1; font-weight:500; letter-spacing:0.02em; color:#000"><span class="ticker" data-value="5941">5,941</span></p>
-                <h3 class="bento-card__name" style="margin-top:6px">צפיות ביוטיוב</h3>
-                <p class="text-sm n700">כל פרק נצפה בממוצע 21% מאורכו</p>
-                <p class="text-xs n400" style="margin-top:4px">נכון ל-25.10.2026, 18 פרקים</p>
-              </div>
+          <section class="w w--tonal w--col rec" data-spot="entry" data-flash>
+            <span class="bline" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
+            <div class="w__bg"><div class="cal" aria-hidden="true">
+              <div class="cal__cap">אוקטובר 2026</div>
+              <div class="cal__grid"><span class="wd">א׳</span><span class="wd">ב׳</span><span class="wd">ג׳</span><span class="wd">ד׳</span><span class="wd">ה׳</span><span class="wd">ו׳</span><span class="wd">ש׳</span><span class="out">.</span><span class="out">.</span><span class="out">.</span><span class="out">.</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span class="sel">29</span><span>30</span><span>31</span></div>
+            </div></div>
+            <div class="w__body">
+              <h3 class="w__name">ההקלטה הבאה</h3>
+              <p class="text-base font-medium">חמישי 29.10, 11:00</p>
+              <p class="text-sm n500">11:00 עד 13:00, אולפן רימקס</p>
+              <p class="text-sm n500">עם נועה בוקרה ורלי זדרב</p>
+              <p class="text-sm n500">מפיק: יהלי</p>
+              <div class="w__links"><a class="btn btn--link" href="#">לשנות מועד</a><a class="btn btn--link" href="#">להוסיף פרטי-אורח</a><a class="btn btn--link" href="#">לתאם הקלטה נוספת</a></div>
             </div>
+          </section>
 
-            <div class="bento-card">
-              <div class="bento-card__bg"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="" style="width:100%; height:62%; object-fit:cover; -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 45%); mask-image: linear-gradient(to top, transparent 0%, #000 45%)"></div>
-              <div class="bento-card__body">
-                <p class="text-xs muted">עלה לאחרונה</p>
-                <h3 class="bento-card__name" style="text-wrap:balance">איך מקפיצים עסק בתיווך עם AI</h3>
-                <p class="text-sm n400">פרק 18 עם אלכס קפ, עלה ב-14.10</p>
-                <div style="margin-top:8px"><a class="btn btn--outline btn--sm" href="#"><svg class="i"><use href="#lu-share-2"/></svg>לשתף</a></div>
-              </div>
+          <section class="w w--tonal w--col latest" data-spot="entry" data-flash>
+            <span class="bline" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
+            <div class="w__bg"><img class="latest__img" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""></div>
+            <div class="w__body">
+              <p class="text-xs muted">עלה לאחרונה</p>
+              <h3 class="w__name" style="text-wrap:balance">איך מקפיצים עסק בתיווך עם AI</h3>
+              <p class="text-sm n500">פרק 18 עם אלכס קפ, עלה ב-14.10</p>
+              <div style="margin-top:8px"><a class="btn btn--outline btn--sm" href="#"><svg class="i"><use href="#lu-share-2"/></svg>לשתף</a></div>
             </div>
+          </section>
 
-            <div class="bento-card">
-              <div class="bento-card__bg" style="padding-top:16px">
-                <div class="edge-fade edge-fade--start"></div><div class="edge-fade edge-fade--end"></div>
-                <div class="marquee" style="--duration:45s">
-                  <div class="marquee__track">
-                    <figure class="ep"><span class="ep__ph"></span><span class="text-xs muted">פרק 19, אורלי אורן</span><span class="ep__title n400">(עוד אין שם)</span></figure>
-                    <figure class="ep"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 18, אלכס קפ</span><span class="ep__title">איך מקפיצים עסק בתיווך עם AI</span></figure>
-                    <figure class="ep"><img src="https://i.ytimg.com/vi/P463I2IV9Xo/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 17, אהרון וחביבה איציקזון</span><span class="ep__title">איך ממשיכים מכאן?</span></figure>
-                    <figure class="ep"><img src="https://i.ytimg.com/vi/epNQhrsKjxI/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 16, ונסה סיימן</span><span class="ep__title">חמשת הכללים למשא ומתן</span></figure>
-                    <figure class="ep"><img src="https://i.ytimg.com/vi/fCG8ceGVDRo/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 15, דקלה ביבי</span><span class="ep__title">איך לעשות שינוי קריירה בגיל 40</span></figure>
-                    <figure class="ep"><img src="https://i.ytimg.com/vi/pp-nzLON8vY/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 14, אריק זאבי</span><span class="ep__title">מי נשאר ומי נשבר</span></figure>
-                    <figure class="ep"><img src="https://i.ytimg.com/vi/Sh0J8sIBfHs/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 13, איתי דוד</span><span class="ep__title">הסוד הכי שמור ברי/מקס</span></figure>
-                  </div>
-                  <div class="marquee__track" aria-hidden="true"></div>
-                </div>
+          <section class="w w--tonal stat" data-spot="entry" data-flash>
+            <span class="bline" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
+            <div class="stat__top">
+              <div>
+                <p class="text-sm font-medium n600">איך התוכנית עושה</p>
+                <p class="stat__num" aria-label="5,941"><span class="countup" data-to="5941">5,941</span></p>
               </div>
-              <div class="bento-card__body">
-                <svg class="i bento-card__icon"><use href="#lu-mic"/></svg>
-                <h3 class="bento-card__name">פרקים</h3>
-              </div>
+              <div class="gauge" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="gauge__track" cx="50" cy="50" r="40"/><circle class="gauge__value" cx="50" cy="50" r="40"/></svg><span class="gauge__label">21%</span></div>
             </div>
-          </div>
+            <h3 class="w__name">צפיות ביוטיוב</h3>
+            <p class="text-sm n700">כל פרק נצפה בממוצע 21% מאורכו</p>
+            <p class="text-xs n500" style="margin-top:4px">נכון ל-25.10.2026, 18 פרקים</p>
+          </section>
 
-          <div style="display:flex; flex-direction:column; gap:10px; padding-top:8px">
-            <h3 class="text-sm font-medium muted" style="padding: 0 4px">פעולות מהירות</h3>
-            <div class="p-actions">
-              <a class="btn btn--outline" href="#"><svg class="i"><use href="#lu-calendar-plus"/></svg>לתאם הקלטה</a>
-              <a class="btn btn--outline" href="#"><svg class="i"><use href="#lu-upload"/></svg>להעלות תמונה</a>
-              <a class="btn btn--outline" href="#"><svg class="i"><use href="#lu-pencil"/></svg>לבחור שם</a>
-              <a class="btn btn--outline" href="#"><svg class="i"><use href="#lu-share-2"/></svg>לשתף פרק</a>
+          <section class="w w--tonal quick" data-spot="entry" data-flash>
+            <span class="bline" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
+            <h3 class="text-sm font-medium n600">פעולות מהירות</h3>
+            <div class="tiles">
+              <a class="tile" href="#"><svg class="i"><use href="#lu-calendar-plus"/></svg>לתאם הקלטה</a>
+              <a class="tile" href="#"><svg class="i"><use href="#lu-upload"/></svg>להעלות תמונה</a>
+              <a class="tile" href="#"><svg class="i"><use href="#lu-pencil"/></svg>לבחור שם</a>
+              <a class="tile" href="#"><svg class="i"><use href="#lu-share-2"/></svg>לשתף פרק</a>
             </div>
-          </div>
+          </section>
         </div>
       </div>
-      <nav class="p-dock" aria-label="ניווט">
-        <div class="dock">
-          <a class="dock__item is-active" href="#" aria-current="page" aria-label="בית"><svg class="i"><use href="#lu-house"/></svg></a>
-          <a class="dock__item" href="#" aria-label="אסטרטגיה"><svg class="i"><use href="#lu-target"/></svg></a>
-          <a class="dock__item" href="#" aria-label="הפקה"><svg class="i"><use href="#lu-mic"/></svg><span class="badge-dot"></span></a>
-          <a class="dock__item" href="#" aria-label="הפצה"><svg class="i"><use href="#lu-send"/></svg></a>
-          <span class="dock__sep"></span>
-          <a class="dock__item" href="#" aria-label="הגדרות"><svg class="i"><use href="#lu-settings"/></svg></a>
-        </div>
+      <nav class="tabbar" aria-label="ניווט">
+        <a class="tab is-active" href="#" aria-current="page"><svg class="i"><use href="#lu-house"/></svg><span>בית</span></a>
+        <a class="tab" href="#"><svg class="i"><use href="#lu-target"/></svg><span>אסטרטגיה</span></a>
+        <a class="tab" href="#"><span class="tab__ic"><svg class="i"><use href="#lu-mic"/></svg><i class="tab__dot"></i></span><span>הפקה</span></a>
+        <a class="tab" href="#"><svg class="i"><use href="#lu-send"/></svg><span>הפצה</span></a>
+        <a class="tab" href="#"><svg class="i"><use href="#lu-settings"/></svg><span>הגדרות</span></a>
       </nav>
     </div>
   </div>
 </section>
+
+<div class="lab-notes">
+  <p><b>קו-המותג, תמיד.</b> 2px של <bdi>Prod Blue</bdi> אל <bdi>SaaS Blue</bdi> בראש כל ווידג'ט (כתום ב«חסר ממך»); אותו קו הוא פס-ההתקדמות בין העיגולים והקו מתחת ל«פרק 19». כל 4.2 שניות אור חולף על קו אחד בלבד (1.6 שניות), ובתור של הבמה הוא עובר גם על «פרק 19».</p>
+  <p><b>זרקור, רק כשמצביעים.</b> במחשב הוא עוקב אחרי העכבר על הבמה ועל כל ווידג'ט. בטלפון, בלי עכבר: הבהוב אחד לכל כרטיס כשהוא נכנס לתצוגה.</p>
+  <p><b>פעם אחת.</b> 5,941 מתגלגל כמונה (<bdi>CountUp</bdi> במצב <bdi>roll</bdi>, 2.2 שניות, בלי קפיצה) והטבעת של 21% מתמלאת, כשהם נכנסים לתצוגה. ב-<bdi>reduced-motion</bdi> הכול סטטי וסופי.</p>
+  <p><b>מקור.</b> SpotlightCard, ShinyText ו-CountUp של react-bits, משוחזרים ב-JS בלי React. גופן: Rag Sans.</p>
+</div>
 
 <section class="lab-stage">
   <div class="lab-label">מחשב <span dir="ltr">1280×800</span></div>
   <div class="device-desktop">
     <div class="device-desktop__bar"><i></i><i></i><i></i></div>
     <div class="screen mu is-desktop">
-      <div class="d-main">
-        <div class="scroll">
-          <div class="d-wrap">
-            <header class="d-head">
-              <img class="av" src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="">
-              <div>
-                <h1>הפיצוח</h1>
-                <p class="text-sm muted">גיל לי-רן</p>
-              </div>
-              <div class="d-head__end">
-                <a class="btn btn--outline btn--sm" href="#"><svg class="i"><use href="#lu-calendar-plus"/></svg>לתאם הקלטה</a>
-                <a class="btn btn--outline btn--sm" href="#"><svg class="i"><use href="#lu-upload"/></svg>להעלות תמונה</a>
-                <a class="btn btn--outline btn--sm" href="#"><svg class="i"><use href="#lu-pencil"/></svg>לבחור שם</a>
-                <a class="btn btn--outline btn--sm" href="#"><svg class="i"><use href="#lu-share-2"/></svg>לשתף פרק</a>
-                <img src="../brand/wedo-logotype-black.svg" alt="wedo" style="height:15px; margin-inline-start:16px">
-              </div>
-            </header>
+      <div class="d-shell">
+        <aside class="side">
+          <img class="side__logo" src="../brand/wedo-logotype-black.svg" alt="wedo">
+          <div class="side__show">
+            <img src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="">
+            <div><div class="text-sm font-semibold">הפיצוח</div><div class="text-xs muted">גיל לי-רן</div></div>
+          </div>
+          <nav aria-label="ניווט" style="display:flex; flex-direction:column; gap:2px">
+            <a class="side__item is-active" href="#" aria-current="page"><svg class="i"><use href="#lu-house"/></svg>בית</a>
+            <a class="side__item" href="#"><svg class="i"><use href="#lu-target"/></svg>אסטרטגיה</a>
+            <a class="side__item" href="#"><svg class="i"><use href="#lu-mic"/></svg>הפקה<span class="dot-orange"></span></a>
+            <a class="side__item" href="#"><svg class="i"><use href="#lu-send"/></svg>הפצה</a>
+          </nav>
+          <a class="side__item side__foot" href="#"><svg class="i"><use href="#lu-settings"/></svg>הגדרות</a>
+        </aside>
 
-            <div class="bento d-bento">
-              <div class="bento-card c-hero" style="padding:30px 32px 32px; justify-content:space-between">
-                <div class="dots dots--center"></div>
-                <div class="hero__stage hero__stage--center">
-                  <span class="pill blur-fade bf1"><span class="shiny text-sm"><svg class="i"><use href="#lu-calendar-days"/></svg>בעוד יומיים</span></span>
-                  <h2 class="grad-text blur-fade bf2" style="font-size:96px; line-height:1; font-weight:600; letter-spacing:-0.035em; padding:18px 0 10px">פרק 19</h2>
-                  <p class="font-semibold n700 tracking-tighter blur-fade bf3" style="font-size:30px; line-height:36px">עם אורלי אורן</p>
-                  <p class="text-lg muted blur-fade bf3" style="margin-top:2px">עולה ביום רביעי 28.10</p>
-                  <div class="hero__progress blur-fade bf4" style="margin-top:22px">
-                    <div class="segments" aria-label="3 מתוך 7"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
-                    <div style="display:flex; justify-content:space-between" class="text-sm"><span class="font-medium tnum">3 מתוך 7</span><span class="muted">עכשיו: עריכה, ממתין לעורך</span></div>
+        <div class="d-main">
+          <div class="scroll">
+            <div class="d-wrap">
+              <header class="d-head"><h1>בית</h1></header>
+              <div class="d-grid">
+                <section class="w w--raised stage span-2" data-spot="pointer" data-flash>
+                  <span class="pill"><svg class="i"><use href="#lu-calendar-days"/></svg>בעוד יומיים</span>
+                  <h2 class="ep-title"><span class="shiny">פרק 19</span></h2>
+                  <span class="mark" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
+                  <p class="ep-guest">עם אורלי אורן</p>
+                  <p class="ep-date">עולה ביום רביעי 28.10</p>
+                  <div class="axis-wrap">
+                    <ol class="axis" aria-label="3 מתוך 7">
+                      <li class="axis__step is-done s1">1</li><li class="axis__step is-done s2">2</li><li class="axis__step is-done s3">3</li><li class="axis__step is-now">4</li><li class="axis__step">5</li><li class="axis__step">6</li><li class="axis__step">7</li>
+                    </ol>
+                    <div class="axis-meta"><span class="font-medium tnum">3 מתוך 7</span><span class="muted">עכשיו: עריכה, ממתין לעורך</span></div>
                   </div>
-                </div>
-                <div class="todo-panel todo-panel--row blur-fade bf5">
-                  <div class="beam" style="--beam-size:180px"></div>
-                  <div class="todo-panel__head"><span class="dot-orange"></span><h3 class="text-lg font-semibold">חסר ממך</h3></div>
-                  <div class="todo-row">
-                    <div class="todo-cell">
-                      <span class="todo__ic todo__ic--orange"><svg class="i"><use href="#lu-pencil"/></svg></span>
-                      <div style="display:flex; align-items:center; gap:8px; margin-top:4px"><span class="text-sm font-medium">שם לפרק</span><span class="badge badge--orange">פתוח</span></div>
-                      <span class="text-xs muted">לפני העריכה</span>
-                      <a class="btn btn--default" href="#" style="margin-top:6px"><svg class="i"><use href="#lu-pencil"/></svg>לבחור שם</a>
-                    </div>
-                    <div class="todo-cell">
-                      <span class="todo__ic"><svg class="i"><use href="#lu-image"/></svg></span>
-                      <span class="text-sm font-medium" style="margin-top:4px">תמונת-מרואיין</span>
-                      <span class="text-xs muted">התקבלה ב-25.10, ממתינה לאישור</span>
-                    </div>
-                    <div class="todo-cell is-locked">
-                      <span class="todo__ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span>
-                      <span class="text-sm font-medium todo__title" style="margin-top:4px">בחירת-טיזרים</span>
-                      <span class="text-xs muted">אחרי העריכה</span>
-                    </div>
-                    <div class="todo-cell is-locked">
-                      <span class="todo__ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span>
-                      <span class="text-sm font-medium todo__title" style="margin-top:4px">אישור-לפרסום</span>
-                      <span class="text-xs muted">בהמשך</span>
-                    </div>
+                </section>
+
+                <section class="w w--raised todo-card" data-spot="pointer" data-flash>
+                  <span class="bline bline--orange" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
+                  <div class="todo-card__head"><span class="dot-orange"></span><h3 class="text-lg font-semibold">חסר ממך</h3></div>
+                  <div class="todo" style="flex-wrap:wrap">
+                    <span class="todo__ic todo__ic--orange"><svg class="i"><use href="#lu-pencil"/></svg></span>
+                    <div class="todo__main"><div style="display:flex; align-items:center; gap:8px"><span class="text-sm font-medium">שם לפרק</span><span class="badge badge--orange">פתוח</span></div><span class="text-xs muted">לפני העריכה</span></div>
+                    <a class="btn btn--default" href="#" style="width:100%; margin-top:4px"><svg class="i"><use href="#lu-pencil"/></svg>לבחור שם</a>
                   </div>
-                </div>
-              </div>
-
-              <div class="bento-card c-1">
-                <div class="bento-card__bg"><div class="cal" aria-hidden="true">
-                  <div class="cal__cap">אוקטובר 2026</div>
-                  <div class="cal__grid"><span class="wd">א׳</span><span class="wd">ב׳</span><span class="wd">ג׳</span><span class="wd">ד׳</span><span class="wd">ה׳</span><span class="wd">ו׳</span><span class="wd">ש׳</span><span class="out">.</span><span class="out">.</span><span class="out">.</span><span class="out">.</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span class="sel">29</span><span>30</span><span>31</span></div>
-                </div></div>
-                <div class="bento-card__body">
-                  <h3 class="bento-card__name">ההקלטה הבאה</h3>
-                  <p class="text-base font-medium" style="color:var(--foreground)">חמישי 29.10, 11:00</p>
-                  <p class="text-sm n400">11:00 עד 13:00, אולפן רימקס</p>
-                  <p class="text-sm n400">עם נועה בוקרה ורלי זדרב</p>
-                  <p class="text-sm n400">מפיק: יהלי</p>
-                  <div style="display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:8px" class="text-sm">
-                    <a class="btn btn--link" href="#">לשנות מועד</a><a class="btn btn--link" href="#">להוסיף פרטי-אורח</a><a class="btn btn--link" href="#">לתאם הקלטה נוספת</a>
+                  <div class="todo">
+                    <span class="todo__ic"><svg class="i"><use href="#lu-image"/></svg></span>
+                    <div class="todo__main"><span class="text-sm font-medium">תמונת-מרואיין</span><span class="text-xs muted">התקבלה ב-25.10, ממתינה לאישור</span></div>
                   </div>
-                </div>
-              </div>
+                  <div class="todo is-locked">
+                    <span class="todo__ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span>
+                    <div class="todo__main"><span class="text-sm font-medium todo__title">בחירת-טיזרים</span><span class="text-xs muted">אחרי העריכה</span></div>
+                  </div>
+                  <div class="todo is-locked">
+                    <span class="todo__ic" aria-label="נעול"><svg class="i"><use href="#lu-lock"/></svg></span>
+                    <div class="todo__main"><span class="text-sm font-medium todo__title">אישור-לפרסום</span><span class="text-xs muted">בהמשך</span></div>
+                  </div>
+                </section>
 
-              <div class="bento-card c-1">
-                <div class="bento-card__bg" style="display:flex; justify-content:flex-end; padding:24px">
-                  <div class="gauge" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="gauge__track" cx="50" cy="50" r="40"/><circle class="gauge__value" cx="50" cy="50" r="40"/></svg><span class="gauge__label">21%</span></div>
-                </div>
-                <div class="bento-card__body">
-                  <p class="tnum" style="font-size:60px; line-height:1; font-weight:500; letter-spacing:0.02em; color:#000"><span class="ticker" data-value="5941">5,941</span></p>
-                  <h3 class="bento-card__name" style="margin-top:6px">צפיות ביוטיוב</h3>
-                  <p class="text-sm n700">כל פרק נצפה בממוצע 21% מאורכו</p>
-                  <p class="text-xs n400" style="margin-top:4px">נכון ל-25.10.2026, 18 פרקים</p>
-                </div>
-              </div>
+                <section class="w w--tonal w--col rec" data-spot="pointer" data-flash>
+                  <span class="bline" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
+                  <div class="w__bg"><div class="cal" aria-hidden="true">
+                    <div class="cal__cap">אוקטובר 2026</div>
+                    <div class="cal__grid"><span class="wd">א׳</span><span class="wd">ב׳</span><span class="wd">ג׳</span><span class="wd">ד׳</span><span class="wd">ה׳</span><span class="wd">ו׳</span><span class="wd">ש׳</span><span class="out">.</span><span class="out">.</span><span class="out">.</span><span class="out">.</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span class="sel">29</span><span>30</span><span>31</span></div>
+                  </div></div>
+                  <div class="w__body">
+                    <h3 class="w__name">ההקלטה הבאה</h3>
+                    <p class="text-base font-medium">חמישי 29.10, 11:00</p>
+                    <p class="text-sm n500">11:00 עד 13:00, אולפן רימקס</p>
+                    <p class="text-sm n500">עם נועה בוקרה ורלי זדרב</p>
+                    <p class="text-sm n500">מפיק: יהלי</p>
+                    <div class="w__links"><a class="btn btn--link" href="#">לשנות מועד</a><a class="btn btn--link" href="#">להוסיף פרטי-אורח</a><a class="btn btn--link" href="#">לתאם הקלטה נוספת</a></div>
+                  </div>
+                </section>
 
-              <div class="bento-card c-1">
-                <div class="bento-card__bg"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt="" style="width:100%; height:64%; object-fit:cover; -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 45%); mask-image: linear-gradient(to top, transparent 0%, #000 45%)"></div>
-                <div class="bento-card__body">
-                  <p class="text-xs muted">עלה לאחרונה</p>
-                  <h3 class="bento-card__name" style="text-wrap:balance">איך מקפיצים עסק בתיווך עם AI</h3>
-                  <p class="text-sm n400">פרק 18 עם אלכס קפ, עלה ב-14.10</p>
-                  <div style="margin-top:8px"><a class="btn btn--outline btn--sm" href="#"><svg class="i"><use href="#lu-share-2"/></svg>לשתף</a></div>
-                </div>
-              </div>
+                <section class="w w--tonal w--col latest" data-spot="pointer" data-flash>
+                  <span class="bline" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
+                  <div class="w__bg"><img class="latest__img" src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""></div>
+                  <div class="w__body">
+                    <p class="text-xs muted">עלה לאחרונה</p>
+                    <h3 class="w__name" style="text-wrap:balance">איך מקפיצים עסק בתיווך עם AI</h3>
+                    <p class="text-sm n500">פרק 18 עם אלכס קפ, עלה ב-14.10</p>
+                    <div style="margin-top:8px"><a class="btn btn--outline btn--sm" href="#"><svg class="i"><use href="#lu-share-2"/></svg>לשתף</a></div>
+                  </div>
+                </section>
 
-              <div class="bento-card c-2">
-                <div class="bento-card__bg" style="padding-top:24px">
-                  <div class="edge-fade edge-fade--start" style="width:14%"></div><div class="edge-fade edge-fade--end" style="width:14%"></div>
-                  <div class="marquee">
-                    <div class="marquee__track">
-                      <figure class="ep"><span class="ep__ph"></span><span class="text-xs muted">פרק 19, אורלי אורן, בעריכה</span><span class="ep__title n400">(עוד אין שם)</span></figure>
-                      <figure class="ep"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 18, אלכס קפ, עלה ב-14.10</span><span class="ep__title">איך מקפיצים עסק בתיווך עם AI</span></figure>
-                      <figure class="ep"><img src="https://i.ytimg.com/vi/P463I2IV9Xo/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 17, אהרון וחביבה איציקזון, עלה ב-7.10</span><span class="ep__title">איך ממשיכים מכאן?</span></figure>
-                      <figure class="ep"><img src="https://i.ytimg.com/vi/epNQhrsKjxI/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 16, ונסה סיימן, עלה ב-30.9</span><span class="ep__title">חמשת הכללים למשא ומתן</span></figure>
-                      <figure class="ep"><img src="https://i.ytimg.com/vi/fCG8ceGVDRo/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 15, דקלה ביבי, עלה ב-23.9</span><span class="ep__title">איך לעשות שינוי קריירה בגיל 40</span></figure>
-                      <figure class="ep"><img src="https://i.ytimg.com/vi/pp-nzLON8vY/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 14, אריק זאבי, עלה ב-16.9</span><span class="ep__title">מי נשאר ומי נשבר</span></figure>
-                      <figure class="ep"><img src="https://i.ytimg.com/vi/Sh0J8sIBfHs/mqdefault.jpg" alt=""><span class="text-xs muted">פרק 13, איתי דוד, עלה ב-9.9</span><span class="ep__title">הסוד הכי שמור ברי/מקס</span></figure>
+                <div class="d-stack">
+                  <section class="w w--tonal stat" data-spot="pointer" data-flash>
+                    <span class="bline" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
+                    <div class="stat__top">
+                      <div>
+                        <p class="text-sm font-medium n600">איך התוכנית עושה</p>
+                        <p class="stat__num" aria-label="5,941"><span class="countup" data-to="5941">5,941</span></p>
+                      </div>
+                      <div class="gauge" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="gauge__track" cx="50" cy="50" r="40"/><circle class="gauge__value" cx="50" cy="50" r="40"/></svg><span class="gauge__label">21%</span></div>
                     </div>
-                    <div class="marquee__track" aria-hidden="true"></div>
+                    <h3 class="w__name">צפיות ביוטיוב</h3>
+                    <p class="text-sm n700">כל פרק נצפה בממוצע 21% מאורכו</p>
+                    <p class="text-xs n500" style="margin-top:4px">נכון ל-25.10.2026, 18 פרקים</p>
+                  </section>
+                  <section class="w w--tonal quick" data-spot="pointer" data-flash>
+                    <span class="bline" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
+                    <h3 class="text-sm font-medium n600">פעולות מהירות</h3>
+                    <div class="tiles">
+                      <a class="tile" href="#"><svg class="i"><use href="#lu-calendar-plus"/></svg>לתאם הקלטה</a>
+                      <a class="tile" href="#"><svg class="i"><use href="#lu-upload"/></svg>להעלות תמונה</a>
+                      <a class="tile" href="#"><svg class="i"><use href="#lu-pencil"/></svg>לבחור שם</a>
+                      <a class="tile" href="#"><svg class="i"><use href="#lu-share-2"/></svg>לשתף פרק</a>
+                    </div>
+                  </section>
+                </div>
+
+                <section class="w w--tonal eps span-3" data-spot="pointer" data-flash>
+                  <span class="bline" aria-hidden="true"><span class="flash__glow"></span><span class="flash__band"></span></span>
+                  <h3 class="w__name">פרקים</h3>
+                  <div class="eps__grid" role="table" aria-label="פרקים">
+                    <div class="eps__row eps__row--head" role="row"><span role="columnheader">פרק</span><span role="columnheader">אורח</span><span role="columnheader">כותרת</span><span role="columnheader">מצב</span><span role="columnheader">תמונה</span></div>
+                    <div class="eps__row" role="row"><span role="cell" class="tnum font-semibold">19</span><span role="cell">אורלי אורן</span><span role="cell" class="n500">(עוד אין שם)</span><span role="cell"><span class="badge badge--live">בעריכה</span></span><span role="cell" class="eps__th eps__th--empty"><svg class="i"><use href="#lu-image"/></svg></span></div>
+                    <div class="eps__row" role="row"><span role="cell" class="tnum font-semibold">18</span><span role="cell">אלכס קפ</span><span role="cell">איך מקפיצים עסק בתיווך עם AI</span><span role="cell" class="n500">עלה ב-14.10</span><span role="cell" class="eps__th"><img src="https://i.ytimg.com/vi/axJW-rqFAbM/mqdefault.jpg" alt=""></span></div>
+                    <div class="eps__row" role="row"><span role="cell" class="tnum font-semibold">17</span><span role="cell">אהרון וחביבה איציקזון</span><span role="cell">איך ממשיכים מכאן?</span><span role="cell" class="n500">עלה ב-7.10</span><span role="cell" class="eps__th"><img src="https://i.ytimg.com/vi/P463I2IV9Xo/mqdefault.jpg" alt=""></span></div>
+                    <div class="eps__row" role="row"><span role="cell" class="tnum font-semibold">16</span><span role="cell">ונסה סיימן</span><span role="cell">חמשת הכללים למשא ומתן</span><span role="cell" class="n500">עלה ב-30.9</span><span role="cell" class="eps__th"><img src="https://i.ytimg.com/vi/epNQhrsKjxI/mqdefault.jpg" alt=""></span></div>
+                    <div class="eps__row" role="row"><span role="cell" class="tnum font-semibold">15</span><span role="cell">דקלה ביבי</span><span role="cell">איך לעשות שינוי קריירה בגיל 40</span><span role="cell" class="n500">עלה ב-23.9</span><span role="cell" class="eps__th"><img src="https://i.ytimg.com/vi/fCG8ceGVDRo/mqdefault.jpg" alt=""></span></div>
+                    <div class="eps__row" role="row"><span role="cell" class="tnum font-semibold">14</span><span role="cell">אריק זאבי</span><span role="cell">מי נשאר ומי נשבר</span><span role="cell" class="n500">עלה ב-16.9</span><span role="cell" class="eps__th"><img src="https://i.ytimg.com/vi/pp-nzLON8vY/mqdefault.jpg" alt=""></span></div>
+                    <div class="eps__row" role="row"><span role="cell" class="tnum font-semibold">13</span><span role="cell">איתי דוד</span><span role="cell">הסוד הכי שמור ברי/מקס</span><span role="cell" class="n500">עלה ב-9.9</span><span role="cell" class="eps__th"><img src="https://i.ytimg.com/vi/Sh0J8sIBfHs/mqdefault.jpg" alt=""></span></div>
                   </div>
-                </div>
-                <div class="bento-card__body">
-                  <svg class="i bento-card__icon"><use href="#lu-mic"/></svg>
-                  <h3 class="bento-card__name">פרקים</h3>
-                </div>
+                </section>
               </div>
             </div>
           </div>
         </div>
-        <nav class="d-dock" aria-label="ניווט">
-          <div class="dock">
-            <img class="dock__avatar" src="https://image-cdn-fa.spotifycdn.com/image/ab6772ab000015be38e442db43fe5a29806369e7" alt="הפיצוח">
-            <span class="dock__sep"></span>
-            <a class="dock__item is-active" href="#" aria-current="page"><svg class="i"><use href="#lu-house"/></svg><span class="dock__tip">בית</span></a>
-            <a class="dock__item" href="#"><svg class="i"><use href="#lu-target"/></svg><span class="dock__tip">אסטרטגיה</span></a>
-            <a class="dock__item" href="#"><svg class="i"><use href="#lu-mic"/></svg><span class="badge-dot"></span><span class="dock__tip">הפקה</span></a>
-            <a class="dock__item" href="#"><svg class="i"><use href="#lu-send"/></svg><span class="dock__tip">הפצה</span></a>
-            <span class="dock__sep"></span>
-            <a class="dock__item" href="#"><svg class="i"><use href="#lu-settings"/></svg><span class="dock__tip">הגדרות</span></a>
-          </div>
-        </nav>
       </div>
     </div>
   </div>
@@ -535,37 +529,336 @@ html.full .d-main { height: auto; }
 
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><symbol id="lu-calendar-days" viewBox="0 0 24 24"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /> <path d="M8 14h.01" /> <path d="M12 14h.01" /> <path d="M16 14h.01" /> <path d="M8 18h.01" /> <path d="M12 18h.01" /> <path d="M16 18h.01" /></symbol><symbol id="lu-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></symbol><symbol id="lu-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /> <circle cx="9" cy="9" r="2" /> <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></symbol><symbol id="lu-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /> <path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol><symbol id="lu-share-2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3" /> <circle cx="6" cy="12" r="3" /> <circle cx="18" cy="19" r="3" /> <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /> <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" /></symbol><symbol id="lu-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" /> <path d="M19 10v2a7 7 0 0 1-14 0v-2" /> <line x1="12" x2="12" y1="19" y2="22" /></symbol><symbol id="lu-calendar-plus" viewBox="0 0 24 24"><path d="M8 2v4" /> <path d="M16 2v4" /> <path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8" /> <path d="M3 10h18" /> <path d="M16 19h6" /> <path d="M19 16v6" /></symbol><symbol id="lu-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /> <polyline points="17 8 12 3 7 8" /> <line x1="12" x2="12" y1="3" y2="15" /></symbol><symbol id="lu-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /> <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></symbol><symbol id="lu-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="6" /> <circle cx="12" cy="12" r="2" /></symbol><symbol id="lu-send" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" /> <path d="m21.854 2.147-10.94 10.939" /></symbol><symbol id="lu-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /> <circle cx="12" cy="12" r="3" /></symbol></svg>
 <script>
-  if (new URLSearchParams(location.search).has('full')) document.documentElement.classList.add('full');
+(function () {
+  'use strict';
+  var params = new URLSearchParams(location.search);
+  if (params.has('full')) document.documentElement.classList.add('full');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasIO = 'IntersectionObserver' in window;
+  var BRAND_FROM = '#0131ff', BRAND_TO = '#01b0ff', ORANGE = '#ff9500';
+  function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+  function hex(c) { return [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16), 1]; }
+  function each(sel, fn) { Array.prototype.forEach.call(document.querySelectorAll(sel), fn); }
+  // ShinyText EASINGS.smooth
+  function smooth(t) { return 0.5 - Math.cos(Math.PI * t) / 2; }
 
-  // marquee.tsx: repeat the children so the loop is seamless
-  document.querySelectorAll('.marquee').forEach(function (m) {
-    var tracks = m.querySelectorAll('.marquee__track');
-    for (var i = 1; i < tracks.length; i++) tracks[i].innerHTML = tracks[0].innerHTML;
-  });
-
-  // number-ticker.tsx: useSpring({ damping: 60, stiffness: 100 }), once, when in view
-  (function () {
-    var fmt = new Intl.NumberFormat('en-US');
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function run(el) {
-      var target = Number(el.dataset.value), x = 0, v = 0, last = null;
-      el.textContent = '0';
-      function step(t) {
-        if (last === null) last = t;
-        var dt = Math.min(0.05, (t - last) / 1000); last = t;
-        for (var i = 0; i < 8; i++) { var h = dt / 8; var a = -100 * (x - target) - 60 * v; v += a * h; x += v * h; }
-        if (Math.abs(target - x) < 0.5 && Math.abs(v) < 0.5) { el.textContent = fmt.format(target); return; }
-        el.textContent = fmt.format(Math.round(x));
-        requestAnimationFrame(step);
+  /* ---------- ShinyText: react-bits src/content/TextAnimations/ShinyText/ShinyText.jsx ----------
+     Same gradient builder (FALLOFF stops, gamma-2.2 blend, shineWidth / softness / angle, direction "left"),
+     driven by one sweep at a time. Text mode paints the glyphs; overlay mode paints only the band (its glow layer). */
+  var FALLOFF = [0, 0.2, 0.4, 0.6, 0.8, 1];
+  function blend(from, to, amount) {
+    function channel(a, b) { return Math.round(Math.pow(Math.pow(a / 255, 2.2) * (1 - amount) + Math.pow(b / 255, 2.2) * amount, 1 / 2.2) * 255); }
+    var alpha = from[3] * (1 - amount) + to[3] * amount;
+    if (alpha <= 0) return 'rgba(0, 0, 0, 0)';
+    function weigh(a, b) { return (a * from[3] * (1 - amount) + b * to[3] * amount) / alpha; }
+    var same = from[3] === to[3];
+    var r = same ? channel(from[0], to[0]) : Math.round(weigh(from[0], to[0]));
+    var g = same ? channel(from[1], to[1]) : Math.round(weigh(from[1], to[1]));
+    var b = same ? channel(from[2], to[2]) : Math.round(weigh(from[2], to[2]));
+    return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + Math.round(alpha * 1000) / 1000 + ')';
+  }
+  function shineGradient(pos, fill, shine, s) {
+    var half = s.shineWidth / 2, core = half * (1 - s.softness), fade = half - core, stops = [];
+    for (var band = 0; band < s.bands; band++) {
+      var center = pos - s.sign * band * s.shineWidth * 1.3, strength = 1 - band * 0.28;
+      for (var side = -1; side <= 1; side += 2) {
+        for (var k = 0; k < FALLOFF.length; k++) {
+          var f = FALLOFF[k];
+          stops.push([center + side * (core + fade * (1 - f)), f * f * (3 - 2 * f) * strength]);
+        }
       }
-      requestAnimationFrame(step);
     }
-    if (reduce || !('IntersectionObserver' in window)) return;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) { io.unobserve(e.target); run(e.target); } });
+    stops.sort(function (a, b) { return a[0] - b[0]; });
+    var list = stops.map(function (st) { return blend(fill, shine, st[1]) + ' ' + st[0].toFixed(2) + '%'; });
+    var rim = blend(fill, shine, 0);
+    return 'linear-gradient(' + s.angle + 'deg, ' + rim + ' 0%, ' + list.join(', ') + ', ' + rim + ' 100%)';
+  }
+  function Shine(el, o) {
+    var s = { angle: o.angle, shineWidth: o.shineWidth, softness: 0.8, bands: 1, sign: -1 };
+    var shine = hex(o.shine), clear = [shine[0], shine[1], shine[2], 0];
+    var base = o.color ? hex(o.color) : clear;
+    var glow = o.glow || null, glowShine = glow ? hex(o.glowShine) : null;
+    var glowClear = glow ? [glowShine[0], glowShine[1], glowShine[2], 0] : null;
+    var extent = s.shineWidth / 2 + (s.bands - 1) * s.shineWidth * 1.3 + 2;
+    var raf = 0;
+    function rest() {
+      el.style.backgroundImage = o.color ? 'linear-gradient(' + o.color + ', ' + o.color + ')' : 'none';
+      if (glow) glow.style.backgroundImage = 'none';
+    }
+    rest();
+    this.sweep = function () {
+      if (raf) return;
+      var from = 100 + extent, to = -extent, dur = o.speed * 1000, t0 = performance.now();
+      function step(now) {
+        var t = clamp((now - t0) / dur, 0, 1), pos = from + (to - from) * smooth(t);
+        el.style.backgroundImage = shineGradient(pos, base, shine, s);
+        if (glow) glow.style.backgroundImage = shineGradient(pos, glowClear, glowShine, s);
+        if (t < 1) raf = requestAnimationFrame(step); else { raf = 0; rest(); }
+      }
+      raf = requestAnimationFrame(step);
+    };
+  }
+
+  /* ---------- SpotlightCard: react-bits src/content/Components/SpotlightCard/SpotlightCard.jsx ----------
+     theme "light" (fill 0.28, edge 0.7), shape "circle", spotlightSize 240, softness 0.7, borderGlow 0.6,
+     proximity 80, smoothing 0.3, flare on press; light color = the middle of the brand gradient. Same falloff() and tick() physics. */
+  function falloff(color, softness) {
+    var soft = clamp(softness, 0, 1), core = Math.pow(1 - soft, 1.5) * 0.85;
+    function stop(alpha, at) { return 'color-mix(in srgb, ' + color + ' ' + (alpha * 100).toFixed(2) + '%, transparent) ' + (at * 100).toFixed(2) + '%'; }
+    var list = [stop(1, 0)];
+    for (var i = 0; i <= 14; i++) {
+      var t = core + ((1 - core) * i) / 14, g = (t - core) / (1 - core);
+      var sm = 1 - g * g * (3 - 2 * g), glow = Math.exp(-4.6 * g * g) * (1 - Math.pow(g, 6));
+      list.push(stop(sm + (glow - sm) * soft, t));
+    }
+    return list.join(', ');
+  }
+  var SPOT_LIGHT = '#0171ff';
+  var SPOT = { fill: falloff(SPOT_LIGHT, 0.7), edge: falloff(SPOT_LIGHT, 1), size: 240, intensity: 0.5 * 0.28, borderGlow: 0.6 * 0.7, proximity: 80, smoothing: 0.3 };
+  var pointer = { x: 0, y: 0, active: false };
+  function Spot(root, follows) {
+    function layer(cls) { var el = document.createElement('span'); el.className = cls; el.setAttribute('aria-hidden', 'true'); return el; }
+    var light = layer('spot__light'), edge = layer('spot__edge');
+    root.insertBefore(light, root.firstChild);
+    root.appendChild(layer('spot__border'));
+    root.appendChild(edge);
+    var state = { x: 0, y: 0, presence: 0, flare: 0, pressed: false };
+    var drawn = { light: '', edge: '' }, raf = 0, last = 0, script = null;
+    function radial(size, stops) { return 'radial-gradient(circle ' + size.toFixed(1) + 'px at ' + state.x.toFixed(1) + 'px ' + state.y.toFixed(1) + 'px, ' + stops + ')'; }
+    function paint() {
+      var size = SPOT.size * (1 + 0.2 * state.flare), boost = 1 + 0.7 * state.flare;
+      var fill = radial(size, SPOT.fill), rim = radial(size * 0.6, SPOT.edge);
+      if (fill !== drawn.light) { drawn.light = fill; light.style.background = fill; }
+      if (rim !== drawn.edge) { drawn.edge = rim; edge.style.background = rim; }
+      light.style.opacity = String(Math.min(1, state.presence * SPOT.intensity * boost));
+      edge.style.opacity = String(Math.min(1, state.presence * SPOT.borderGlow * boost));
+    }
+    function tick(now) {
+      raf = 0;
+      var dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000));
+      last = now;
+      var rect = root.getBoundingClientRect(), tx = state.x, ty = state.y, target = 0;
+      if (script) {
+        var at = script(now, rect);
+        tx = at.x; ty = at.y; target = at.presence;
+        if (at.done) script = null;
+      } else if (follows && pointer.active) {
+        tx = pointer.x - rect.left; ty = pointer.y - rect.top;
+        var gap = Math.hypot(Math.max(0, -tx, tx - rect.width), Math.max(0, -ty, ty - rect.height));
+        if (gap === 0) target = 1;
+        else target = Math.pow(Math.max(0, 1 - gap / SPOT.proximity), 2);
+      }
+      if (state.presence < 0.02 && target > 0) { state.x = tx; state.y = ty; }
+      var follow = reduce ? 1 : 1 - Math.exp(-dt / (0.015 + SPOT.smoothing * 0.22));
+      state.x += (tx - state.x) * follow;
+      state.y += (ty - state.y) * follow;
+      var fade = reduce ? 1 : 1 - Math.exp(-dt / (target > state.presence ? 0.1 : 0.32));
+      state.presence += (target - state.presence) * fade;
+      if (Math.abs(target - state.presence) < 0.002) state.presence = target;
+      var press = state.pressed && !reduce ? 1 : 0;
+      state.flare += (press - state.flare) * (1 - Math.exp(-dt / (press ? 0.05 : 0.28)));
+      if (Math.abs(press - state.flare) < 0.002) state.flare = press;
+      paint();
+      var moving = Math.abs(tx - state.x) > 0.1 || Math.abs(ty - state.y) > 0.1;
+      if (moving || state.presence !== target || state.flare !== press || script) raf = requestAnimationFrame(tick);
+    }
+    function wake() { if (raf) return; last = performance.now(); raf = requestAnimationFrame(tick); }
+    this.wake = wake;
+    this.press = function (on) { state.pressed = on; wake(); };
+    // Phone (no pointer): one entry flash. Starts swollen like a press flare, drifts across, lets go.
+    this.flash = function () {
+      var t0 = performance.now();
+      state.flare = 1;
+      script = function (now, rect) {
+        var t = (now - t0) / 1000, e = smooth(clamp(t / 0.9, 0, 1));
+        return { x: rect.width * (0.84 - 0.6 * e), y: rect.height * (0.14 + 0.4 * e), presence: t < 0.55 ? 1 : 0, done: t > 2 };
+      };
+      wake();
+    };
+  }
+  var followers = [];
+  each('[data-spot]', function (el) {
+    var follows = el.dataset.spot === 'pointer';
+    var spot = new Spot(el, follows);
+    el._spot = spot;
+    if (follows) {
+      followers.push(spot);
+      el.addEventListener('pointerdown', function (e) { pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true; spot.press(true); });
+    }
+  });
+  function wakeAll() { for (var i = 0; i < followers.length; i++) followers[i].wake(); }
+  function release(e) { if (e.pointerType !== 'mouse') pointer.active = false; for (var i = 0; i < followers.length; i++) followers[i].press(false); }
+  window.addEventListener('pointermove', function (e) { pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true; wakeAll(); });
+  window.addEventListener('pointerup', release);
+  window.addEventListener('pointercancel', release);
+  document.addEventListener('pointerout', function (e) { if (e.relatedTarget) return; pointer.active = false; wakeAll(); });
+  window.addEventListener('scroll', wakeAll, { capture: true, passive: true });
+  if (!reduce && hasIO) {
+    var entryIO = new IntersectionObserver(function (entries) {
+      var n = 0;
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        entryIO.unobserve(e.target);
+        setTimeout(e.target._spot.flash, 140 + 150 * n++);
+      });
+    }, { threshold: 0.35 });
+    each('[data-spot="entry"]', function (el) { entryIO.observe(el); });
+  }
+
+  /* ---------- The brand-line light: one line at a time, every 4.2 s, only lines on screen ---------- */
+  var stations = Array.prototype.map.call(document.querySelectorAll('[data-flash]'), function (st) {
+    var targets = [], title = st.querySelector('.shiny');
+    if (title) targets.push(new Shine(title, { color: BRAND_FROM, shine: BRAND_TO, speed: 2, angle: 120, shineWidth: 40 }));
+    Array.prototype.forEach.call(st.querySelectorAll('.bline, .mark'), function (line) {
+      var orange = line.classList.contains('bline--orange');
+      targets.push(new Shine(line.querySelector('.flash__band'), {
+        shine: orange ? '#fff2dc' : '#e8f8ff', glow: line.querySelector('.flash__glow'), glowShine: orange ? ORANGE : BRAND_TO,
+        speed: title ? 2 : 1.6, angle: 90, shineWidth: 36
+      }));
     });
-    document.querySelectorAll('.ticker').forEach(function (el) { io.observe(el); });
-  })();
+    return { targets: targets, probe: title || st.querySelector('.bline'), visible: false };
+  });
+  if (!reduce && hasIO && stations.length) {
+    var seen = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { e.target._station.visible = e.isIntersecting; });
+    });
+    stations.forEach(function (st) { st.probe._station = st; seen.observe(st.probe); });
+    var cursor = -1;
+    var next = function () {
+      for (var k = 1; k <= stations.length; k++) {
+        var i = (cursor + k) % stations.length;
+        if (stations[i].visible) { cursor = i; stations[i].targets.forEach(function (t) { t.sweep(); }); break; }
+      }
+      setTimeout(next, 4200);
+    };
+    setTimeout(next, 1700);
+  }
+
+  /* ---------- CountUp mode="roll": react-bits src/content/TextAnimations/CountUp/CountUp.jsx ----------
+     buildRoll() columns and turns, CELL 1.2em, STAGGER 0.07, easeOut cubicBezier(0.33, 1, 0.68, 1), vertical motion blur.
+     Rag Sans has no tabular figures, so each column rolls at the widest digit and closes to its final digit's width. */
+  function cubicBezier(p1x, p1y, p2x, p2y) {
+    var cx = 3 * p1x, bx = 3 * (p2x - p1x) - cx, ax = 1 - cx - bx;
+    var cy = 3 * p1y, by = 3 * (p2y - p1y) - cy, ay = 1 - cy - by;
+    function sx(t) { return ((ax * t + bx) * t + cx) * t; }
+    function sy(t) { return ((ay * t + by) * t + cy) * t; }
+    function dsx(t) { return (3 * ax * t + 2 * bx) * t + cx; }
+    return function (x) {
+      if (x <= 0) return 0;
+      if (x >= 1) return 1;
+      var t = x;
+      for (var i = 0; i < 8; i++) {
+        var err = sx(t) - x, d = dsx(t);
+        if (Math.abs(err) < 1e-6 || Math.abs(d) < 1e-6) break;
+        t -= err / d;
+      }
+      if (Math.abs(sx(t) - x) > 1e-4) {
+        var lo = 0, hi = 1; t = x;
+        while (hi - lo > 1e-6) { if (sx(t) < x) lo = t; else hi = t; t = (lo + hi) / 2; }
+      }
+      return sy(t);
+    };
+  }
+  var easeOut = cubicBezier(0.33, 1, 0.68, 1);
+  var CELL = 1.2, STAGGER = 0.07, rollId = 0;
+  function mod10(v) { return ((v % 10) + 10) % 10; }
+  function smoothstep(e0, e1, v) { var t = clamp((v - e0) / (e1 - e0), 0, 1); return t * t * (3 - 2 * t); }
+  function makeRoll(el) {
+    var to = Number(el.dataset.to), from = 0, total = 2.2, sep = ',';
+    var a = String(from), b = String(to), length = Math.max(a.length, b.length), slots = [], columns = [];
+    function digitAt(str, place) { var i = str.length - 1 - place; return i >= 0 ? Number(str[i]) : null; }
+    for (var place = length - 1; place >= 0; place--) {
+      var start = digitAt(a, place), end = digitAt(b, place);
+      var col = { place: place, from: start === null ? 0 : start, to: end === null ? 0 : end, enter: start === null, index: columns.length };
+      slots.push(col); columns.push(col);
+      if (place > 0 && place % 3 === 0) slots.push({ char: sep, follow: col.index });
+    }
+    columns.forEach(function (c, i) {
+      var rank = columns.length - 1 - i;
+      var turns = Math.min(Math.floor(Math.abs(to - from) / Math.pow(10, c.place + 1)), Math.max(0, 3 - rank));
+      c.delta = mod10(c.to - c.from) + 10 * turns;
+    });
+    var probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute; visibility:hidden; white-space:pre';
+    el.appendChild(probe);
+    function measure(ch) { probe.textContent = ch; return probe.getBoundingClientRect().width; }
+    var digitW = []; for (var d = 0; d < 10; d++) digitW.push(measure(String(d)));
+    var maxW = Math.max.apply(null, digitW), sepW = measure(sep);
+    el.removeChild(probe);
+    var cell = CELL * (parseFloat(getComputedStyle(el).fontSize) || 16), id = 'cu' + (++rollId);
+    var NS = 'http://www.w3.org/2000/svg';
+    var roll = document.createElement('span'); roll.className = 'roll'; roll.setAttribute('aria-hidden', 'true');
+    var svg = document.createElementNS(NS, 'svg'), defs = document.createElementNS(NS, 'defs');
+    svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.setAttribute('aria-hidden', 'true'); svg.style.position = 'absolute';
+    svg.appendChild(defs);
+    slots.forEach(function (slot) {
+      var box = document.createElement('span'); box.className = 'roll__slot'; slot.box = box;
+      if (slot.char !== undefined) { box.textContent = slot.char; roll.appendChild(box); return; }
+      var strip = document.createElement('span'); strip.className = 'roll__strip';
+      slot.cells = [];
+      for (var off = -1; off <= 2; off++) { var c = document.createElement('span'); c.textContent = String(mod10(slot.from + off)); strip.appendChild(c); slot.cells.push(c.firstChild); }
+      box.appendChild(strip); roll.appendChild(box);
+      slot.strip = strip; slot.base = slot.from; slot.sigma = 0; slot.finalW = digitW[slot.to];
+      var filter = document.createElementNS(NS, 'filter');
+      filter.setAttribute('id', id + '-' + slot.index); filter.setAttribute('x', '-20%'); filter.setAttribute('y', '-50%');
+      filter.setAttribute('width', '140%'); filter.setAttribute('height', '200%'); filter.setAttribute('color-interpolation-filters', 'sRGB');
+      var blur = document.createElementNS(NS, 'feGaussianBlur'); blur.setAttribute('stdDeviation', '0 0');
+      filter.appendChild(blur); defs.appendChild(filter); slot.blur = blur;
+    });
+    var stagger = columns.length > 1 ? Math.min(STAGGER, (total * 0.4) / (columns.length - 1)) : 0;
+    var span = Math.max(0.001, total - stagger * (columns.length - 1));
+    function render(t) {
+      columns.forEach(function (c) {
+        var u = clamp((t - c.index * stagger) / span, 0, 1), pos = c.from + c.delta * easeOut(u), base = Math.floor(pos);
+        if (base !== c.base) { c.base = base; c.cells.forEach(function (node, k) { node.nodeValue = String(mod10(base + k - 1)); }); }
+        c.strip.style.transform = 'translateY(' + (-(1 + pos - base) * CELL).toFixed(4) + 'em)';
+        var u0 = Math.max(0, u - 0.004), u1 = Math.min(1, u + 0.004);
+        var speed = u1 > u0 ? (Math.abs(c.delta) * Math.abs(easeOut(u1) - easeOut(u0))) / (u1 - u0) / span : 0;
+        var sigma = u > 0 && u < 1 ? Math.min(cell * 0.05, (speed * cell) / 600) : 0;
+        if (Math.abs(sigma - c.sigma) > 0.05 || (sigma === 0 && c.sigma !== 0)) {
+          c.sigma = sigma;
+          if (sigma > 0.2) { c.blur.setAttribute('stdDeviation', '0 ' + sigma.toFixed(2)); c.strip.style.filter = 'url(#' + id + '-' + c.index + ')'; }
+          else c.strip.style.filter = '';
+        }
+        c.presence = c.enter ? smoothstep(0, 0.45, u) : 1;
+        c.box.style.width = ((maxW + (c.finalW - maxW) * smoothstep(0.8, 1, u)) * c.presence).toFixed(2) + 'px';
+        c.box.style.opacity = c.presence.toFixed(3);
+      });
+      slots.forEach(function (slot) {
+        if (slot.char === undefined) return;
+        var p = columns[slot.follow].presence;
+        slot.box.style.width = (sepW * p).toFixed(2) + 'px';
+        slot.box.style.opacity = p.toFixed(3);
+      });
+    }
+    var finalText = b.replace(/\B(?=(\d{3})+(?!\d))/g, sep);
+    el.textContent = '';
+    el.appendChild(roll); el.appendChild(svg);
+    render(0);
+    return function play() {
+      var t0 = performance.now();
+      (function step(now) {
+        var t = ((now || t0) - t0) / 1000;
+        if (t >= total) { el.textContent = finalText; return; }
+        render(t);
+        requestAnimationFrame(step);
+      })();
+    };
+  }
+  if (!reduce && hasIO) {
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(function () {
+      var rollIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { rollIO.unobserve(e.target); e.target._play(); } });
+      }, { threshold: 0.5 });
+      each('.countup', function (el) { el._play = makeRoll(el); rollIO.observe(el); });
+    });
+    var gaugeIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { gaugeIO.unobserve(e.target); e.target.classList.add('is-on'); } });
+    }, { threshold: 0.5 });
+    each('.gauge', function (el) { gaugeIO.observe(el); });
+  }
+
+})();
 </script>
 </body>
 </html>

@@ -268,9 +268,9 @@ html.full .d-shell, html.full .d-main { height: auto; }
     <span class="lab-cap__meta wide-only">הקוטב השקט של 14: אותה שפה, אפקט אחד, הסדר של 12 ותפריט-צד</span>
   </div>
   <div class="lab-cap__points">
-    <p><b>מה זז.</b> שני דברים בלבד: קרן-אור אחת (BorderBeam) סביב «חסר ממך», והמספר 5,941. כל השאר עומד; מעבר-עכבר משנה רק רקע, בלי הרמה ובלי הגדלה.</p>
+    <p><b>מה זז.</b> אפקט אחד: קרן-אור (BorderBeam) סביב «חסר ממך». מלבדה רק המספר 5,941, שמתגלגל פעם אחת. כל השאר עומד; מעבר-עכבר משנה רק רקע, בלי הרמה ובלי הגדלה.</p>
     <p><b>מתי.</b> הקרן כל הזמן, בהקפה לינארית שחוזרת על עצמה. המספר פעם אחת, כשהכרטיס שלו נכנס לתצוגה, ונעצר על 5,941.</p>
-    <p><b>כמה.</b> קרן של 1px באורך 100px בגרדיאנט-המותג, הקפה ב-14 שניות (אצלם 6 כברירת-מחדל, 8 בדמו). המספר עולה מ-0 בקפיץ damping 60, stiffness 100 ונח אחרי כ-5.5 שניות. ב-reduced-motion הכול עומד: הקרן קפואה בפינה, המספר סופי.</p>
+    <p><b>כמה.</b> קרן של 1px באורך 100px בגרדיאנט-המותג, הקפה ב-14 שניות (אצלם 6 כברירת-מחדל, 8 בדמו). המספר עולה מ-0 בקפיץ <bdi dir="ltr" style="white-space:nowrap">damping 60</bdi> ו-<bdi dir="ltr" style="white-space:nowrap">stiffness 100</bdi> ונח אחרי כ-5.5 שניות. במצב reduced-motion הכול עומד: הקרן קפואה על הפינה, המספר מוצג סופי.</p>
     <p class="wide-only"><b>מהקוד שלהם, תחת <bdi dir="ltr">apps/www/</bdi>.</b> <bdi dir="ltr">registry/magicui/border-beam.tsx</bdi> (מסלול offset-path של rect, מסכת-טבעת, לינארי ואינסופי), <bdi dir="ltr">registry/magicui/number-ticker.tsx</bdi> (useSpring ו-useInView once), <bdi dir="ltr">registry/magicui/bento-grid.tsx</bdi> (הצל המשולש והריחוף), <bdi dir="ltr">components/ui/sidebar.tsx</bdi> (תפריט-הצד, 16rem). commit <bdi dir="ltr">efe76fc</bdi>.</p>
     <p class="wide-only"><b>מה ירד מ-14.</b> רשת-הנקודות, הגרדיאנט על «פרק 19», הגלולה המנצנצת, ה-Marquee, ה-Dock, ה-blur-fade ומילוי-הטבעת. «חסר ממך» יצא לכרטיס משלו; מ-10 נלקחו רק משטחים טונאליים לווידג'טים המשניים ופינות של 20px. גופן: Rag Sans, כמו ב-14.</p>
   </div>
@@ -537,7 +537,8 @@ html.full .d-shell, html.full .d-main { height: auto; }
 
   // number-ticker.tsx: useMotionValue(startValue 0) + useSpring({ damping: 60, stiffness: 100 }), mass 1 (motion 12),
   // useInView(ref, { once: true, margin: "0px" }), Intl.NumberFormat("en-US") on Number(latest.toFixed(0)).
-  // The spring is motion's own closed form for an overdamped spring (zeta = 3), resting at restDelta 0.5 like motion's default.
+  // The spring is motion's own closed form for an overdamped spring (zeta = 3). motion keeps integrating to restDelta 0.001
+  // (motion-dom value/utils/follow.ts), but the rounded text stops changing once |delta| < 0.5, so the loop stops there.
   (function () {
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce || !('IntersectionObserver' in window)) return;
